@@ -183,8 +183,15 @@ export default function App() {
     saveSiteSettings(newSettings);
   };
 
-  // Filter published posts for public view
-  const publishedPosts = posts.filter((p) => p.status === "published");
+  // Filter published posts for public view and sort date-wise descending (latest first)
+  const publishedPosts = posts
+    .filter((p) => p.status === "published")
+    .sort((a, b) => {
+      const timeA = new Date(a.publishedAt || a.createdAt || 0).getTime();
+      const timeB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+      return timeB - timeA;
+    });
+
   const filteredPosts = publishedPosts.filter((p) => {
     if (currentCategory !== "all" && p.category !== currentCategory) return false;
     if (searchQuery.trim()) {
@@ -278,20 +285,7 @@ export default function App() {
             onNavigateHome={handleBackToHome}
           />
 
-          <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 sm:py-12 space-y-12">
-            {/* Minimalist Editorial Hero Header */}
-            <div className="border-b border-[#EAE8E0] pb-8 pt-2 space-y-3">
-              <div className="text-xs font-mono-data text-stone-500 uppercase tracking-widest">
-                Mutual Fund Research & Analytics
-              </div>
-              <h1 className="font-display-title text-4xl sm:text-5xl md:text-6xl text-[#1A1A1A] font-normal leading-[1.08] tracking-tight max-w-3xl">
-                Independent Mutual Fund Analytics
-              </h1>
-              <p className="text-stone-600 text-sm sm:text-base leading-relaxed font-sans max-w-2xl">
-                Unbiased rolling return audits, portfolio overlap teardowns, and factor exposure analytics across Indian mutual funds.
-              </p>
-            </div>
-
+          <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6 sm:py-8 space-y-10">
             {/* Loading State */}
             {loading ? (
               <div className="py-20 text-center text-xs font-mono-data text-stone-500">
@@ -316,11 +310,11 @@ export default function App() {
             ) : (
               /* Articles Listing */
               <div className="space-y-12">
-                {/* Featured Headline Article */}
+                {/* Featured Headline Article - Latest by Date */}
                 {featuredPost && (
                   <section>
                     <div className="text-[11px] font-mono-data uppercase tracking-wider text-stone-500 mb-3">
-                      Featured Research Note
+                      Latest Research Note
                     </div>
                     <ArticleCard
                       post={featuredPost}
@@ -334,7 +328,7 @@ export default function App() {
                 {remainingPosts.length > 0 && (
                   <section className="space-y-4 pt-4">
                     <div className="pb-2 border-b border-[#EAE8E0] text-xs font-mono-data text-stone-500 uppercase tracking-wider">
-                      Recent Audits & Comparisons ({remainingPosts.length})
+                      Previous Research & Audits ({remainingPosts.length})
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">

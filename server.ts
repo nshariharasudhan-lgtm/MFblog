@@ -763,7 +763,11 @@ app.get("/api/posts", async (_req, res) => {
   } catch (err) {
     console.warn("[/api/posts] Failed to fetch from Supabase:", err);
   }
-  return res.json(INITIAL_ARTICLES);
+  return res.json(
+    [...INITIAL_ARTICLES].sort(
+      (a, b) => new Date(b.publishedAt || b.createdAt || 0).getTime() - new Date(a.publishedAt || a.createdAt || 0).getTime()
+    )
+  );
 });
 
 app.post("/api/posts", async (req, res) => {

@@ -228,10 +228,20 @@ function getLocalPosts(): ArticlePost[] {
       };
     });
 
-    localStorage.setItem(POSTS_KEY, JSON.stringify(updated));
-    return updated;
+    const sorted = updated.sort((a, b) => {
+      const timeA = new Date(a.publishedAt || a.createdAt || 0).getTime();
+      const timeB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+      return timeB - timeA;
+    });
+
+    localStorage.setItem(POSTS_KEY, JSON.stringify(sorted));
+    return sorted;
   } catch {
-    return INITIAL_ARTICLES;
+    return [...INITIAL_ARTICLES].sort((a, b) => {
+      const timeA = new Date(a.publishedAt || a.createdAt || 0).getTime();
+      const timeB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+      return timeB - timeA;
+    });
   }
 }
 
@@ -324,13 +334,19 @@ export async function getAllPosts(): Promise<ArticlePost[]> {
     if (res.ok) {
       const serverPosts: ArticlePost[] = await res.json();
       if (Array.isArray(serverPosts) && serverPosts.length > 0) {
-        const sanitized = serverPosts.map((p) => ({
-          ...p,
-          authorName: "Research Desk",
-          authorTitle: "YieldNest Research Desk",
-        }));
-        saveLocalPosts(sanitized);
-        return sanitized;
+        const sorted = serverPosts
+          .map((p) => ({
+            ...p,
+            authorName: "Research Desk",
+            authorTitle: "YieldNest Research Desk",
+          }))
+          .sort((a, b) => {
+            const timeA = new Date(a.publishedAt || a.createdAt || 0).getTime();
+            const timeB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+            return timeB - timeA;
+          });
+        saveLocalPosts(sorted);
+        return sorted;
       }
     }
   } catch (apiErr) {
@@ -373,8 +389,13 @@ export async function getAllPosts(): Promise<ArticlePost[]> {
           createdAt: d.created_at,
           updatedAt: d.updated_at,
         }));
-        saveLocalPosts(mapped);
-        return mapped;
+        const sorted = mapped.sort((a, b) => {
+          const timeA = new Date(a.publishedAt || a.createdAt || 0).getTime();
+          const timeB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+          return timeB - timeA;
+        });
+        saveLocalPosts(sorted);
+        return sorted;
       }
     } catch (err) {
       console.warn("Supabase fetch failed, falling back to local store:", err);
