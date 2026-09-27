@@ -722,6 +722,101 @@ app.post("/api/posts/sync-supabase", async (req, res) => {
 });
 
 // -------------------------------------------------------------
+// 7. Posts API (Server-Side Proxy for Production & Sync)
+// -------------------------------------------------------------
+app.get("/api/posts", async (_req, res) => {
+  try {
+    if (serverSupabase) {
+      const { data, error } = await serverSupabase
+        .from("posts")
+        .select("*")
+        .order("published_at", { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        const posts = data.map((d: any) => ({
+          id: d.id,
+          slug: d.slug,
+          title: d.title,
+          excerpt: d.excerpt,
+          content: d.content,
+          category: d.category,
+          tags: d.tags || [],
+          status: d.status,
+          authorName: "Research Desk",
+          authorTitle: "YieldNest Research Desk",
+          authorAvatar: d.author_avatar,
+          coverImage: d.cover_image,
+          readTimeMinutes: d.read_time_minutes || 5,
+          viewsCount: d.views_count || 0,
+          amfiSchemeCodes: d.amfi_scheme_codes || [],
+          amfiDataSnapshot: d.amfi_data_snapshot || [],
+          seoMetadata: d.seo_metadata || {},
+          socialSnippets: d.social_shares || {},
+          scheduledFor: d.scheduled_for,
+          publishedAt: d.published_at,
+          createdAt: d.created_at,
+          updatedAt: d.updated_at,
+        }));
+        return res.json(posts);
+      }
+    }
+  } catch (err) {
+    console.warn("[/api/posts] Failed to fetch from Supabase:", err);
+  }
+  return res.json(INITIAL_ARTICLES);
+});
+
+app.post("/api/posts", async (req, res) => {
+  const post = req.body;
+  if (!post || !post.slug) {
+    return res.status(400).json({ error: "Post data with slug is required" });
+  }
+
+  if (serverSupabase) {
+    try {
+      const { data, error } = await serverSupabase
+        .from("posts")
+        .upsert(
+          {
+            slug: post.slug,
+            title: post.title,
+            excerpt: post.excerpt,
+            content: post.content,
+            category: post.category,
+            tags: post.tags,
+            status: post.status,
+            author_name: "Research Desk",
+            author_title: "YieldNest Research Desk",
+            author_avatar: post.authorAvatar,
+            cover_image: post.coverImage,
+            read_time_minutes: post.readTimeMinutes,
+            views_count: post.viewsCount,
+            amfi_scheme_codes: post.amfiSchemeCodes,
+            amfi_data_snapshot: post.amfiDataSnapshot,
+            seo_metadata: post.seoMetadata,
+            social_shares: post.socialSnippets,
+            scheduled_for: post.scheduledFor,
+            published_at: post.publishedAt || new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+          { onConflict: "slug" }
+        )
+        .select()
+        .single();
+
+      if (!error && data) {
+        return res.json({ success: true, post: data });
+      } else if (error) {
+        console.error("[/api/posts] Supabase upsert error:", error);
+      }
+    } catch (dbErr: any) {
+      console.error("[/api/posts] Database error:", dbErr);
+    }
+  }
+  return res.json({ success: true, post });
+});
+
+// -------------------------------------------------------------
 // SEO, Crawlers & LLM Endpoints (sitemap.xml, robots.txt, llms.txt)
 // -------------------------------------------------------------
 

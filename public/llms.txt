@@ -14,6 +14,8 @@ We are strictly an investor education and quantitative research publication. Not
 - [Direct vs Regular Mutual Funds: The Compounding Drag of Distributor Commissions & Total Expense Ratios](https://yieldnest.online/article/direct-vs-regular-mutual-funds-charges-commissions-compounding): Mathematical breakdown of how 0.85% TER differential drains ₹47+ Lakhs on a 20-year monthly SIP of ₹25,000.
 - [How to Measure Mutual Fund Performance: Rolling Returns, Alpha, Beta & Risk-Adjusted Ratios](https://yieldnest.online/article/evaluating-mutual-fund-performance-rolling-returns-risk-ratios): Comprehensive quantitative guide explaining rolling returns over trailing CAGR, Sortino Ratio, Sharpe Ratio, and Downside Capture.
 - [AMFI & Regulatory Guidelines: Categorization Norms, Liquidity Mandates & Riskometer Framework](https://yieldnest.online/article/amfi-latest-regulatory-updates-categorization-norms-transparency): Definitive breakdown of SEBI categorization rules, dynamic riskometer metrics, and investor protection mandates.
+- [Why TER Matters: Impact of Expense Ratio on Mutual Fund Returns](https://yieldnest.online/article/why-total-expense-ratio-ter-is-important-for-investors): Mathematical breakdown of how Total Expense Ratio (TER) drains wealth over a 20-year horizon, with SEBI regulatory slabs and Direct vs Regular plan fee analyses.
+- [Quant Small Cap vs Nippon India Small Cap: A Data-Driven Analysis](https://yieldnest.online/article/quant-small-cap-vs-nippon-india-small-cap-comparison): Rigorous comparison of factor momentum rotation (VLRT model) vs institutional bottom-up diversification, liquidity stress test horizons, and 5-year rolling returns.
 
 ## Research Categories
 

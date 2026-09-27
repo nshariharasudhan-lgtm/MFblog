@@ -318,6 +318,26 @@ export function saveSiteSettings(settings: SiteSettings) {
 // Posts API with Supabase Sync
 // -------------------------------------------------------------
 export async function getAllPosts(): Promise<ArticlePost[]> {
+  // 1. Try unified server-side API proxy first (guarantees cross-device & production sync)
+  try {
+    const res = await fetch("/api/posts");
+    if (res.ok) {
+      const serverPosts: ArticlePost[] = await res.json();
+      if (Array.isArray(serverPosts) && serverPosts.length > 0) {
+        const sanitized = serverPosts.map((p) => ({
+          ...p,
+          authorName: "Research Desk",
+          authorTitle: "YieldNest Research Desk",
+        }));
+        saveLocalPosts(sanitized);
+        return sanitized;
+      }
+    }
+  } catch (apiErr) {
+    console.warn("[Storage] /api/posts fetch error, attempting direct client fallback:", apiErr);
+  }
+
+  // 2. Direct Supabase Client fallback
   const settings = getSiteSettings();
   const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseAnonKey);
 
@@ -326,10 +346,10 @@ export async function getAllPosts(): Promise<ArticlePost[]> {
       const { data, error } = await supabase
         .from("posts")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("published_at", { ascending: false });
 
       if (!error && data && data.length > 0) {
-        return data.map((d: any) => ({
+        const mapped = data.map((d: any) => ({
           id: d.id,
           slug: d.slug,
           title: d.title,
@@ -353,35 +373,8 @@ export async function getAllPosts(): Promise<ArticlePost[]> {
           createdAt: d.created_at,
           updatedAt: d.updated_at,
         }));
-      } else if (!error && data && data.length === 0) {
-        // Auto-seed initial posts to Supabase if empty
-        const local = getLocalPosts();
-        for (const p of local) {
-          await supabase.from("posts").upsert(
-            {
-              slug: p.slug,
-              title: p.title,
-              excerpt: p.excerpt,
-              content: p.content,
-              category: p.category,
-              tags: p.tags,
-              status: p.status,
-              author_name: p.authorName,
-              author_title: p.authorTitle,
-              author_avatar: p.authorAvatar,
-              cover_image: p.coverImage,
-              read_time_minutes: p.readTimeMinutes,
-              views_count: p.viewsCount,
-              amfi_scheme_codes: p.amfiSchemeCodes,
-              amfi_data_snapshot: p.amfiDataSnapshot,
-              seo_metadata: p.seoMetadata,
-              social_shares: p.socialSnippets,
-              published_at: p.publishedAt,
-            },
-            { onConflict: "slug" }
-          );
-        }
-        return local;
+        saveLocalPosts(mapped);
+        return mapped;
       }
     } catch (err) {
       console.warn("Supabase fetch failed, falling back to local store:", err);
@@ -417,13 +410,24 @@ export async function savePost(post: ArticlePost): Promise<ArticlePost> {
   }
   saveLocalPosts(posts);
 
-  // Attempt Supabase Sync
+  // 1. Sync via Server API (persists to Supabase reliably across networks)
+  try {
+    await fetch("/api/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(updatedPost),
+    });
+  } catch (apiErr) {
+    console.warn("[Storage] /api/posts POST failed:", apiErr);
+  }
+
+  // 2. Direct Supabase Client sync
   const settings = getSiteSettings();
   const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseAnonKey);
 
   if (supabase) {
     try {
-      const { error } = await supabase.from("posts").upsert(
+      await supabase.from("posts").upsert(
         {
           slug: updatedPost.slug,
           title: updatedPost.title,
@@ -448,11 +452,8 @@ export async function savePost(post: ArticlePost): Promise<ArticlePost> {
         },
         { onConflict: "slug" }
       );
-      if (error) {
-        console.warn("Supabase sync post warning:", error);
-      }
     } catch (err) {
-      console.warn("Supabase sync post warning:", err);
+      console.warn("Supabase post upsert warning:", err);
     }
   }
 

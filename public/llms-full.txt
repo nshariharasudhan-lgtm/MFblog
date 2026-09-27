@@ -63,3 +63,24 @@ Canonical URL: https://yieldnest.online/article/amfi-latest-regulatory-updates-c
 SEBI and AMFI circulars govern scheme classification, portfolio disclosure schedules, dynamic monthly riskometers, and mandatory stress testing to protect retail investors.
 
 Core Research Finding: Understanding regulatory mandates ensures investors avoid style drift, excessive small-cap exposure in multi-cap schemes, and illiquid debt paper.
+
+---
+
+## Article: Why TER Matters: Impact of Expense Ratio on Mutual Fund Returns
+Canonical URL: https://yieldnest.online/article/why-total-expense-ratio-ter-is-important-for-investors
+
+### Executive Summary: The Hidden Compounding Drain
+When evaluating mutual funds, investors frequently focus almost exclusively on past trailing returns and fund manager star ratings. However, one of the most mathematically reliable determinants of your long-term terminal wealth is the Total Expense Ratio (TER). A 1% TER difference drains over ₹41 Lakhs on a 20-year monthly SIP of ₹25,000.
+
+Core Research Finding: Direct plans hold identical underlying stocks and fund management teams as Regular plans. Transitioning to Direct plans eliminates distributor commissions and immediately enhances terminal compounding.
+
+---
+
+## Article: Quant Small Cap vs Nippon India Small Cap: A Data-Driven Analysis
+Canonical URL: https://yieldnest.online/article/quant-small-cap-vs-nippon-india-small-cap-comparison
+
+### Executive Summary: Two Opposing Philosophies in Small Cap Investing
+In the volatile landscape of Indian small caps, Quant Small Cap uses proprietary quantitative VLRT factor momentum and high portfolio turnover, while Nippon India Small Cap relies on deep institutional bottom-up diversification with 150+ stocks.
+
+Core Research Finding: Nippon India provides superior drawdown cushioning and lower beta during broad market corrections, whereas Quant delivers explosive factor-driven upside during momentum expansions. Both require strict risk management under AMFI liquidity stress test horizons.
+
