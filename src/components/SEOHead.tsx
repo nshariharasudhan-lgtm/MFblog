@@ -103,8 +103,8 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
   // 3. Image check (do not create or force images for articles)
   const socialImage = post?.coverImage ? resolveSocialImageUrl(post.coverImage, origin) : null;
 
-  // 4. Author & Attribution
-  const authorName = post?.authorName || settings.authorName || "Research Desk";
+  // 4. Author & Attribution (Strictly institutional desk, no individual names)
+  const authorName = "Research Desk";
 
   useEffect(() => {
     // A. Update Document Title
@@ -216,6 +216,15 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
     }
     canonical.setAttribute("href", fullUrl);
 
+    // Google tag / Google Analytics tracking for SPA virtual pageviews
+    if (typeof window !== "undefined" && typeof (window as any).gtag === "function") {
+      (window as any).gtag("event", "page_view", {
+        page_title: title,
+        page_location: fullUrl,
+        page_path: urlPath || window.location.pathname,
+      });
+    }
+
     // H. Schema.org JSON-LD Structured Data
     let scriptTag = document.getElementById("structured-data-jsonld") as HTMLScriptElement | null;
     if (!scriptTag) {
@@ -246,9 +255,8 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
         "wordCount": words,
         "timeRequired": `PT${readTime}M`,
         "author": {
-          "@type": "Person",
-          "name": authorName,
-          "jobTitle": post.authorTitle || "Mutual Fund Research Analyst",
+          "@type": "Organization",
+          "name": "YieldNest Research Desk",
         },
         "publisher": {
           "@type": "Organization",

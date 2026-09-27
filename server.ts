@@ -3,7 +3,9 @@ import { GoogleGenAI } from "@google/genai";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 import path from "path";
+import fs from "fs";
 import { fileURLToPath } from "url";
+import { INITIAL_ARTICLES } from "./src/lib/seedData";
 
 dotenv.config();
 
@@ -720,6 +722,200 @@ app.post("/api/posts/sync-supabase", async (req, res) => {
 });
 
 // -------------------------------------------------------------
+// SEO, Crawlers & LLM Endpoints (sitemap.xml, robots.txt, llms.txt)
+// -------------------------------------------------------------
+
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+async function getPublishedArticlesList() {
+  if (serverSupabase) {
+    try {
+      const { data, error } = await serverSupabase
+        .from("posts")
+        .select("slug, title, excerpt, category, published_at, updated_at, cover_image, author_name, author_title")
+        .eq("status", "published")
+        .order("published_at", { ascending: false });
+      if (!error && data && data.length > 0) {
+        return data.map((d: any) => ({
+          slug: d.slug,
+          title: d.title,
+          excerpt: d.excerpt,
+          category: d.category,
+          publishedAt: d.published_at,
+          updatedAt: d.updated_at,
+          coverImage: d.cover_image,
+          authorName: d.author_name,
+          authorTitle: d.author_title,
+        }));
+      }
+    } catch (err) {
+      console.warn("[Sitemap] Supabase fallback to seed data:", err);
+    }
+  }
+  return INITIAL_ARTICLES.map((a) => ({
+    slug: a.slug,
+    title: a.title,
+    excerpt: a.excerpt,
+    category: a.category,
+    publishedAt: a.publishedAt || a.createdAt,
+    updatedAt: a.updatedAt || a.createdAt,
+    coverImage: a.coverImage,
+    authorName: a.authorName,
+    authorTitle: a.authorTitle,
+  }));
+}
+
+// 1. Robots.txt
+app.get("/robots.txt", (_req, res) => {
+  const robotsPath = path.join(__dirname, "public", "robots.txt");
+  if (fs.existsSync(robotsPath)) {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    return res.sendFile(robotsPath);
+  }
+  const fallback = `# robots.txt for YieldNest.online
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/
+
+Sitemap: https://yieldnest.online/sitemap.xml
+`;
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  return res.send(fallback);
+});
+
+// 2. Dynamic Sitemap.xml
+app.get("/sitemap.xml", async (_req, res) => {
+  try {
+    const articles = await getPublishedArticlesList();
+    const categories = [
+      "fund-comparison",
+      "performance-analysis",
+      "market-trends",
+      "category-deep-dive",
+      "sip-strategies",
+    ];
+    const today = new Date().toISOString().split("T")[0];
+
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://yieldnest.online/</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+${categories
+  .map(
+    (cat) => `  <url>
+    <loc>https://yieldnest.online/category/${cat}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>`
+  )
+  .join("\n")}
+${articles
+  .map((art) => {
+    const lastMod = (art.updatedAt || art.publishedAt || today).split("T")[0];
+    return `  <url>
+    <loc>https://yieldnest.online/article/${encodeURIComponent(art.slug)}</loc>
+    <lastmod>${lastMod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>`;
+  })
+  .join("\n")}
+</urlset>`;
+
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
+    return res.status(200).send(xml);
+  } catch (err: any) {
+    console.error("Failed to generate sitemap.xml:", err);
+    return res.status(500).send("Error generating sitemap");
+  }
+});
+
+// 3. LLMs.txt & LLMs-full.txt
+app.get(["/llms.txt", "/.well-known/llms.txt"], (_req, res) => {
+  const llmsPath = path.join(__dirname, "public", "llms.txt");
+  if (fs.existsSync(llmsPath)) {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    return res.sendFile(llmsPath);
+  }
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  return res.send("# YieldNest.online\n\nIndependent Mutual Fund Research & Analytics.");
+});
+
+app.get("/llms-full.txt", (_req, res) => {
+  const fullPath = path.join(__dirname, "public", "llms-full.txt");
+  if (fs.existsSync(fullPath)) {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    return res.sendFile(fullPath);
+  }
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  return res.send("# YieldNest.online - Full Content Archive");
+});
+
+function injectArticleMeta(html: string, article: any): string {
+  const title = `${escapeHtml(article.title)} | YieldNest.online`;
+  const description = escapeHtml(article.excerpt || "Independent mutual fund research on YieldNest.online.");
+  const url = `https://yieldnest.online/article/${encodeURIComponent(article.slug)}`;
+  const datePublished = new Date(article.publishedAt || article.createdAt || Date.now()).toISOString();
+  const dateModified = new Date(article.updatedAt || article.createdAt || Date.now()).toISOString();
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "FinancialArticle",
+    "headline": article.title,
+    "description": article.excerpt,
+    "url": url,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": url,
+    },
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "author": {
+      "@type": "Organization",
+      "name": "YieldNest Research Desk",
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "YieldNest.online",
+      "url": "https://yieldnest.online",
+    },
+    "articleSection": article.category,
+  });
+
+  let modified = html;
+  modified = modified.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${url}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${url}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:title["'][\s\S]*?>/i, `<meta name="twitter:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:description["'][\s\S]*?>/i, `<meta name="twitter:description" content="${description}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  return modified;
+}
+
+// -------------------------------------------------------------
 // Vite Middleware / Static Server setup
 // -------------------------------------------------------------
 async function startServer() {
@@ -729,8 +925,48 @@ async function startServer() {
       server: { middlewareMode: true },
       appType: "spa",
     });
+
+    // Server-side injected HTML for individual articles in Dev
+    app.get("/article/:slug", async (req, res, next) => {
+      try {
+        const slug = req.params.slug;
+        const articles = await getPublishedArticlesList();
+        const article = articles.find((a) => a.slug === slug);
+        if (!article) return next();
+
+        const indexHtmlPath = path.join(__dirname, "index.html");
+        let html = fs.readFileSync(indexHtmlPath, "utf-8");
+        html = injectArticleMeta(html, article);
+        html = await vite.transformIndexHtml(req.originalUrl, html);
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.status(200).send(html);
+      } catch (err) {
+        return next(err);
+      }
+    });
+
     app.use(vite.middlewares);
   } else {
+    // Server-side injected HTML for individual articles in Production
+    app.get("/article/:slug", async (req, res, next) => {
+      try {
+        const slug = req.params.slug;
+        const articles = await getPublishedArticlesList();
+        const article = articles.find((a) => a.slug === slug);
+        const indexPath = path.join(__dirname, "dist", "index.html");
+        if (!fs.existsSync(indexPath)) return next();
+
+        let html = fs.readFileSync(indexPath, "utf-8");
+        if (article) {
+          html = injectArticleMeta(html, article);
+        }
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.status(200).send(html);
+      } catch (err) {
+        return next(err);
+      }
+    });
+
     app.use(express.static(path.join(__dirname, "dist")));
     app.get("*", (_req, res) => {
       res.sendFile(path.join(__dirname, "dist", "index.html"));

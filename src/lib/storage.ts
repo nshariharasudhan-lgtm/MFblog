@@ -209,11 +209,14 @@ function getLocalPosts(): ArticlePost[] {
     const allPosts = [...parsed, ...missingSeedArticles];
 
     // Keep seed posts content, metadata, and snapshots up-to-date with latest pillar versions
+    // Strictly enforce institutional Research Desk attribution; no individual names permitted
     const updated = allPosts.map((p) => {
       const seedMatch = INITIAL_ARTICLES.find((s) => s.id === p.id);
-      if (seedMatch) {
-        return {
-          ...p,
+      return {
+        ...p,
+        authorName: "Research Desk",
+        authorTitle: "YieldNest Research Desk",
+        ...(seedMatch ? {
           content: seedMatch.content,
           seoMetadata: seedMatch.seoMetadata || p.seoMetadata,
           amfiDataSnapshot: seedMatch.amfiDataSnapshot || p.amfiDataSnapshot,
@@ -221,9 +224,8 @@ function getLocalPosts(): ArticlePost[] {
           category: seedMatch.category || p.category,
           title: seedMatch.title || p.title,
           excerpt: seedMatch.excerpt || p.excerpt,
-        };
-      }
-      return p;
+        } : {}),
+      };
     });
 
     localStorage.setItem(POSTS_KEY, JSON.stringify(updated));
@@ -288,13 +290,12 @@ export function getSiteSettings(): SiteSettings {
       parsed.contactEmail = "research@yieldnest.online";
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(parsed));
     }
-    // Clean any lingering third-party dummy credits
-    if (parsed.authorName && (parsed.authorName.includes("Arindam") || parsed.authorName.includes("CFA"))) {
-      parsed.authorName = "Research Desk";
-      parsed.authorCredentials = "Mutual Fund Research Team";
-      parsed.authorTitle = "Mutual Fund Research Team";
-      localStorage.setItem(SETTINGS_KEY, JSON.stringify(parsed));
-    }
+    // Clean any lingering personal names; strictly institutional Research Desk only
+    parsed.authorName = "Research Desk";
+    parsed.authorCredentials = "Mutual Fund Research Team";
+    parsed.authorTitle = "YieldNest Research Desk";
+    parsed.authorBio = "YieldNest.online Research Desk conducts quantitative rolling return audits, expense drag teardowns, and downside capture analyses of Indian Mutual Funds.";
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(parsed));
     return parsed;
   } catch {
     return DEFAULT_SITE_SETTINGS;
@@ -304,6 +305,9 @@ export function getSiteSettings(): SiteSettings {
 export function saveSiteSettings(settings: SiteSettings) {
   const cleanSettings = {
     ...settings,
+    authorName: "Research Desk",
+    authorTitle: "YieldNest Research Desk",
+    authorCredentials: "Mutual Fund Research Team",
     supabaseUrl: sanitizeSupabaseUrl(settings.supabaseUrl),
     supabaseAnonKey: getSupabaseAnonKey(settings.supabaseAnonKey),
   };
@@ -334,8 +338,8 @@ export async function getAllPosts(): Promise<ArticlePost[]> {
           category: d.category,
           tags: d.tags || [],
           status: d.status,
-          authorName: d.author_name,
-          authorTitle: d.author_title,
+          authorName: "Research Desk",
+          authorTitle: "YieldNest Research Desk",
           authorAvatar: d.author_avatar,
           coverImage: d.cover_image,
           readTimeMinutes: d.read_time_minutes || 5,
@@ -396,7 +400,12 @@ export async function savePost(post: ArticlePost): Promise<ArticlePost> {
   const posts = getLocalPosts();
   const index = posts.findIndex((p) => p.id === post.id);
 
-  let updatedPost = { ...post, updatedAt: new Date().toISOString() };
+  let updatedPost = {
+    ...post,
+    authorName: "Research Desk",
+    authorTitle: "YieldNest Research Desk",
+    updatedAt: new Date().toISOString(),
+  };
   if (!updatedPost.publishedAt && updatedPost.status === "published") {
     updatedPost.publishedAt = new Date().toISOString();
   }
@@ -423,8 +432,8 @@ export async function savePost(post: ArticlePost): Promise<ArticlePost> {
           category: updatedPost.category,
           tags: updatedPost.tags,
           status: updatedPost.status,
-          author_name: updatedPost.authorName,
-          author_title: updatedPost.authorTitle,
+          author_name: "Research Desk",
+          author_title: "YieldNest Research Desk",
           author_avatar: updatedPost.authorAvatar,
           cover_image: updatedPost.coverImage,
           read_time_minutes: updatedPost.readTimeMinutes,
@@ -723,8 +732,8 @@ export async function syncAllToSupabase(): Promise<{ success: boolean; count: nu
           category: p.category,
           tags: p.tags,
           status: p.status,
-          author_name: p.authorName,
-          author_title: p.authorTitle,
+          author_name: "Research Desk",
+          author_title: "YieldNest Research Desk",
           author_avatar: p.authorAvatar,
           cover_image: p.coverImage,
           read_time_minutes: p.readTimeMinutes,

@@ -1,0 +1,65 @@
+# YieldNest.online - Complete Research Library Archive
+
+> Comprehensive collection of independent mutual fund quantitative audits, rolling return studies, and expense analyses.
+
+---
+
+## Article: Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap: 5-Year Rolling Return Audit
+Canonical URL: https://yieldnest.online/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap
+
+### Executive Summary: The Allocation Dilemma
+For retail and HNI investors constructing a core equity mutual fund portfolio in India, two flagship schemes consistently occupy center stage: Parag Parikh Flexi Cap Fund and Mirae Asset Large & Midcap Fund. While both have delivered remarkable compound annual growth rates (CAGR) over the preceding decade, their underlying risk architecture, portfolio construction methodologies, and factor bets diverge substantially.
+
+This quantitative research paper examines their risk-adjusted performance, downside capture ratios, portfolio overlap, and expense drag utilizing official datasets from the Association of Mutual Funds in India (AMFI).
+
+Core Research Finding: While Mirae Asset captures cyclical upswings with aggressive mid-cap participation, Parag Parikh's disciplined value orientation, selective cash buffers, and foreign equity exposure generate superior risk-adjusted alpha with 34% lower drawdown volatility during market turbulence.
+
+---
+
+## Article: Small Cap Mutual Funds Stress Test: Liquidity Risk, Days-to-Liquidate & Market Resilience
+Canonical URL: https://yieldnest.online/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity
+
+### Executive Summary: The Liquidity Reality of Small Caps
+Following rapid retail inflows into Indian small-cap funds, SEBI mandated liquidity stress tests published monthly by AMFI. This research examines portfolio liquidity horizons for Nippon India Small Cap, Quant Small Cap, and HDFC Small Cap Funds.
+
+Core Research Finding: Days-to-liquidate metrics reflect portfolio concentration and free-float constraints. Investors must balance trailing momentum with stress test liquidation horizons to manage panic redemption risks during market corrections.
+
+---
+
+## Article: NIFTY 50 Index Funds vs Active Large-Cap Funds: Is Alpha Dead in Indian Equities?
+Canonical URL: https://yieldnest.online/article/nifty-50-index-funds-vs-active-large-cap-funds
+
+### Executive Summary: The SPIVA India Reality
+The SPIVA India scorecard shows that over 85% of actively managed large-cap mutual funds fail to outperform the NIFTY 50 TRI benchmark over 5 and 10-year investment horizons once fees and transaction frictions are accounted for.
+
+Core Research Finding: For pure large-cap exposure, low-cost index funds with tracking errors under 0.05% provide mathematically superior expected compounding compared to high-expense active funds.
+
+---
+
+## Article: Direct vs Regular Mutual Funds: The Compounding Drag of Distributor Commissions & Total Expense Ratios
+Canonical URL: https://yieldnest.online/article/direct-vs-regular-mutual-funds-charges-commissions-compounding
+
+### Executive Summary: The Invisible Cost of Intermediation
+A 0.85% difference in Total Expense Ratio (TER) between Direct and Regular plans reduces terminal wealth by over ₹47 Lakhs on a 20-year monthly SIP of ₹25,000 at a 12% baseline return.
+
+Core Research Finding: Direct plans hold identical underlying stocks and fund management teams. Transitioning to Direct plans is the single highest-certainty return enhancement available to mutual fund investors.
+
+---
+
+## Article: How to Measure Mutual Fund Performance: Rolling Returns, Alpha, Beta & Risk-Adjusted Ratios
+Canonical URL: https://yieldnest.online/article/evaluating-mutual-fund-performance-rolling-returns-risk-ratios
+
+### Executive Summary: Beyond Trailing CAGR Point-to-Point Bias
+Trailing returns suffer from severe endpoint distortion. Quantitative fund evaluation requires analyzing daily 3-year and 5-year rolling returns, Sortino ratios, Sharpe ratios, and downside capture percentages.
+
+Core Research Finding: Consistency of outperformance across rolling windows correlates far higher with future alpha than trailing 1-year performance rankings.
+
+---
+
+## Article: AMFI & Regulatory Guidelines: Categorization Norms, Liquidity Mandates & Riskometer Framework
+Canonical URL: https://yieldnest.online/article/amfi-latest-regulatory-updates-categorization-norms-transparency
+
+### Executive Summary: Investor Protection Architecture in India
+SEBI and AMFI circulars govern scheme classification, portfolio disclosure schedules, dynamic monthly riskometers, and mandatory stress testing to protect retail investors.
+
+Core Research Finding: Understanding regulatory mandates ensures investors avoid style drift, excessive small-cap exposure in multi-cap schemes, and illiquid debt paper.

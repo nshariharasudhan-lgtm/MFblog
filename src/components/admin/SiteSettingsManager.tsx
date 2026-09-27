@@ -288,13 +288,13 @@ export function SiteSettingsManager({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-stone-700 mb-1 font-mono-data">
-                Author & Principal Analyst
+                Publication Byline (Institutional Desk)
               </label>
               <input
                 type="text"
-                value={formData.authorName}
-                onChange={(e) => setFormData({ ...formData, authorName: e.target.value })}
-                className="w-full text-xs p-2.5 rounded-xl border border-stone-200 bg-[#FAF9F5] focus:outline-none"
+                readOnly
+                value="Research Desk"
+                className="w-full text-xs p-2.5 rounded-xl border border-stone-200 bg-stone-100 text-stone-700 font-semibold focus:outline-none cursor-not-allowed"
               />
             </div>
 

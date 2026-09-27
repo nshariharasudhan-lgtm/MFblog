@@ -40,9 +40,7 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
   const [content, setContent] = useState(post?.content || "");
   const [status, setStatus] = useState<ArticlePost["status"]>(post?.status || "draft");
   const [readTime, setReadTime] = useState(post?.readTimeMinutes || 6);
-  const [authorName, setAuthorName] = useState(
-    post?.authorName || (settings.authorName?.includes("Arindam") ? "Research Desk" : settings.authorName) || "Research Desk"
-  );
+  const [authorName, setAuthorName] = useState("Research Desk");
 
   // SEO & Keywords State
   const [primaryKeyword, setPrimaryKeyword] = useState(post?.seoMetadata?.primaryKeyword || "");

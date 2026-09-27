@@ -20,6 +20,22 @@ import { AdminDashboard } from "./components/admin/AdminDashboard";
 import { AdminAuthModal } from "./components/admin/AdminAuthModal";
 import { NewsletterSignup } from "./components/NewsletterSignup";
 
+const CATEGORY_SLUG_MAP: Record<string, ArticleCategory> = {
+  "fund-comparison": "Fund Comparison",
+  "performance-analysis": "Performance Analysis",
+  "market-trends": "Market Trends",
+  "category-deep-dive": "Category Deep-Dive",
+  "sip-strategies": "SIP Strategies",
+};
+
+const CATEGORY_TO_SLUG: Record<ArticleCategory, string> = {
+  "Fund Comparison": "fund-comparison",
+  "Performance Analysis": "performance-analysis",
+  "Market Trends": "market-trends",
+  "Category Deep-Dive": "category-deep-dive",
+  "SIP Strategies": "sip-strategies",
+};
+
 export default function App() {
   const [posts, setPosts] = useState<ArticlePost[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -58,16 +74,25 @@ export default function App() {
   };
 
   const handleRouteFromUrl = async () => {
-    const path = window.location.pathname;
+    const rawPath = window.location.pathname;
+    const path = rawPath.replace(/\/+$/, "") || "/";
     const loadedPosts = await getAllPosts();
 
     if (path.startsWith("/article/")) {
-      const slug = path.replace("/article/", "");
+      const slug = path.replace(/^\/article\//, "").replace(/\/+$/, "");
       const matched = loadedPosts.find((p) => p.slug === slug);
       if (matched) {
         setSelectedArticle(matched);
         setIsAdminView(false);
         incrementPostViews(matched.id);
+        return;
+      }
+    } else if (path.startsWith("/category/")) {
+      const catSlug = path.replace(/^\/category\//, "").replace(/\/+$/, "");
+      if (CATEGORY_SLUG_MAP[catSlug]) {
+        setCurrentCategory(CATEGORY_SLUG_MAP[catSlug]);
+        setSelectedArticle(null);
+        setIsAdminView(false);
         return;
       }
     } else if (path === "/admin") {
@@ -84,6 +109,9 @@ export default function App() {
     // Default view
     setSelectedArticle(null);
     setIsAdminView(false);
+    if (path === "/") {
+      setCurrentCategory("all");
+    }
   };
 
   // Navigate to article (updates URL with pushState for indexable URL)
@@ -95,11 +123,25 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // Switch category with clean indexable URL
+  const handleSelectCategory = (cat: ArticleCategory | "all") => {
+    setCurrentCategory(cat);
+    setSelectedArticle(null);
+    setIsAdminView(false);
+    if (cat === "all") {
+      window.history.pushState({}, "", "/");
+    } else {
+      window.history.pushState({}, "", `/category/${CATEGORY_TO_SLUG[cat]}`);
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   // Back to Blog Home
   const handleBackToHome = () => {
     setSelectedArticle(null);
     setIsAdminView(false);
     setShowAuthModal(false);
+    setCurrentCategory("all");
     window.history.pushState({}, "", "/");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -167,7 +209,23 @@ export default function App() {
       <SEOHead
         post={selectedArticle}
         settings={settings}
-        urlPath={selectedArticle ? `/article/${selectedArticle.slug}` : "/"}
+        urlPath={
+          selectedArticle
+            ? `/article/${selectedArticle.slug}`
+            : currentCategory !== "all"
+            ? `/category/${CATEGORY_TO_SLUG[currentCategory]}`
+            : "/"
+        }
+        customTitle={
+          !selectedArticle && currentCategory !== "all"
+            ? `${currentCategory} Mutual Fund Research & Audits | YieldNest.online`
+            : undefined
+        }
+        customDescription={
+          !selectedArticle && currentCategory !== "all"
+            ? `Explore data-driven ${currentCategory} mutual fund research, rolling returns, and performance audits on YieldNest.online.`
+            : undefined
+        }
       />
 
       {/* Admin Authentication Login Modal (shown only when visiting /admin without active session) */}
@@ -203,8 +261,7 @@ export default function App() {
           onBack={handleBackToHome}
           settings={settings}
           onOpenCategory={(cat) => {
-            setCurrentCategory(cat);
-            handleBackToHome();
+            handleSelectCategory(cat);
           }}
           allPosts={posts}
           onNavigateArticle={handleOpenArticle}
@@ -214,7 +271,7 @@ export default function App() {
         <>
           <Navbar
             currentCategory={currentCategory}
-            onSelectCategory={setCurrentCategory}
+            onSelectCategory={handleSelectCategory}
             onSearchChange={setSearchQuery}
             searchQuery={searchQuery}
             settings={settings}
@@ -300,7 +357,7 @@ export default function App() {
 
           <Footer
             settings={settings}
-            onSelectCategory={setCurrentCategory}
+            onSelectCategory={handleSelectCategory}
           />
         </>
       )}
