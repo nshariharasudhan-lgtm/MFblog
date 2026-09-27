@@ -1,0 +1,6 @@
+{
+  "name": "NiveshEditorial - Mutual Fund Research & CMS",
+  "description": "Clean minimalist mutual fund blog and CMS with live AMFI India data, EEAT-compliant AI article generator, keyword research, and admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
