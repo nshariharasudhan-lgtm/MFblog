@@ -656,7 +656,7 @@ export function getSocialSchedules(): Array<{
   id: string;
   postId: string;
   postTitle: string;
-  platform: "linkedin" | "twitter" | "threads";
+  platform: "twitter" | "instagram" | "facebook";
   copy: string;
   scheduledTime: string;
   status: "scheduled" | "published" | "draft";
@@ -669,8 +669,8 @@ export function getSocialSchedules(): Array<{
           id: "soc-1",
           postId: "post-1",
           postTitle: "Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap",
-          platform: "linkedin" as const,
-          copy: "📊 Mutual Fund Analysis: Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap.\n\nWe evaluated 5-year rolling returns against official AMFI India datasets. Full report on YieldNest.online.\n\n#MutualFunds #InvestingIndia",
+          platform: "twitter" as const,
+          copy: "📊 Mutual Fund Analysis: Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap.\n\nWe evaluated 5-year rolling returns against official AMFI India datasets. Full thread inside 🧵👇 https://yieldnest.online/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap\n\n#MutualFunds #InvestingIndia",
           scheduledTime: new Date(Date.now() + 86400000 * 1).toISOString(),
           status: "scheduled" as const,
         },
@@ -681,6 +681,24 @@ export function getSocialSchedules(): Array<{
           platform: "twitter" as const,
           copy: "🚨 Can your Small Cap Fund survive a liquidity shock? AMFI stress test disclosures for Nippon India vs Quant Small Cap analyzed: 🧵👇",
           scheduledTime: new Date(Date.now() + 86400000 * 2).toISOString(),
+          status: "scheduled" as const,
+        },
+        {
+          id: "soc-3",
+          postId: "post-1",
+          postTitle: "Parag Parikh Flexi Cap vs Mirae Asset: Visual Breakdown",
+          platform: "instagram" as const,
+          copy: "Swipe to compare 📊 Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap!\n\n💡 Key Insight: Holding both in your portfolio? Surprising news: their portfolio overlap is only 26%.\n\n📌 Slide 1: 5-Year Rolling CAGR (19.4% vs 17.8%)\n📌 Slide 2: Downside Capture in Corrections (62% vs 88%)\n📌 Slide 3: Direct Plan TER Compounding Difference (>₹21 Lakhs saved)\n\n💬 Which of these two core funds do you hold for your long-term SIP?\n\n🔗 Full data breakdown link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #ParagParikh #MiraeAsset #SIP #WealthBuilding #YieldNest",
+          scheduledTime: new Date(Date.now() + 86400000 * 3).toISOString(),
+          status: "scheduled" as const,
+        },
+        {
+          id: "soc-4",
+          postId: "post-4",
+          postTitle: "Direct vs Regular Plans Wealth Comparison",
+          platform: "facebook" as const,
+          copy: "Are you quietly losing over ₹40 Lakhs to distributor commissions?\n\nMany mutual fund investors don't realize that Regular Plans deduct 0.5%–1.2% every single day from your fund's NAV as distributor trail commission.\n\nHere is what our mathematical analysis revealed:\n• A ₹25,000 monthly SIP over 20 years at 12% gross returns:\n- Direct Plan Corpus: ₹2.49 Crore\n- Regular Plan Corpus: ₹2.08 Crore\n- Total Wealth Forfeited: Over ₹41 Lakhs for the exact same fund and same stocks!\n\nCheck your statement: If your fund name doesn't say 'Direct - Growth', you are paying commissions. Read the full step-by-step transition guide on YieldNest.online:\n👉 https://yieldnest.online/article/direct-vs-regular-mutual-funds-charges-commissions-compounding\n\nWhat percentage of your portfolio is in Direct plans today? Share below! 👇",
+          scheduledTime: new Date(Date.now() + 86400000 * 4).toISOString(),
           status: "scheduled" as const,
         },
       ];
@@ -697,7 +715,7 @@ export function saveSocialSchedule(schedule: {
   id: string;
   postId: string;
   postTitle: string;
-  platform: "linkedin" | "twitter" | "threads";
+  platform: "twitter" | "instagram" | "facebook";
   copy: string;
   scheduledTime: string;
   status: "scheduled" | "published" | "draft";

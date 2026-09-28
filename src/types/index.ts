@@ -33,7 +33,7 @@ export interface SEOMetadata {
 }
 
 export interface SocialSnippet {
-  platform: "linkedin" | "twitter" | "threads";
+  platform: "twitter" | "instagram" | "facebook";
   copy: string;
   scheduledTime?: string;
   status?: "draft" | "scheduled" | "published";
@@ -58,9 +58,9 @@ export interface ArticlePost {
   amfiDataSnapshot?: AMFISchemeData[];
   seoMetadata: SEOMetadata;
   socialSnippets?: {
-    linkedin?: string;
     twitter?: string;
-    threads?: string;
+    instagram?: string;
+    facebook?: string;
   };
   scheduledFor?: string;
   publishedAt?: string;

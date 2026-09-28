@@ -485,7 +485,7 @@ Guidelines:
    - [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap)
    - [Small Cap Mutual Funds Stress Test & Liquidity Analysis](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity)
    - [NIFTY 50 Index Funds vs Active Large-Cap Funds](/article/nifty-50-index-funds-vs-active-large-cap-funds)
-5. Craft complete social media snippets (LinkedIn post, Twitter/X post, Threads post) ready for social scheduling.
+5. Craft complete social media snippets (Twitter/X post, Instagram carousel post, and Facebook community post) ready for social distribution.
 
 Return ONLY valid JSON matching this structure:
 {
@@ -504,9 +504,9 @@ Return ONLY valid JSON matching this structure:
     "riskRating": "Very High (Equity)"
   },
   "socialScheduling": {
-    "linkedin": "string (complete professional post with bullet points & hashtags)",
-    "twitter": "string (engaging thread opener with hashtags)",
-    "threads": "string (punchy conversational teaser)"
+    "twitter": "string (engaging thread opener for X with 3-4 hashtags)",
+    "instagram": "string (visual carousel breakdown, emoji bullets, bio link CTA, 5-8 relevant hashtags)",
+    "facebook": "string (engaging community discussion post with key stats, clear takeaway, and link referral)"
   }
 }`;
 
@@ -603,9 +603,9 @@ Under current Indian Income Tax regulations (Section 112A), Long-Term Capital Ga
         riskRating: "Very High (Equity)",
       },
       socialScheduling: {
-        linkedin: `📊 In-Depth Research: ${cleanTopic}\n\nWe analyzed the 5-year rolling returns, active share, and downside capture against AMFI India datasets. Here is what smart investors must know:\n\n1️⃣ Direct plan expense ratio advantages\n2️⃣ Alpha generation vs NIFTY benchmarks\n3️⃣ Risk-adjusted Sharpe ratio evaluation\n\nFull peer-reviewed analysis in our latest editorial. #MutualFunds #InvestingIndia #AMFI #WealthBuilding`,
-        twitter: `📈 Deep-Dive: ${cleanTopic}\n\nDoes the data back up the hype? We analyzed official AMFI numbers, rolling returns, and expense ratios.\n\nKey takeaways inside 🧵👇\n#MutualFundsIndia #StockMarketIndia`,
-        threads: `Comparing funds just got scientific. Our new breakdown of ${cleanTopic} breaks down real AMFI numbers, portfolio overlap, and SIP strategy. Read the full research note.`,
+        twitter: `📈 Deep-Dive: ${cleanTopic}\n\nDoes the data back up the hype? We analyzed official AMFI numbers, rolling returns, and expense ratios.\n\nKey takeaways inside 🧵👇\nhttps://yieldnest.online/article/${slug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`,
+        instagram: `Swipe to analyze 📊 ${cleanTopic}!\n\n💡 Key findings from our quantitative study:\n• 1️⃣ Rolling return persistence vs benchmark\n• 2️⃣ Downside capture ratio during market corrections\n• 3️⃣ Direct vs Regular plan wealth difference\n\n💬 Do you hold this in your mutual fund portfolio? Drop your thoughts below!\n\n🔗 Full article link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #WealthBuilding #SIP #StockMarketIndia #YieldNest`,
+        facebook: `Are you evaluating ${cleanTopic} for your mutual fund portfolio?\n\nOur latest research paper analyzes rolling returns, risk-adjusted metrics, and expense ratio compounding based on official AMFI disclosures.\n\nKey Highlights:\n- Historical performance consistency across market cycles\n- Expense ratio impact on 15-20 year wealth compounding\n- Key allocation takeaways for retail investors\n\nRead the complete research report here: https://yieldnest.online/article/${slug}\n\nWhat has been your experience with this strategy? Let us know in the comments! 👇`,
       },
     };
   }
@@ -655,9 +655,9 @@ app.post("/api/social/generate-snippets", async (req, res) => {
   }
 
   const fallbackSnippets = {
-    linkedin: `📊 New Research Note: ${title}\n\n${excerpt || "Data-backed analysis from AMFI India."}\n\nKey Insights:\n• Verified NAV & CAGR trajectories\n• Active share vs index drag\n• Actionable allocation strategy\n\nRead the full report on YieldNest.online. #MutualFunds #Investing #AMFI #WealthCreation`,
-    twitter: `📈 Deep Dive: ${title}\n\n${excerpt ? excerpt.slice(0, 140) : ""}\n\nFull breakdown with verified AMFI data on YieldNest.online. 🧵👇 #MutualFundsIndia`,
-    threads: `Just published our research note on "${title}". If you invest in Indian equities, check the rolling returns data before your next SIP.`,
+    twitter: `📈 Deep Dive: ${title}\n\n${excerpt ? excerpt.slice(0, 140) : ""}\n\nKey takeaways with verified AMFI data on YieldNest.online 🧵👇\n#MutualFundsIndia #StockMarketIndia #YieldNest`,
+    instagram: `Swipe for key takeaways 📊 ${title}\n\n${excerpt ? `💡 ${excerpt}\n\n` : ""}📌 Slide 1: Historical 5-year rolling returns\n📌 Slide 2: Expense ratio compounding drag\n📌 Slide 3: Portfolio allocation recommendations\n\n💬 Have questions on this scheme? Comment below!\n🔗 Full data breakdown link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #WealthBuilding #SIP #StockMarket #YieldNest`,
+    facebook: `New Research: ${title}\n\n${excerpt || "Our research desk analyzed official AMFI scheme data to help retail investors make data-driven decisions."}\n\nKey highlights for investors:\n- Long-term rolling return consistency\n- Risk-adjusted Sharpe and Alpha metrics\n- Practical takeaways for your monthly SIP\n\nRead the complete research report: https://yieldnest.online\n\nWhat are your thoughts on this strategy? Join the discussion below! 👇`,
     suggestedTimes: [
       "Today at 08:30 AM IST (Pre-market morning opening)",
       "Today at 06:15 PM IST (Post-market closing analysis)",
@@ -671,21 +671,21 @@ Excerpt: "${excerpt}"
 Key Findings: "${keyFindings || ""}"
 
 Generate tailored posts for:
-1. LinkedIn (Professional, thought-leadership, bullet points, 4 hashtags)
-2. Twitter/X (Punchy hook, key data highlight, character-conscious, 3 hashtags)
-3. Threads (Conversational, curiosity-inducing)
+1. Twitter / X (Punchy hook, key data highlight, under 280 characters, 3 hashtags)
+2. Instagram (Visual carousel breakdown, slide outline, emoji bullets, bio CTA, 6-8 hashtags)
+3. Facebook (Community discussion, actionable takeaways, link referral, conversational tone)
 Include 3 recommended publication times in IST.
 
 Return ONLY valid JSON:
 {
-  "linkedin": "string",
   "twitter": "string",
-  "threads": "string",
+  "instagram": "string",
+  "facebook": "string",
   "suggestedTimes": ["string", "string", "string"]
 }`;
 
   const parsed = await generateJSONWithFallback(prompt, 0.4);
-  if (parsed && (parsed.linkedin || parsed.twitter)) {
+  if (parsed && (parsed.twitter || parsed.instagram || parsed.facebook)) {
     return res.json(parsed);
   }
   return res.json(fallbackSnippets);

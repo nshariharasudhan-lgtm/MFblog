@@ -101,6 +101,11 @@ export function AdminDashboard({
         secondaryKeywords: [],
         eeatScore: 95,
       },
+      socialSnippets: {
+        twitter: `📈 New Research: ${suggestion.title}\n\n${suggestion.hook.slice(0, 130)}\n\nKey analysis inside 🧵👇\nhttps://yieldnest.online/article/${suggestion.title.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-")}\n#MutualFundsIndia #YieldNest`,
+        instagram: `Swipe to analyze 📊 ${suggestion.title}!\n\n💡 ${suggestion.hook}\n\n📌 Slide 1: 5-year rolling returns vs benchmark\n📌 Slide 2: Downside capture in market sell-offs\n📌 Slide 3: Direct plan compounding difference\n\n💬 Are you investing in this scheme? Tell us below!\n🔗 Full data breakdown link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #WealthBuilding #SIP #StockMarket #YieldNest`,
+        facebook: `Are you evaluating ${suggestion.title} for your portfolio?\n\n${suggestion.hook}\n\nKey Highlights:\n- Long-term rolling return consistency\n- Downside protection during market corrections\n- Direct plan expense ratio advantages\n\nRead the full report on YieldNest.online:\n👉 https://yieldnest.online/article/${suggestion.title.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-")}\n\nWhat is your allocation strategy? Join the discussion below! 👇`,
+      },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -271,6 +276,7 @@ export function AdminDashboard({
               onToggleStatus={async (post, status) => {
                 await onSavePost({ ...post, status });
               }}
+              onSavePost={onSavePost}
             />
           )}
 
@@ -298,7 +304,7 @@ export function AdminDashboard({
             <ContentSuggestions onDraftSuggestion={handleDraftSuggestion} />
           )}
 
-          {activeTab === "social" && <SocialScheduler />}
+          {activeTab === "social" && <SocialScheduler posts={posts} />}
 
           {activeTab === "comments" && <CommentModerator />}
 

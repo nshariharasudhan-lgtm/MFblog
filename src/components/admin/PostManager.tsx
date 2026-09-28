@@ -13,8 +13,10 @@ import {
   Sparkles,
   BarChart2,
   Copy,
+  Share2,
 } from "lucide-react";
 import { ArticlePost } from "../../types";
+import { SocialPostsModal } from "./SocialPostsModal";
 
 interface PostManagerProps {
   posts: ArticlePost[];
@@ -23,6 +25,7 @@ interface PostManagerProps {
   onDeletePost: (id: string, slug?: string) => Promise<void> | void;
   onViewPost: (post: ArticlePost) => void;
   onToggleStatus: (post: ArticlePost, newStatus: ArticlePost["status"]) => void;
+  onSavePost?: (post: ArticlePost) => Promise<void>;
 }
 
 export function PostManager({
@@ -32,11 +35,13 @@ export function PostManager({
   onDeletePost,
   onViewPost,
   onToggleStatus,
+  onSavePost,
 }: PostManagerProps) {
   const [filter, setFilter] = useState<"all" | "published" | "draft" | "scheduled">("all");
   const [search, setSearch] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [selectedSocialPost, setSelectedSocialPost] = useState<ArticlePost | null>(null);
 
   const filteredPosts = posts.filter((p) => {
     if (filter !== "all" && p.status !== filter) return false;
@@ -203,6 +208,14 @@ export function PostManager({
                     <td className="py-3.5 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
+                          onClick={() => setSelectedSocialPost(post)}
+                          className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-800 transition-colors flex items-center gap-1.5 border border-stone-200"
+                          title="View, copy & manage social posts for X, Instagram, Facebook"
+                        >
+                          <Share2 className="w-3 h-3 text-pink-600" />
+                          <span>Social Posts</span>
+                        </button>
+                        <button
                           onClick={() => onViewPost(post)}
                           className="p-1.5 text-stone-500 hover:text-black hover:bg-stone-100 rounded-lg transition-colors"
                           title="View on site"
@@ -240,6 +253,26 @@ export function PostManager({
           </table>
         </div>
       </div>
+
+      {/* Social Posts Modal */}
+      {selectedSocialPost && (
+        <SocialPostsModal
+          post={selectedSocialPost}
+          onClose={() => setSelectedSocialPost(null)}
+          onUpdatePostSocial={async (postId, updatedSocial) => {
+            const target = posts.find((p) => p.id === postId);
+            if (target && onSavePost) {
+              const updated = {
+                ...target,
+                socialSnippets: updatedSocial,
+                updatedAt: new Date().toISOString(),
+              };
+              await onSavePost(updated);
+              setSelectedSocialPost(updated);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

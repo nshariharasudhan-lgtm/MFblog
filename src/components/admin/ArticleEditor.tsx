@@ -18,6 +18,8 @@ import {
   Trash2,
   RefreshCw,
   Link2,
+  Copy,
+  Check,
 } from "lucide-react";
 import { ArticleCategory, ArticlePost, AMFISchemeData, KeywordResearchResult, SiteSettings } from "../../types";
 import { cleanSocialExcerpt } from "../SEOHead";
@@ -52,10 +54,63 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
   const [metaTitle, setMetaTitle] = useState(post?.seoMetadata?.metaTitle || "");
   const [metaDescription, setMetaDescription] = useState(post?.seoMetadata?.metaDescription || "");
 
-  // Social Snippets State
-  const [linkedinCopy, setLinkedinCopy] = useState(post?.socialSnippets?.linkedin || "");
-  const [twitterCopy, setTwitterCopy] = useState(post?.socialSnippets?.twitter || "");
-  const [threadsCopy, setThreadsCopy] = useState(post?.socialSnippets?.threads || "");
+  // Social Snippets State (X, Instagram, Facebook)
+  const [twitterCopy, setTwitterCopy] = useState(
+    post?.socialSnippets?.twitter ||
+      (post?.title
+        ? `📈 Deep-Dive: ${post.title}\n\n${(post.excerpt || "").slice(0, 140)}\n\nKey takeaways with verified AMFI data 🧵👇\nhttps://yieldnest.online/article/${post.slug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`
+        : "")
+  );
+  const [instagramCopy, setInstagramCopy] = useState(
+    post?.socialSnippets?.instagram ||
+      (post?.title
+        ? `Swipe to analyze 📊 ${post.title}!\n\n💡 ${post.excerpt || ""}\n\n📌 Slide 1: Historical 5-year rolling returns\n📌 Slide 2: Downside capture in market sell-offs\n📌 Slide 3: Direct plan compounding difference\n\n💬 Do you hold this in your mutual fund portfolio? Share below!\n🔗 Full article link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #WealthBuilding #SIP #StockMarket #YieldNest`
+        : "")
+  );
+  const [facebookCopy, setFacebookCopy] = useState(
+    post?.socialSnippets?.facebook ||
+      (post?.title
+        ? `Are you evaluating ${post.title} for your mutual fund portfolio?\n\nOur research desk analyzed official AMFI scheme metrics to evaluate rolling returns, alpha generation, and expense drag.\n\nKey Highlights:\n- Long-term performance consistency\n- Downside protection during market sell-offs\n- Direct plan cost savings\n\nRead the complete research report here: https://yieldnest.online/article/${post.slug}\n\nWhat has been your experience with this strategy? Let us know in the comments! 👇`
+        : "")
+  );
+  const [copiedSocialKey, setCopiedSocialKey] = useState<string | null>(null);
+  const [isGeneratingSocial, setIsGeneratingSocial] = useState(false);
+
+  const handleCopySnippet = (key: string, text: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedSocialKey(key);
+    setTimeout(() => setCopiedSocialKey(null), 2000);
+  };
+
+  const handleGenerateSocialSnippets = async () => {
+    if (!title && !aiTopicInput) {
+      alert("Please provide an article title first.");
+      return;
+    }
+    setIsGeneratingSocial(true);
+    try {
+      const res = await fetch("/api/social/generate-snippets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: title || aiTopicInput,
+          excerpt,
+          keyFindings: content.slice(0, 600),
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.twitter) setTwitterCopy(data.twitter);
+        if (data.instagram) setInstagramCopy(data.instagram);
+        if (data.facebook) setFacebookCopy(data.facebook);
+      }
+    } catch (err) {
+      console.warn("Failed to generate social snippets:", err);
+    } finally {
+      setIsGeneratingSocial(false);
+    }
+  };
 
   // AMFI Schemes State
   const [attachedFunds, setAttachedFunds] = useState<AMFISchemeData[]>(post?.amfiDataSnapshot || []);
@@ -195,9 +250,9 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
           if (data.seoMetadata.secondaryKeywords?.length) setSecondaryKeywords(data.seoMetadata.secondaryKeywords);
         }
         if (data.socialScheduling) {
-          setLinkedinCopy(data.socialScheduling.linkedin || "");
-          setTwitterCopy(data.socialScheduling.twitter || "");
-          setThreadsCopy(data.socialScheduling.threads || "");
+          if (data.socialScheduling.twitter) setTwitterCopy(data.socialScheduling.twitter);
+          if (data.socialScheduling.instagram) setInstagramCopy(data.socialScheduling.instagram);
+          if (data.socialScheduling.facebook) setFacebookCopy(data.socialScheduling.facebook);
         }
         setGenerationNotice("Research article successfully generated and populated into the editor!");
         setTimeout(() => setGenerationNotice(null), 4000);
@@ -289,9 +344,15 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
         riskRating: "Very High (Equity)",
       },
       socialSnippets: {
-        linkedin: linkedinCopy,
-        twitter: twitterCopy,
-        threads: threadsCopy,
+        twitter:
+          twitterCopy.trim() ||
+          `📈 Deep-Dive: ${title.trim()}\n\n${(excerpt.trim() || content.slice(0, 140)).replace(/[#*`]/g, "")}\n\nKey takeaways with verified AMFI data 🧵👇\nhttps://yieldnest.online/article/${cleanedSlug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`,
+        instagram:
+          instagramCopy.trim() ||
+          `Swipe to analyze 📊 ${title.trim()}!\n\n💡 ${(excerpt.trim() || content.slice(0, 160)).replace(/[#*`]/g, "")}\n\n📌 Slide 1: Historical 5-year rolling returns\n📌 Slide 2: Downside capture in market sell-offs\n📌 Slide 3: Direct plan compounding difference\n\n💬 Do you hold this in your mutual fund portfolio? Share below!\n🔗 Full article link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #WealthBuilding #SIP #StockMarket #YieldNest`,
+        facebook:
+          facebookCopy.trim() ||
+          `Are you evaluating ${title.trim()} for your mutual fund portfolio?\n\nOur research desk analyzed official AMFI scheme metrics to evaluate rolling returns, alpha generation, and expense drag.\n\nKey Highlights:\n- Long-term performance consistency\n- Downside protection during market sell-offs\n- Direct plan cost savings\n\nRead the complete research report here: https://yieldnest.online/article/${cleanedSlug}\n\nWhat has been your experience with this strategy? Let us know in the comments! 👇`,
       },
       publishedAt: publishStatus === "published" ? (post?.publishedAt || new Date().toISOString()) : undefined,
       createdAt: post?.createdAt || new Date().toISOString(),
@@ -959,20 +1020,32 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
       {/* TAB 5: Social Media Scheduling */}
       {activeTab === "social" && (
         <div className="bg-white p-6 rounded-2xl border border-[#EAE8E0] space-y-6">
-          <div className="space-y-1">
-            <h3 className="font-serif-editorial text-xl font-semibold text-stone-900 flex items-center gap-2">
-              <Share2 className="w-5 h-5 text-stone-700" />
-              <span>Automated Social Media Scheduling</span>
-            </h3>
-            <p className="text-xs text-stone-500">
-              Customize publication-ready copy for LinkedIn, Twitter/X, and Threads before scheduling.
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h3 className="font-serif-editorial text-xl font-semibold text-stone-900 flex items-center gap-2">
+                <Share2 className="w-5 h-5 text-stone-700" />
+                <span>Automated Social Media Post Generation</span>
+              </h3>
+              <p className="text-xs text-stone-500">
+                Tailored publication-ready copy for 𝕏 (Twitter), Instagram, and Facebook.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleGenerateSocialSnippets}
+              disabled={isGeneratingSocial}
+              className="bg-[#1A1A1A] hover:bg-black text-white text-xs px-3.5 py-2 rounded-xl font-medium flex items-center gap-1.5 transition-colors shadow-xs self-start sm:self-auto disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isGeneratingSocial ? "animate-spin" : ""}`} />
+              <span>{isGeneratingSocial ? "Generating Posts..." : "Regenerate Social Posts (X, Insta, FB)"}</span>
+            </button>
           </div>
 
           {/* Social Card Live Preview */}
           <div className="p-4 rounded-xl bg-[#FAF9F5] border border-stone-200 space-y-2">
             <div className="flex items-center justify-between text-[11px] font-mono-data text-stone-600">
-              <span className="font-semibold">Attached Link Card Preview (OpenGraph & Twitter Card)</span>
+              <span className="font-semibold">Attached Link Card Preview (OpenGraph, Facebook & Instagram Links)</span>
               <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
                 Auto-generated from excerpt & headline
               </span>
@@ -996,50 +1069,121 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
             </div>
           </div>
 
-          <div className="space-y-4">
-            {/* LinkedIn */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs font-semibold text-stone-800 font-mono-data">
-                <span className="text-blue-800">LinkedIn Post Snippet</span>
-                <span className="text-stone-400 font-normal">Thought Leadership Format</span>
+          <div className="space-y-6">
+            {/* 1. Twitter / X */}
+            <div className="p-4 rounded-xl border border-stone-300 bg-white space-y-2 shadow-xs">
+              <div className="flex items-center justify-between text-xs font-semibold font-mono-data">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-black text-white text-[11px]">
+                  <span>𝕏 / Twitter</span>
+                  <span className="opacity-80">Post & Thread Hook</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleCopySnippet("twitter", twitterCopy)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-stone-200 bg-white text-stone-700 hover:text-black text-xs transition-colors shadow-2xs"
+                >
+                  {copiedSocialKey === "twitter" ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-700 font-medium">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-stone-600" />
+                      <span>Copy 𝕏 Post</span>
+                    </>
+                  )}
+                </button>
               </div>
               <textarea
                 rows={4}
-                value={linkedinCopy}
-                onChange={(e) => setLinkedinCopy(e.target.value)}
-                placeholder="LinkedIn professional summary with bullet points..."
-                className="w-full text-xs p-3 rounded-xl border border-stone-200 bg-[#FAF9F5] focus:outline-none"
-              />
-            </div>
-
-            {/* Twitter */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs font-semibold text-stone-800 font-mono-data">
-                <span>Twitter / X Thread Hook</span>
-                <span className="text-stone-400 font-normal">280 Chars Max</span>
-              </div>
-              <textarea
-                rows={3}
                 value={twitterCopy}
                 onChange={(e) => setTwitterCopy(e.target.value)}
-                placeholder="Punchy hook with hashtags..."
-                className="w-full text-xs p-3 rounded-xl border border-stone-200 bg-[#FAF9F5] focus:outline-none"
+                placeholder="Punchy hook, key data point, canonical link, and hashtags..."
+                className="w-full text-xs p-3 rounded-xl border border-stone-200 bg-[#FAF9F5] focus:outline-none focus:border-stone-800 font-sans leading-relaxed"
               />
+              <div className="text-[11px] text-stone-500 font-mono-data flex justify-between">
+                <span>Optimized for X feeds & thread engagement</span>
+                <span className={twitterCopy.length > 280 ? "text-rose-600 font-bold" : ""}>
+                  {twitterCopy.length} / 280 characters
+                </span>
+              </div>
             </div>
 
-            {/* Threads */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-xs font-semibold text-stone-800 font-mono-data">
-                <span>Threads Teaser</span>
-                <span className="text-stone-400 font-normal">Conversational Style</span>
+            {/* 2. Instagram Post & Carousel Caption */}
+            <div className="p-4 rounded-xl border border-pink-200 bg-gradient-to-br from-pink-50/40 via-purple-50/20 to-amber-50/30 space-y-2">
+              <div className="flex items-center justify-between text-xs font-semibold font-mono-data">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white text-[11px]">
+                  <span>Instagram</span>
+                  <span className="opacity-80">Carousel & Bio Link</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleCopySnippet("instagram", instagramCopy)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-pink-300 bg-white text-stone-700 hover:text-black hover:border-pink-400 text-xs transition-colors shadow-2xs"
+                >
+                  {copiedSocialKey === "instagram" ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-700 font-medium">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-pink-600" />
+                      <span>Copy Caption</span>
+                    </>
+                  )}
+                </button>
               </div>
               <textarea
-                rows={2}
-                value={threadsCopy}
-                onChange={(e) => setThreadsCopy(e.target.value)}
-                placeholder="Conversational teaser..."
-                className="w-full text-xs p-3 rounded-xl border border-stone-200 bg-[#FAF9F5] focus:outline-none"
+                rows={6}
+                value={instagramCopy}
+                onChange={(e) => setInstagramCopy(e.target.value)}
+                placeholder="Visual carousel breakdown, bullet points with emoji pointers, bio link CTA, and hashtags..."
+                className="w-full text-xs p-3 rounded-xl border border-pink-200/80 bg-white focus:outline-none focus:border-pink-400 font-sans leading-relaxed"
               />
+              <div className="text-[11px] text-stone-500 flex justify-between font-mono-data">
+                <span>Includes slide hooks & bio link CTA</span>
+                <span>{instagramCopy.length} characters</span>
+              </div>
+            </div>
+
+            {/* 3. Facebook Community Post */}
+            <div className="p-4 rounded-xl border border-blue-200 bg-blue-50/30 space-y-2">
+              <div className="flex items-center justify-between text-xs font-semibold font-mono-data">
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[#1877F2] text-white text-[11px]">
+                  <span>Facebook</span>
+                  <span className="opacity-80">Community & Group Discussion</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleCopySnippet("facebook", facebookCopy)}
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-blue-300 bg-white text-stone-700 hover:text-black hover:border-blue-400 text-xs transition-colors shadow-2xs"
+                >
+                  {copiedSocialKey === "facebook" ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="text-emerald-700 font-medium">Copied!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5 text-blue-600" />
+                      <span>Copy Post</span>
+                    </>
+                  )}
+                </button>
+              </div>
+              <textarea
+                rows={6}
+                value={facebookCopy}
+                onChange={(e) => setFacebookCopy(e.target.value)}
+                placeholder="Detailed educational discussion, key findings, discussion prompt, and link referral..."
+                className="w-full text-xs p-3 rounded-xl border border-blue-200/80 bg-white focus:outline-none focus:border-blue-400 font-sans leading-relaxed"
+              />
+              <div className="text-[11px] text-stone-500 flex justify-between font-mono-data">
+                <span>Optimized for investor groups & community discussion</span>
+                <span>{facebookCopy.length} characters</span>
+              </div>
             </div>
           </div>
         </div>

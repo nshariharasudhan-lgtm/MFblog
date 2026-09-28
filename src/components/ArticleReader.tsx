@@ -70,10 +70,6 @@ export function ArticleReader({
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(articleUrl)}`, "_blank");
   };
 
-  const handleShareLinkedIn = () => {
-    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}`, "_blank");
-  };
-
   const handleShareWhatsApp = () => {
     const text = encodeURIComponent(`*${post.title}*\n${post.excerpt}\n\nRead article: ${articleUrl}`);
     window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
@@ -301,13 +297,6 @@ export function ArticleReader({
               title="Share on X"
             >
               𝕏
-            </button>
-            <button
-              onClick={handleShareLinkedIn}
-              className="p-1.5 rounded-md hover:bg-[#EAE8E0] text-[#59554C] transition-colors text-xs font-semibold text-blue-700"
-              title="Share on LinkedIn"
-            >
-              in
             </button>
             <button
               onClick={handleShareWhatsApp}
