@@ -18,7 +18,7 @@ export function cleanSocialExcerpt(rawExcerpt?: string, content?: string, maxLen
     ? rawExcerpt
     : (content || "");
 
-  if (!source) return "Independent mutual fund research, rolling returns audits, and portfolio analysis.";
+  if (!source) return "Independent mutual fund research, rolling returns analysis, and portfolio reviews.";
 
   // Strip Markdown, HTML, and code artifacts
   let cleaned = source

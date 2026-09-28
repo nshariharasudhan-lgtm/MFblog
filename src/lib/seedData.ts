@@ -3,7 +3,7 @@ import { ArticlePost, Comment, SiteSettings } from "../types";
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   siteName: "YieldNest.online",
   tagline: "Independent Mutual Fund Research & Analytics",
-  description: "Data-driven research on Indian Mutual Funds. Unbiased fund comparisons, rolling return audits, portfolio overlap checks, and market analytics.",
+  description: "Data-driven research on Indian Mutual Funds. Unbiased fund comparisons, rolling return analyses, portfolio overlap checks, and market analytics.",
   authorName: "Research Desk",
   authorTitle: "Mutual Fund Research Team",
   authorBio: "Dedicated to analyzing fund metrics, rolling returns, and portfolio exposures for long-term investors.",
@@ -21,9 +21,9 @@ export const INITIAL_ARTICLES: ArticlePost[] = [
   {
     id: "post-1",
     slug: "parag-parikh-flexi-cap-vs-mirae-asset-large-midcap",
-    title: "Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap: 5-Year Rolling Return Audit",
-    excerpt: "A comprehensive audit of downside protection, international equity allocations, and expense ratio drag across bull and bear market cycles.",
-    content: `# Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap: 5-Year Rolling Return Audit
+    title: "Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap: 5-Year Rolling Return Analysis",
+    excerpt: "A comprehensive analysis of downside protection, international equity allocations, and expense ratio drag across bull and bear market cycles.",
+    content: `# Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap: 5-Year Rolling Return Analysis
 
 *YieldNest.online Research Desk | Published September 2026*
 
@@ -89,7 +89,7 @@ Comparing the top 30 holdings reveals an overlap of **only 26%**.
    Investors with an 8+ year horizon seeking higher beta during economic expansion cycles should blend Mirae Asset Large & Midcap alongside a dedicated large-cap index fund, as detailed in our comparative study on [NIFTY 50 Index Funds vs Active Large-Cap Funds](/article/nifty-50-index-funds-vs-active-large-cap-funds).
 
 3. **Complementary Deployment:**
-   Given the modest 26% overlap, holding both in a 60:40 ratio provides balanced exposure to domestic mid-cap momentum and defensive global quality. For those pairing this with satellite high-alpha vehicles, be sure to review our liquidity analysis in the [Small Cap Mutual Funds Stress Test & Liquidity Audit](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity).
+   Given the modest 26% overlap, holding both in a 60:40 ratio provides balanced exposure to domestic mid-cap momentum and defensive global quality. For those pairing this with satellite high-alpha vehicles, be sure to review our liquidity analysis in the [Small Cap Mutual Funds Stress Test & Liquidity Analysis](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity).
 
 ---
 
@@ -149,7 +149,7 @@ The regular plan carries an expense ratio of ~1.34%, meaning a 0.72% annual dist
       },
     ],
     seoMetadata: {
-      metaTitle: "Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap Audit",
+      metaTitle: "Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap Analysis",
       metaDescription: "In-depth comparison of Parag Parikh Flexi Cap and Mirae Asset Large & Midcap. NAV data, 5-year rolling CAGR, downside capture, and expense ratios.",
       primaryKeyword: "Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap",
       secondaryKeywords: [
@@ -167,7 +167,7 @@ The regular plan carries an expense ratio of ~1.34%, meaning a 0.72% annual dist
       riskRating: "Very High (Equity)",
     },
     socialSnippets: {
-      linkedin: "📊 Mutual Fund Audit: Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap\n\nWe evaluated 5-year rolling returns, downside capture, and portfolio overlap:\n\n1️⃣ Parag Parikh generated a 62% downside capture ratio vs 88% for Mirae Asset.\n2️⃣ Portfolio overlap between the two schemes is surprisingly modest at just 26%.\n3️⃣ Direct plan TER differences compound to >₹20L over a 20-year SIP.\n\nRead our research note on YieldNest.online.\n\n#MutualFunds #IndianStockMarket #WealthBuilding #Investing",
+      linkedin: "📊 Mutual Fund Analysis: Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap\n\nWe evaluated 5-year rolling returns, downside capture, and portfolio overlap:\n\n1️⃣ Parag Parikh generated a 62% downside capture ratio vs 88% for Mirae Asset.\n2️⃣ Portfolio overlap between the two schemes is surprisingly modest at just 26%.\n3️⃣ Direct plan TER differences compound to >₹20L over a 20-year SIP.\n\nRead our research note on YieldNest.online.\n\n#MutualFunds #IndianStockMarket #WealthBuilding #Investing",
       twitter: "📈 Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap.\n\nWhich fund deserves your SIP? We compared 5-year rolling CAGR, standard deviation, and NAV data.\n\nKey takeaways inside 🧵👇\n#MutualFundsIndia #PersonalFinance",
       threads: "The data is clear: Parag Parikh and Mirae Asset Large & Midcap have only a 26% overlap. Here is how smart investors allocate between both.",
     },
@@ -283,7 +283,7 @@ For a deeper dive into volatility, standard deviation, and Sortino ratios, explo
       },
     ],
     seoMetadata: {
-      metaTitle: "Small Cap Mutual Funds Stress Test & Liquidity Audit 2026",
+      metaTitle: "Small Cap Mutual Funds Stress Test & Liquidity Analysis 2026",
       metaDescription: "Detailed breakdown of small-cap stress tests. Days-to-liquidate ratios, redemption shock buffers, and portfolio turnover for Nippon and Quant Small Cap.",
       primaryKeyword: "Small Cap Mutual Funds Stress Test",
       secondaryKeywords: [
@@ -301,7 +301,7 @@ For a deeper dive into volatility, standard deviation, and Sortino ratios, explo
       riskRating: "Very High (Equity)",
     },
     socialSnippets: {
-      linkedin: "🚨 Special Report: Small Cap Stress Tests Audited\n\nWith record SIP inflows into small caps, how fast can fund managers liquidate their portfolios in a crisis?\n\n• Nippon India Small Cap requires 28 days to liquidate 50% of its ₹58k Cr corpus.\n• Quant Small Cap requires 11 days, buoyed by higher cash buffers and dynamic momentum.\n\nOur full analysis breaks down the implications for retail investors.\n\n#SmallCaps #Investing #WealthBuilding #MutualFundsIndia",
+      linkedin: "🚨 Special Report: Small Cap Stress Tests Evaluated\n\nWith record SIP inflows into small caps, how fast can fund managers liquidate their portfolios in a crisis?\n\n• Nippon India Small Cap requires 28 days to liquidate 50% of its ₹58k Cr corpus.\n• Quant Small Cap requires 11 days, buoyed by higher cash buffers and dynamic momentum.\n\nOur full analysis breaks down the implications for retail investors.\n\n#SmallCaps #Investing #WealthBuilding #MutualFundsIndia",
       twitter: "🚨 Can your Small Cap Mutual Fund survive a liquidity shock?\n\nWe analyzed stress test disclosures for Nippon India vs Quant Small Cap.\n\nHere are the critical findings: 🧵👇",
       threads: "Small cap funds are posting massive returns, but stress tests reveal surprising differences in liquidation speed. Read our breakdown.",
     },
@@ -367,7 +367,7 @@ When evaluating mutual funds, fees are the only guaranteed variable. Consider an
 
 - **For Large-Cap Exposure:** Prefer low-cost **Nifty 50 or Nifty LargeMidcap 250 Index Funds**.
 - **Where Active Management Still Works:** Allocate active budgets to **Flexi Cap** and **Small Cap** funds where fund managers enjoy genuine latitude to discover growth franchises. For an evaluation of disciplined active managers vs multi-cap mandates, explore our analysis of [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap).
-- **Managing Illiquidity in Satellite Allocations:** Before committing capital to high-beta small caps, review days-to-liquidate ratios in our [Small Cap Mutual Funds Stress Test & Liquidity Audit](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity), and consult the official category boundaries in [AMFI & Regulatory Guidelines: Categorization Norms, Liquidity Mandates & Riskometer Framework](/article/amfi-latest-regulatory-updates-categorization-norms-transparency).
+- **Managing Illiquidity in Satellite Allocations:** Before committing capital to high-beta small caps, review days-to-liquidate ratios in our [Small Cap Mutual Funds Stress Test & Liquidity Analysis](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity), and consult the official category boundaries in [AMFI & Regulatory Guidelines: Categorization Norms, Liquidity Mandates & Riskometer Framework](/article/amfi-latest-regulatory-updates-categorization-norms-transparency).
 
 ---
 
@@ -435,7 +435,7 @@ When evaluating mutual funds, fees are the only guaranteed variable. Consider an
       riskRating: "Very High (Equity)",
     },
     socialSnippets: {
-      linkedin: "📉 The Alpha Squeeze in Indian Large Caps: Index vs Active\n\nOur latest audit reveals:\n\n• Over 80% of active large-cap managers fail to beat Nifty 50 TRI after fees over 5 years.\n• A 77 bps expense difference between UTI Index (0.18%) and active funds drains >₹35 Lakhs on a 20-year SIP.\n\nHere is how to optimize your portfolio allocation.\n\n#IndexFunds #MutualFundsIndia #PersonalFinance #Investing",
+      linkedin: "📉 The Alpha Squeeze in Indian Large Caps: Index vs Active\n\nOur latest research reveals:\n\n• Over 80% of active large-cap managers fail to beat Nifty 50 TRI after fees over 5 years.\n• A 77 bps expense difference between UTI Index (0.18%) and active funds drains >₹35 Lakhs on a 20-year SIP.\n\nHere is how to optimize your portfolio allocation.\n\n#IndexFunds #MutualFundsIndia #PersonalFinance #Investing",
       twitter: "📉 Is Alpha dead in Indian large cap mutual funds?\n\n80%+ of active large-cap funds lag the NIFTY 50 TRI over 5 years. Here is the math behind why 70 bps in fees destroys compounding: 🧵👇",
       threads: "Why pay 0.95% when you can pay 0.18%? Our research note on Nifty 50 Index Funds vs Active Large Caps is live.",
     },
@@ -447,7 +447,7 @@ When evaluating mutual funds, fees are the only guaranteed variable. Consider an
     id: "post-4",
     slug: "direct-vs-regular-mutual-funds-charges-commissions-compounding",
     title: "Direct vs Regular Mutual Funds: The Compounding Drag of Distributor Commissions & Total Expense Ratios",
-    excerpt: "A mathematical audit of Total Expense Ratio (TER) differentials, distributor trail commissions, and the 20-year wealth impact of direct investing.",
+    excerpt: "A mathematical analysis of Total Expense Ratio (TER) differentials, distributor trail commissions, and the 20-year wealth impact of direct investing.",
     content: `# Direct vs Regular Mutual Funds: The Compounding Drag of Distributor Commissions & Total Expense Ratios
 
 *YieldNest.online Research Desk | Published September 2026*
@@ -460,7 +460,7 @@ On January 1, 2013, Indian mutual fund investing was permanently transformed by 
 
 Despite over a decade having elapsed, thousands of crores remain trapped in **Regular Plans**, where investors unwittingly forfeit **0.50% to 1.25% of their total accumulated assets every year** in distributor commissions. Because this charge is silently deducted from the Net Asset Value (NAV) on a daily basis, most investors never receive an invoice and remain oblivious to the immense wealth being eroded.
 
-This pillar research paper provides a rigorous mathematical audit of mutual fund charges, Total Expense Ratios (TER), distributor trail structures, and how to execute a tax-efficient transition to Direct plans.
+This pillar research paper provides a rigorous mathematical analysis of mutual fund charges, Total Expense Ratios (TER), distributor trail structures, and how to execute a tax-efficient transition to Direct plans.
 
 > **Key Research Finding:** On a 20-year SIP of ₹25,000 per month, an apparently modest 0.85% expense ratio differential between Regular and Direct plans drains **₹38.4 Lakhs to ₹52.1 Lakhs** directly from the investor's final retirement corpus.
 
@@ -474,7 +474,7 @@ Every mutual fund scheme incurs operational, advisory, and administrative expens
 | :--- | :--- | :--- | :--- | :--- |
 | **Investment Management Fee** | Fund manager, analyst salaries, quantitative models | Yes | Yes | 0.20% - 0.50% |
 | **Registrar & Transfer (RTA)** | CAMS / KFintech unit accounting, KYC processing | Yes | Yes | 0.04% - 0.08% |
-| **Custodian & Audit Fees** | Safe custody of scrips, independent statutory audits | Yes | Yes | 0.02% - 0.04% |
+| **Custodian & Accounting Fees** | Safe custody of scrips, independent statutory compliance | Yes | Yes | 0.02% - 0.04% |
 | **Marketing & Investor Awareness**| AMC statutory investor awareness programs (IAP) | Yes | Yes | 0.02% |
 | **Goods & Services Tax (GST)** | 18% GST levied on management fees | Yes | Yes | 0.05% - 0.10% |
 | **Distributor Trail Commission** | Perpetual commission paid to bank/broker/distributor | **NO (0.00%)** | **YES (Mandatory)** | **0.50% - 1.25%** |
@@ -496,7 +496,7 @@ The table below illustrates the stark real-world difference in NAV, expense drag
 | **UTI Nifty 50 Index Fund** | **Direct - Growth** | **120716** | **₹194.22** | **+16.8%** | **0.18%** | **Baseline** |
 | UTI Nifty 50 Index Fund | Regular - Growth | 120715 | ₹187.40 | +16.2% | 0.42% | **-0.24% / year** |
 
-*Observe the NAV differential:* Because PPFCF Direct has compounded with 72 bps lower drag since inception, its NAV is **₹84.62 vs ₹76.18** for the identical portfolio of underlying stocks! For a deeper dive into PPFCF's portfolio structure, read our [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap Audit](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap).
+*Observe the NAV differential:* Because PPFCF Direct has compounded with 72 bps lower drag since inception, its NAV is **₹84.62 vs ₹76.18** for the identical portfolio of underlying stocks! For a deeper dive into PPFCF's portfolio structure, read our [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap Analysis](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap).
 
 ---
 
@@ -524,7 +524,7 @@ Beyond the Total Expense Ratio, mutual fund investors must account for tertiary 
 1. **Exit Load:** Most equity funds impose a 1.00% exit load if redeemed within 365 days of unit allocation.
 2. **Stamp Duty:** A one-time charge of **0.005%** is levied on all mutual fund purchases (SIPs, lump sums, STPs).
 3. **Securities Transaction Tax (STT):** At redemption, equity schemes incur an STT of **0.001%** on total redemption value.
-4. **Portfolio Turnover Drag:** High-turnover schemes (such as momentum-focused funds) rack up brokerage and exchange charges that sit outside the stated TER. To understand how turnover impacts liquidity, read our [Small Cap Mutual Funds Stress Test & Liquidity Audit](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity).
+4. **Portfolio Turnover Drag:** High-turnover schemes (such as momentum-focused funds) rack up brokerage and exchange charges that sit outside the stated TER. To understand how turnover impacts liquidity, read our [Small Cap Mutual Funds Stress Test & Liquidity Analysis](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity).
 
 ---
 
@@ -598,7 +598,7 @@ For investors seeking to maximize risk-adjusted performance, choosing Direct pla
     ],
     seoMetadata: {
       metaTitle: "Direct vs Regular Mutual Funds: Charges, Commissions & Compounding Drag",
-      metaDescription: "Detailed mathematical audit of Direct vs Regular Mutual Funds. How distributor trail commissions erode up to ₹50L over a 20-year SIP. TER analysis and switch guide.",
+      metaDescription: "Detailed mathematical analysis of Direct vs Regular Mutual Funds. How distributor trail commissions erode up to ₹50L over a 20-year SIP. TER analysis and switch guide.",
       primaryKeyword: "Direct vs Regular Mutual Funds",
       secondaryKeywords: [
         "mutual fund expense ratio comparison",
@@ -615,9 +615,9 @@ For investors seeking to maximize risk-adjusted performance, choosing Direct pla
       riskRating: "Very High (Equity)",
     },
     socialSnippets: {
-      linkedin: "💡 Pillar Study: Direct vs Regular Mutual Funds & Distributor Commissions\n\nDid you know that a 0.85% difference in Total Expense Ratio (TER) drains over ₹47 Lakhs on a 20-year monthly SIP of ₹25,000?\n\n• Both plans hold the EXACT same stocks and fund managers.\n• Regular plans quietly deduct trail commissions daily from NAV.\n• We audited PPFCF, Mirae Asset, and UTI Index to calculate the true cost of convenience.\n\nRead the full compounding math on YieldNest.online.\n\n#MutualFunds #DirectPlans #PersonalFinance #Investing #WealthCreation",
+      linkedin: "💡 Pillar Study: Direct vs Regular Mutual Funds & Distributor Commissions\n\nDid you know that a 0.85% difference in Total Expense Ratio (TER) drains over ₹47 Lakhs on a 20-year monthly SIP of ₹25,000?\n\n• Both plans hold the EXACT same stocks and fund managers.\n• Regular plans quietly deduct trail commissions daily from NAV.\n• We evaluated PPFCF, Mirae Asset, and UTI Index to calculate the true cost of convenience.\n\nRead the full compounding math on YieldNest.online.\n\n#MutualFunds #DirectPlans #PersonalFinance #Investing #WealthCreation",
       twitter: "💸 Why are you paying 0.85% more for the EXACT same portfolio?\n\nWe broke down the compounding math of Direct vs Regular mutual funds over 10, 20, and 25-year horizons.\n\nThe cost of trail commissions will shock you: 🧵👇",
-      threads: "Direct vs Regular mutual funds: same stocks, same manager, but ₹47 Lakhs difference over 20 years. Here is the mathematical audit.",
+      threads: "Direct vs Regular mutual funds: same stocks, same manager, but ₹47 Lakhs difference over 20 years. Here is the mathematical analysis.",
     },
     publishedAt: "2026-09-25T08:00:00.000Z",
     createdAt: "2026-09-25T07:30:00.000Z",
@@ -696,21 +696,21 @@ Measures the dispersion of a fund's monthly returns from its historical mean.
 
 ### 3. Beta & Downside Capture Ratio
 - **Beta:** Measures sensitivity to benchmark index fluctuations. A beta of 0.80 implies the fund moves only 8% when the benchmark moves 10%.
-- **Downside Capture:** Calculates how much of the index's decline the fund participated in during down months. A Downside Capture of **62%** means when the NIFTY 50 fell by 10%, the scheme dropped by only 6.2%. For an empirical case study, read our [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap Audit](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap).
+- **Downside Capture:** Calculates how much of the index's decline the fund participated in during down months. A Downside Capture of **62%** means when the NIFTY 50 fell by 10%, the scheme dropped by only 6.2%. For an empirical case study, read our [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap Analysis](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap).
 
 ### 4. Jensen's Alpha: Identifying Skill
 Alpha measures the excess return generated by the manager above what was predicted by the Capital Asset Pricing Model (CAPM). In large caps, generating consistent alpha has become extraordinarily difficult—see our findings in [NIFTY 50 Index Funds vs Active Large-Cap Funds: Is Alpha Dead?](/article/nifty-50-index-funds-vs-active-large-cap-funds).
 
 ---
 
-## Step-by-Step Fund Audit Protocol for Investors
+## Step-by-Step Fund Review Protocol for Investors
 
-When reviewing an existing portfolio or adding a new scheme, execute this four-step audit:
+When reviewing an existing portfolio or adding a new scheme, execute this four-step review:
 
 1. **Check 5-Year Rolling Consistency (>12% CAGR):** Ensure the fund remained in the top two quartiles across at least 70% of rolling periods.
 2. **Scrutinize Downside Capture (<85%):** Avoid funds that outshine during roaring bull markets but plummet twice as hard during corrections.
-3. **Inspect Liquidity & Stress Test Ratios:** For mid and small-cap allocations, ensure the fund doesn't face structural days-to-liquidate hazards, as explained in our [Small Cap Mutual Funds Stress Test & Liquidity Audit](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity).
-4. **Enforce Direct Plan Allocation:** Eliminate 50–100 bps of deadweight distributor trail drag by ensuring all holdings are in Direct plans; read our detailed audit on [Direct vs Regular Mutual Funds: Charges, Commissions & Compounding](/article/direct-vs-regular-mutual-funds-charges-commissions-compounding).
+3. **Inspect Liquidity & Stress Test Ratios:** For mid and small-cap allocations, ensure the fund doesn't face structural days-to-liquidate hazards, as explained in our [Small Cap Mutual Funds Stress Test & Liquidity Analysis](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity).
+4. **Enforce Direct Plan Allocation:** Eliminate 50–100 bps of deadweight distributor trail drag by ensuring all holdings are in Direct plans; read our detailed analysis on [Direct vs Regular Mutual Funds: Charges, Commissions & Compounding](/article/direct-vs-regular-mutual-funds-charges-commissions-compounding).
 
 ---
 
@@ -825,7 +825,7 @@ Historically, AMCs launched dozens of duplicate funds with subjective names like
 | **Multi Cap Fund** | Mandated minimum **25% Large + 25% Mid + 25% Small Caps** at all times | Strictly disciplined allocation |
 | **ELSS (Tax Saving)** | Minimum **80%** equity with mandatory 3-year statutory lock-in | High discretion |
 
-*Strategic Insight:* The distinction between **Flexi Cap** (unconstrained manager flexibility) and **Large & Mid Cap** (mandatory 35% mid-cap holding even in frothy markets) directly drives volatility and downside capture, as demonstrated in our comparative audit of [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap).
+*Strategic Insight:* The distinction between **Flexi Cap** (unconstrained manager flexibility) and **Large & Mid Cap** (mandatory 35% mid-cap holding even in frothy markets) directly drives volatility and downside capture, as demonstrated in our comparative analysis of [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap).
 
 ---
 
@@ -949,7 +949,7 @@ Understanding these regulatory pillars empowers investors to make data-driven de
       riskRating: "Very High (Equity)",
     },
     socialSnippets: {
-      linkedin: "📜 Master Audit: The Regulatory Rules Protecting Mutual Fund Investors in India\n\nHow do categorization boundaries, TER slabs, and liquidity stress tests protect your wealth?\n\n• Categorization prevents dangerous style drift.\n• Mandatory bi-monthly stress testing monitors redemption shock buffers.\n• Dynamic riskometers recalibrate monthly based on actual underlying volatility.\n\nOur full regulatory audit breaks down what every mutual fund investor needs to know.\n\n#AMFI #MutualFundsIndia #Regulation #PersonalFinance #Investing",
+      linkedin: "📜 Master Review: The Regulatory Rules Protecting Mutual Fund Investors in India\n\nHow do categorization boundaries, TER slabs, and liquidity stress tests protect your wealth?\n\n• Categorization prevents dangerous style drift.\n• Mandatory bi-monthly stress testing monitors redemption shock buffers.\n• Dynamic riskometers recalibrate monthly based on actual underlying volatility.\n\nOur full regulatory review breaks down what every mutual fund investor needs to know.\n\n#AMFI #MutualFundsIndia #Regulation #PersonalFinance #Investing",
       twitter: "📜 Mutual fund rules in India are among the strictest in the world.\n\nHere is how AMFI categorization, TER caps, and liquidity stress tests safeguard your hard-earned wealth: 🧵👇",
       threads: "Why do mutual fund names follow strict rules? Our comprehensive breakdown of AMFI categorization, TER caps, and riskometers is live.",
     },
@@ -968,13 +968,13 @@ Understanding these regulatory pillars empowers investors to make data-driven de
 
 When evaluating mutual funds, investors frequently focus almost exclusively on past trailing returns and fund manager star ratings. However, one of the most mathematically reliable determinants of your long-term terminal wealth is an operational metric that is deducted every single day: the **Total Expense Ratio (TER)**.
 
-In this research audit, we break down what TER comprises, examine official AMFI disclosures across direct and regular plans, and demonstrate the compounding impact of expense drag across multi-decade investment horizons.
+In this research study, we break down what TER comprises, examine official AMFI disclosures across direct and regular plans, and demonstrate the compounding impact of expense drag across multi-decade investment horizons.
 
 ---
 
 ## What is Total Expense Ratio (TER)?
 
-The Total Expense Ratio (TER) represents the annual percentage of a fund's total assets that is charged to cover operating costs, management fees, registrar and transfer agent (RTA) expenses, legal and audit fees, and distributor commissions (in Regular plans).
+The Total Expense Ratio (TER) represents the annual percentage of a fund's total assets that is charged to cover operating costs, management fees, registrar and transfer agent (RTA) expenses, legal and compliance fees, and distributor commissions (in Regular plans).
 
 Under SEBI regulations, the Net Asset Value (NAV) declared every business day by asset management companies (AMCs) is already net of the daily prorated TER. You do not receive a separate bill; the fee is continuously deducted from fund assets before daily NAV declaration.
 
@@ -1011,7 +1011,7 @@ As mutual funds grow in size, economies of scale mandate that TER must decrease,
 
 ## Actionable Takeaways for Investors
 
-1. **Audit Your Portfolio Plans:** Verify whether your mutual fund holdings are labeled **"Direct - Growth"** or **"Regular - Growth"**. Switching eligible units to Direct plans immediately recovers 0.5%–1.2% in annual fee drag.
+1. **Review Your Portfolio Plans:** Verify whether your mutual fund holdings are labeled **"Direct - Growth"** or **"Regular - Growth"**. Switching eligible units to Direct plans immediately recovers 0.5%–1.2% in annual fee drag.
 2. **Check Tracking Errors on Index Funds:** For passive index funds (such as NIFTY 50 and NIFTY Next 50), look for schemes with TER below 0.20% and minimal tracking error.
 3. **Compare Category TER Medians:** When selecting active equity schemes, ensure the scheme's TER does not exceed the category median without consistent, verifiable alpha generation over 5-year rolling periods.
 
@@ -1064,7 +1064,7 @@ A: AMFI India publishes monthly and half-yearly TER disclosures for all mutual f
       riskRating: "Very High (Equity)",
     },
     socialSnippets: {
-      linkedin: "📊 Master Audit: Why Total Expense Ratio (TER) is the Single Highest-Certainty Variable in Mutual Fund Investing\n\n• How 1% extra fee drains ₹41+ Lakhs on a 20-year SIP.\n• SEBI regulatory AUM slabs on fund expenses.\n• Why NAV is already net of daily expense deductions.\n\nRead the complete research on YieldNest.online.\n\n#MutualFunds #TER #Investing #WealthCreation",
+      linkedin: "📊 Master Analysis: Why Total Expense Ratio (TER) is the Single Highest-Certainty Variable in Mutual Fund Investing\n\n• How 1% extra fee drains ₹41+ Lakhs on a 20-year SIP.\n• SEBI regulatory AUM slabs on fund expenses.\n• Why NAV is already net of daily expense deductions.\n\nRead the complete research on YieldNest.online.\n\n#MutualFunds #TER #Investing #WealthCreation",
       twitter: "Most investors ignore TER, but it is the silent compound drag on terminal wealth. 📉\n\nHere is how much fee differences cost over 20 years with AMFI data: 🧵👇",
       threads: "Why does Total Expense Ratio matter more than last year's return? Full research breakdown on YieldNest.online.",
     },
@@ -1083,7 +1083,7 @@ A: AMFI India publishes monthly and half-yearly TER disclosures for all mutual f
 
 In the dynamic and volatile landscape of Indian small-cap equities, two flagship schemes command immense investor attention: **Quant Small Cap Fund** and **Nippon India Small Cap Fund**. While both operate within the SEBI-defined small-cap mandate (minimum 65% in companies ranked 251st and beyond by market capitalization), their portfolio construction philosophies, factor exposures, and turnover ratios could not be more divergent.
 
-This quantitative comparative audit evaluates their historical rolling returns, liquidity horizons under SEBI stress tests, Sharpe ratios, and downside capture metrics.
+This quantitative comparative study evaluates their historical rolling returns, liquidity horizons under SEBI stress tests, Sharpe ratios, and downside capture metrics.
 
 ---
 
@@ -1114,7 +1114,7 @@ This quantitative comparative audit evaluates their historical rolling returns, 
 ### 2. AUM Size & Liquidity Horizons (AMFI Stress Test Context)
 Under the SEBI-mandated monthly liquidity stress testing published by AMFI:
 - **Nippon India Small Cap** manages the largest asset base in the category (>₹56,000 Cr). Consequently, its days-to-liquidate 50% and 25% of the portfolio are higher, prompting fund managers to hold a buffer of large-cap and mid-cap stocks alongside cash equivalents to mitigate redemption shocks.
-- **Quant Small Cap** manages a smaller asset base (~₹22,000 Cr), granting higher agility to exit smaller positions quickly during market corrections. For full regulatory context, see our [Small Cap Mutual Funds Stress Test & Liquidity Audit](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity).
+- **Quant Small Cap** manages a smaller asset base (~₹22,000 Cr), granting higher agility to exit smaller positions quickly during market corrections. For full regulatory context, see our [Small Cap Mutual Funds Stress Test & Liquidity Analysis](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity).
 
 ---
 
@@ -1188,7 +1188,7 @@ A: Direct plans are always recommended to eliminate compounding distributor comm
       riskRating: "Very High (Equity)",
     },
     socialSnippets: {
-      linkedin: "📈 Comparative Audit: Quant Small Cap vs Nippon India Small Cap\n\nTwo opposing philosophies in Indian small caps:\n• Quant: High-turnover VLRT quantitative momentum model.\n• Nippon India: High-diversification (150+ stocks) institutional bottom-up research.\n\nOur full quantitative comparison covers 3Y/5Y rolling CAGR, liquidity horizons, and downside capture.\n\n#SmallCapFunds #MutualFunds #Investing #YieldNest",
+      linkedin: "📈 Comparative Analysis: Quant Small Cap vs Nippon India Small Cap\n\nTwo opposing philosophies in Indian small caps:\n• Quant: High-turnover VLRT quantitative momentum model.\n• Nippon India: High-diversification (150+ stocks) institutional bottom-up research.\n\nOur full quantitative comparison covers 3Y/5Y rolling CAGR, liquidity horizons, and downside capture.\n\n#SmallCapFunds #MutualFunds #Investing #YieldNest",
       twitter: "Quant Small Cap vs Nippon India Small Cap: Two giants, opposite investment styles. 📊\n\nFull rolling returns & risk metrics breakdown: 🧵👇",
       threads: "Choosing between Quant Small Cap and Nippon India Small Cap? We analyze the data and liquidity metrics on YieldNest.online.",
     },

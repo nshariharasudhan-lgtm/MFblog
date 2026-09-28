@@ -213,9 +213,6 @@ export default function App() {
     return true;
   });
 
-  const featuredPost = filteredPosts[0];
-  const remainingPosts = filteredPosts.slice(1);
-
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF9F5] text-[#1A1A1A] font-serif-editorial">
       {/* SEO & Structured Data Head */}
@@ -231,12 +228,12 @@ export default function App() {
         }
         customTitle={
           !selectedArticle && currentCategory !== "all"
-            ? `${currentCategory} Mutual Fund Research & Audits | YieldNest.online`
+            ? `${currentCategory} Mutual Fund Research & Analysis | YieldNest.online`
             : undefined
         }
         customDescription={
           !selectedArticle && currentCategory !== "all"
-            ? `Explore data-driven ${currentCategory} mutual fund research, rolling returns, and performance audits on YieldNest.online.`
+            ? `Explore data-driven ${currentCategory} mutual fund research, rolling returns, and performance analysis on YieldNest.online.`
             : undefined
         }
       />
@@ -316,38 +313,17 @@ export default function App() {
             ) : (
               /* Articles Listing */
               <div className="space-y-12">
-                {/* Featured Headline Article - Latest by Date */}
-                {featuredPost && (
-                  <section>
-                    <div className="text-[11px] font-mono-data uppercase tracking-wider text-stone-500 mb-3">
-                      Latest Research Note
-                    </div>
-                    <ArticleCard
-                      post={featuredPost}
-                      onOpen={handleOpenArticle}
-                      featured={true}
-                    />
-                  </section>
-                )}
-
-                {/* Remaining Articles Grid */}
-                {remainingPosts.length > 0 && (
-                  <section className="space-y-4 pt-4">
-                    <div className="pb-2 border-b border-[#EAE8E0] text-xs font-mono-data text-stone-500 uppercase tracking-wider">
-                      Previous Research & Audits ({remainingPosts.length})
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                      {remainingPosts.map((post) => (
-                        <ArticleCard
-                          key={post.id}
-                          post={post}
-                          onOpen={handleOpenArticle}
-                        />
-                      ))}
-                    </div>
-                  </section>
-                )}
+                <section>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {filteredPosts.map((post) => (
+                      <ArticleCard
+                        key={post.id}
+                        post={post}
+                        onOpen={handleOpenArticle}
+                      />
+                    ))}
+                  </div>
+                </section>
 
                 {/* Newsletter Subscription Block */}
                 <NewsletterSignup />

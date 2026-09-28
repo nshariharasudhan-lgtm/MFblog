@@ -167,7 +167,7 @@ export function YieldNestLogo({
                 isSmall ? "text-[8px]" : "text-[9.5px] sm:text-[11px]"
               }`}
             >
-              FUND COMPARISON | PERFORMANCE AUDITS | SIP INSIGHTS
+              FUND COMPARISON | PERFORMANCE ANALYSIS | SIP INSIGHTS
             </span>
             <div className="h-[1px] bg-stone-300 flex-1 max-w-[80px] sm:max-w-[120px]"></div>
           </div>

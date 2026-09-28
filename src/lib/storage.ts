@@ -343,7 +343,7 @@ export function getSiteSettings(): SiteSettings {
     parsed.authorName = "Research Desk";
     parsed.authorCredentials = "Mutual Fund Research Team";
     parsed.authorTitle = "YieldNest Research Desk";
-    parsed.authorBio = "YieldNest.online Research Desk conducts quantitative rolling return audits, expense drag teardowns, and downside capture analyses of Indian Mutual Funds.";
+    parsed.authorBio = "YieldNest.online Research Desk conducts quantitative rolling return evaluations, expense drag teardowns, and downside capture analyses of Indian Mutual Funds.";
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(parsed));
     return parsed;
   } catch {
@@ -670,7 +670,7 @@ export function getSocialSchedules(): Array<{
           postId: "post-1",
           postTitle: "Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap",
           platform: "linkedin" as const,
-          copy: "📊 Mutual Fund Audit: Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap.\n\nWe evaluated 5-year rolling returns against official AMFI India datasets. Full report on YieldNest.online.\n\n#MutualFunds #InvestingIndia",
+          copy: "📊 Mutual Fund Analysis: Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap.\n\nWe evaluated 5-year rolling returns against official AMFI India datasets. Full report on YieldNest.online.\n\n#MutualFunds #InvestingIndia",
           scheduledTime: new Date(Date.now() + 86400000 * 1).toISOString(),
           status: "scheduled" as const,
         },

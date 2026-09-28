@@ -477,7 +477,7 @@ export function ArticleReader({
             <div className="flex items-center gap-2 mb-4">
               <BookOpen className="w-4 h-4 text-stone-700" />
               <h3 className="font-mono-data uppercase tracking-wider text-xs font-semibold text-stone-800">
-                Related Research & Category Audits
+                Related Research & Category Analyses
               </h3>
             </div>
 

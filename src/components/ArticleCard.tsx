@@ -60,13 +60,13 @@ export function ArticleCard({ post, onOpen, featured = false }: ArticleCardProps
               </p>
             </div>
 
-            {/* Audited Scheme Focus */}
+            {/* Analyzed Scheme Focus */}
             {primaryAmfi && (
               <div className="bg-[#FAF9F5] p-3.5 rounded-xl border border-[#E3DFC2]/60 flex flex-wrap items-center justify-between gap-3 text-xs max-w-3xl">
                 <div className="flex items-center gap-2 text-stone-800">
                   <BarChart2 className="w-3.5 h-3.5 text-stone-600" />
                   <span className="font-mono-data text-xs">
-                    Audited Scheme: <span className="font-semibold text-stone-900">{primaryAmfi.schemeName}</span>
+                    Scheme Focus: <span className="font-semibold text-stone-900">{primaryAmfi.schemeName}</span>
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-[11px] font-mono-data text-stone-500">
@@ -123,7 +123,7 @@ export function ArticleCard({ post, onOpen, featured = false }: ArticleCardProps
             <div className="pt-1.5 flex items-center justify-between text-[11px] font-mono-data text-stone-500 border-t border-stone-100">
               <span className="truncate max-w-[220px]">Scheme: {primaryAmfi.schemeName}</span>
               <span className="text-[10px] text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded shrink-0">
-                Audit Data Inside
+                AMFI Data Inside
               </span>
             </div>
           )}

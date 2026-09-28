@@ -380,7 +380,7 @@ app.get("/api/ai/content-suggestions", async (_req, res) => {
   const fallbackSuggestions = {
     suggestions: [
       {
-        title: "Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap: 5-Year Rolling Return Audit",
+        title: "Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap: 5-Year Rolling Return Analysis",
         category: "Fund Comparison",
         hook: "Comparing downside protection, foreign equity allocation, and NAV resilience across market cycles.",
         estimatedTraffic: "High",
@@ -396,7 +396,7 @@ app.get("/api/ai/content-suggestions", async (_req, res) => {
       {
         title: "Direct vs Regular Mutual Funds: The Compounding Drag of Distributor Commissions",
         category: "SIP Strategies",
-        hook: "A mathematical audit of Total Expense Ratio (TER) differentials and the 20-year wealth impact.",
+        hook: "A mathematical analysis of Total Expense Ratio (TER) differentials and the 20-year wealth impact.",
         estimatedTraffic: "Very High",
         amfiSchemeCodes: ["122639", "122640"],
       },
@@ -411,7 +411,7 @@ app.get("/api/ai/content-suggestions", async (_req, res) => {
   };
 
   const prompt = `You are the Editor-in-Chief of a premier Indian Mutual Fund research publication adhering strictly to AMFI regulations and EEAT (Experience, Expertise, Authoritativeness, Trustworthiness).
-Provide 4 compelling, trending, highly researched editorial article ideas based on current AMFI India data, market trends, fund comparisons, and performance audits.
+Provide 4 compelling, trending, highly researched editorial article ideas based on current AMFI India data, market trends, fund comparisons, and performance evaluations.
 Return ONLY valid JSON:
 {
   "suggestions": [
@@ -483,7 +483,7 @@ Guidelines:
    - [How to Measure Mutual Fund Performance: Rolling Returns, Alpha, Beta](/article/evaluating-mutual-fund-performance-rolling-returns-risk-ratios)
    - [AMFI & Regulatory Guidelines: Categorization Norms & Riskometers](/article/amfi-latest-regulatory-updates-categorization-norms-transparency)
    - [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap)
-   - [Small Cap Mutual Funds Stress Test & Liquidity Audit](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity)
+   - [Small Cap Mutual Funds Stress Test & Liquidity Analysis](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity)
    - [NIFTY 50 Index Funds vs Active Large-Cap Funds](/article/nifty-50-index-funds-vs-active-large-cap-funds)
 5. Craft complete social media snippets (LinkedIn post, Twitter/X post, Threads post) ready for social scheduling.
 
@@ -515,7 +515,7 @@ Return ONLY valid JSON matching this structure:
   // If Gemini calls did not return, synthesize dynamic high-grade article fallback
   if (!articleData || !articleData.title || !articleData.content) {
     console.log(`[Generate Article] Gemini fallback triggered for topic: "${cleanTopic}"`);
-    const generatedMarkdown = `# ${cleanTopic}: Comprehensive Mutual Fund Research & Valuation Audit
+    const generatedMarkdown = `# ${cleanTopic}: Comprehensive Mutual Fund Research & Valuation Analysis
 
 *By ${authorName} | Fact-checked with official AMFI India Data | Last Updated: September 2026*
 
@@ -554,10 +554,10 @@ The table below compiles official NAV and historical returns verified from the A
 ### 1. Active Share and Diversification Discipline
 A critical determinant of whether an actively managed fund justifies its Total Expense Ratio (TER) is its Active Share. Schemes that merely mirror the NIFTY 50 TRI while charging 80-100 bps extract a persistent drag on long-term compound wealth, as shown in our comparative study on [NIFTY 50 Index Funds vs Active Large-Cap Funds](/article/nifty-50-index-funds-vs-active-large-cap-funds). 
 
-In contrast, rigorous bottom-up stock selection combined with stringent valuation discipline has allowed top-tier managers to generate consistent Alpha across 3-year and 5-year rolling windows. For a core allocation review, refer to our [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap Audit](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap).
+In contrast, rigorous bottom-up stock selection combined with stringent valuation discipline has allowed top-tier managers to generate consistent Alpha across 3-year and 5-year rolling windows. For a core allocation review, refer to our [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap Analysis](/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap).
 
 ### 2. Downside Capture & Volatility Resilience
-During sharp market pullbacks (standard deviation > 15%), defensive cash allocations and liquidity buffers mitigate drawdown severity. To understand redemption shock absorption during market corrections, read our [Small Cap Mutual Funds Stress Test & Liquidity Audit](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity), and explore the statistical mechanics in [How to Measure Mutual Fund Performance: Rolling Returns, Alpha, Beta & Risk-Adjusted Ratios](/article/evaluating-mutual-fund-performance-rolling-returns-risk-ratios).
+During sharp market pullbacks (standard deviation > 15%), defensive cash allocations and liquidity buffers mitigate drawdown severity. To understand redemption shock absorption during market corrections, read our [Small Cap Mutual Funds Stress Test & Liquidity Analysis](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity), and explore the statistical mechanics in [How to Measure Mutual Fund Performance: Rolling Returns, Alpha, Beta & Risk-Adjusted Ratios](/article/evaluating-mutual-fund-performance-rolling-returns-risk-ratios).
 
 ---
 
@@ -603,8 +603,8 @@ Under current Indian Income Tax regulations (Section 112A), Long-Term Capital Ga
         riskRating: "Very High (Equity)",
       },
       socialScheduling: {
-        linkedin: `📊 In-Depth Research: ${cleanTopic}\n\nWe audited the 5-year rolling returns, active share, and downside capture against AMFI India datasets. Here is what smart investors must know:\n\n1️⃣ Direct plan expense ratio advantages\n2️⃣ Alpha generation vs NIFTY benchmarks\n3️⃣ Risk-adjusted Sharpe ratio evaluation\n\nFull peer-reviewed analysis in our latest editorial. #MutualFunds #InvestingIndia #AMFI #WealthBuilding`,
-        twitter: `📈 Deep-Dive: ${cleanTopic}\n\nDoes the data back up the hype? We audited official AMFI numbers, rolling returns, and expense ratios.\n\nKey takeaways inside 🧵👇\n#MutualFundsIndia #StockMarketIndia`,
+        linkedin: `📊 In-Depth Research: ${cleanTopic}\n\nWe analyzed the 5-year rolling returns, active share, and downside capture against AMFI India datasets. Here is what smart investors must know:\n\n1️⃣ Direct plan expense ratio advantages\n2️⃣ Alpha generation vs NIFTY benchmarks\n3️⃣ Risk-adjusted Sharpe ratio evaluation\n\nFull peer-reviewed analysis in our latest editorial. #MutualFunds #InvestingIndia #AMFI #WealthBuilding`,
+        twitter: `📈 Deep-Dive: ${cleanTopic}\n\nDoes the data back up the hype? We analyzed official AMFI numbers, rolling returns, and expense ratios.\n\nKey takeaways inside 🧵👇\n#MutualFundsIndia #StockMarketIndia`,
         threads: `Comparing funds just got scientific. Our new breakdown of ${cleanTopic} breaks down real AMFI numbers, portfolio overlap, and SIP strategy. Read the full research note.`,
       },
     };
@@ -904,13 +904,13 @@ app.get("/api/posts", async (_req, res) => {
 const CATEGORY_META: Record<string, { name: string; title: string; description: string }> = {
   "fund-comparison": {
     name: "Fund Comparison",
-    title: "Fund Comparison Mutual Fund Research & Audits | YieldNest.online",
-    description: "Side-by-side mutual fund audits, 5-year rolling returns, downside capture, and AMFI scheme comparisons on YieldNest.online.",
+    title: "Fund Comparison Mutual Fund Research & Analysis | YieldNest.online",
+    description: "Side-by-side mutual fund analyses, 5-year rolling returns, downside capture, and AMFI scheme comparisons on YieldNest.online.",
   },
   "performance-analysis": {
     name: "Performance Analysis",
-    title: "Performance Analysis & Rolling Return Audits | YieldNest.online",
-    description: "Quantitative mutual fund performance audits, risk-adjusted ratios (Sharpe, Sortino), and rolling return evaluations.",
+    title: "Performance Analysis & Rolling Return Studies | YieldNest.online",
+    description: "Quantitative mutual fund performance analysis, risk-adjusted ratios (Sharpe, Sortino), and rolling return evaluations.",
   },
   "market-trends": {
     name: "Market Trends",
@@ -919,7 +919,7 @@ const CATEGORY_META: Record<string, { name: string; title: string; description: 
   },
   "category-deep-dive": {
     name: "Category Deep-Dive",
-    title: "Category Deep-Dive & Scheme Audits | YieldNest.online",
+    title: "Category Deep-Dive & Scheme Analyses | YieldNest.online",
     description: "Comprehensive deep-dives into Indian equity fund categories: Flexi Cap, Small Cap, Large & Mid Cap, and Index funds.",
   },
   "sip-strategies": {
@@ -1122,10 +1122,10 @@ async function syncStaticSitemapAndLlms() {
       "",
       "## Research Categories",
       "",
-      "- [Fund Comparison](https://yieldnest.online/category/fund-comparison): Side-by-side quantitative audits of peer mutual fund schemes.",
+      "- [Fund Comparison](https://yieldnest.online/category/fund-comparison): Side-by-side quantitative comparisons of peer mutual fund schemes.",
       "- [Performance Analysis](https://yieldnest.online/category/performance-analysis): Rolling return analysis, factor exposures, and risk-adjusted metrics.",
       "- [Market Trends](https://yieldnest.online/category/market-trends): AMFI inflows, SIP book trajectories, and macro liquidity trends.",
-      "- [Category Deep-Dive](https://yieldnest.online/category/category-deep-dive): Audits of Flexi Cap, Small Cap, Large & Mid Cap, and Index fund universes.",
+      "- [Category Deep-Dive](https://yieldnest.online/category/category-deep-dive): Deep dives into Flexi Cap, Small Cap, Large & Mid Cap, and Index fund universes.",
       "- [SIP Strategies](https://yieldnest.online/category/sip-strategies): Systematic investment planning tactics, step-up SIP compounding, and direct plan optimization.",
       "",
       "## Full Documentation Archive",
@@ -1527,7 +1527,7 @@ function injectCategoryMeta(html: string, categorySlug: string, articles: any[])
         Research Category
       </span>
       <h1 style="font-size:2.2rem;font-weight:700;color:#1a1a1a;margin-bottom:0.5rem;">
-        ${escapeHtml(meta.name)} Mutual Fund Audits
+        ${escapeHtml(meta.name)} Mutual Fund Research
       </h1>
       <p style="font-size:1rem;color:#57534e;line-height:1.6;max-w-2xl;">
         ${escapeHtml(meta.description)}
@@ -1566,7 +1566,7 @@ function injectCategoryMeta(html: string, categorySlug: string, articles: any[])
 // -------------------------------------------------------------
 function injectHomepageMeta(html: string, articles: any[]): string {
   const title = "YieldNest.online – Independent Mutual Fund Research & Analytics";
-  const description = "Data-driven research on Indian Mutual Funds. Unbiased fund comparisons, rolling return audits, portfolio overlap checks, and market analytics on YieldNest.online.";
+  const description = "Data-driven research on Indian Mutual Funds. Unbiased fund comparisons, rolling return analyses, portfolio overlap checks, and market analytics on YieldNest.online.";
   const url = "https://yieldnest.online/";
 
   const schemaJson = JSON.stringify({
@@ -1617,15 +1617,15 @@ function injectHomepageMeta(html: string, articles: any[]): string {
       </p>
       <nav aria-label="Research Categories" style="margin-top:1.5rem;display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap;font-size:0.8rem;font-family:monospace;">
         <a href="/category/fund-comparison" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">Fund Comparisons</a>
-        <a href="/category/performance-analysis" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">Performance Audits</a>
+        <a href="/category/performance-analysis" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">Performance Analysis</a>
         <a href="/category/market-trends" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">Market Trends</a>
-        <a href="/category/category-deep-dive" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">Category Audits</a>
+        <a href="/category/category-deep-dive" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">Category Deep-Dive</a>
         <a href="/category/sip-strategies" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">SIP Tactics</a>
       </nav>
     </header>
     <main>
       <h2 style="font-size:1.2rem;font-family:monospace;font-weight:600;margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:0.05em;color:#292524;">
-        Latest Research Audits
+        Mutual Fund Research & Analysis
       </h2>
       <div style="display:flex;flex-direction:column;gap:1.5rem;">
         ${articles

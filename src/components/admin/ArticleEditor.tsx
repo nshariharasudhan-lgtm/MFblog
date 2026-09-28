@@ -475,7 +475,7 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
               </label>
               <input
                 type="text"
-                placeholder="e.g. Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap: 5-Year Rolling Return Audit"
+                placeholder="e.g. Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap: 5-Year Rolling Return Analysis"
                 value={title}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 className="w-full text-base sm:text-lg font-serif-editorial p-3 rounded-xl border border-stone-200 focus:outline-none focus:border-stone-800 bg-white"

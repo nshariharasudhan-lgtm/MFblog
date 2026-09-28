@@ -62,7 +62,7 @@ export function SubscribersManager() {
             <span>Newsletter & Research Subscribers</span>
           </h2>
           <p className="text-xs text-stone-500 font-mono-data">
-            Investors receiving automated AMFI weekly research notes and mutual fund comparison audits.
+            Investors receiving automated AMFI weekly research notes and mutual fund comparison reports.
           </p>
         </div>
 

@@ -37,7 +37,7 @@ export function Footer({ settings, onSelectCategory }: FooterProps) {
               <YieldNestLogo size="sm" showTagline={false} />
             </div>
             <p className="text-stone-600 text-xs sm:text-sm leading-relaxed max-w-sm">
-              {settings.description || "Data-driven research on Indian Mutual Funds. Unbiased fund comparisons, rolling return audits, portfolio overlap checks, and market analytics."}
+              {settings.description || "Data-driven research on Indian Mutual Funds. Unbiased fund comparisons, rolling return evaluations, portfolio overlap checks, and market analytics."}
             </p>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-stone-200/70 text-stone-800 text-[11px] font-mono-data">
               <span>Status: Independent Investor Education • yieldnest.online</span>

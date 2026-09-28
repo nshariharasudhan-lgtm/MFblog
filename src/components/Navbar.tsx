@@ -24,9 +24,9 @@ export function Navbar({
   const categories: Array<{ id: ArticleCategory | "all"; label: string; href: string }> = [
     { id: "all", label: "All Research", href: "/" },
     { id: "Fund Comparison", label: "Fund Comparisons", href: "/category/fund-comparison" },
-    { id: "Performance Analysis", label: "Performance Audits", href: "/category/performance-analysis" },
+    { id: "Performance Analysis", label: "Performance Analysis", href: "/category/performance-analysis" },
     { id: "Market Trends", label: "Market Trends", href: "/category/market-trends" },
-    { id: "Category Deep-Dive", label: "Category Audits", href: "/category/category-deep-dive" },
+    { id: "Category Deep-Dive", label: "Category Deep-Dive", href: "/category/category-deep-dive" },
     { id: "SIP Strategies", label: "SIP Tactics", href: "/category/sip-strategies" },
   ];
 

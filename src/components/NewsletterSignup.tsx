@@ -43,7 +43,7 @@ export function NewsletterSignup() {
         </h3>
 
         <p className="text-xs sm:text-sm text-stone-600 leading-relaxed font-sans">
-          Weekly quantitative roll-forward audits, SPIVA index tracking, and portfolio overlap alerts. Strictly for educational analysis; no sponsored bias or investment advice.
+          Weekly quantitative roll-forward studies, SPIVA index tracking, and portfolio overlap alerts. Strictly for educational analysis; no sponsored bias or investment advice.
         </p>
 
         {status === "success" ? (
