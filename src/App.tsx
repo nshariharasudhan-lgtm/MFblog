@@ -170,9 +170,15 @@ export default function App() {
   };
 
   // Delete Post Handler
-  const handleDeletePost = async (id: string) => {
+  const handleDeletePost = async (id: string, slug?: string) => {
     if (confirm("Are you sure you want to permanently delete this research article?")) {
-      await deletePost(id);
+      // Optimistic instant UI update
+      setPosts((prev) =>
+        prev.filter(
+          (p) => String(p.id) !== String(id) && (!slug || String(p.slug) !== String(slug))
+        )
+      );
+      await deletePost(id, slug);
       await loadData();
     }
   };

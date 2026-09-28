@@ -2,24 +2,22 @@
 User-agent: *
 Allow: /
 Disallow: /admin
-Disallow: /api/
 
 # Explicit permissions for Googlebot
 User-agent: Googlebot
 Allow: /
 Disallow: /admin
-Disallow: /api/
 
+# Google Search Console URL Inspection Tool
 User-agent: Google-InspectionTool
 Allow: /
 
-# Explicit permissions for Bingbot
+# Bingbot
 User-agent: Bingbot
 Allow: /
 Disallow: /admin
-Disallow: /api/
 
-# AI and LLM Search Agents for Financial Research Grounding
+# AI Search & Research Crawlers
 User-agent: GPTBot
 Allow: /
 

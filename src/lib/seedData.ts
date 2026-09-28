@@ -10,8 +10,9 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   authorCredentials: "Quantitative Mutual Fund Research",
   sebiRegistrationNumber: "",
   contactEmail: "research@yieldnest.online",
-  supabaseUrl: "",
-  supabaseAnonKey: "",
+  supabaseUrl: "https://iguesvdehoxhsanasrcm.supabase.co",
+  supabaseAnonKey:
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlndWVzdmRlaG94aHNhbmFzcmNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MjQzMDAsImV4cCI6MjEwNjAwMDMwMH0.7fVc5O0r3zXy5ijkUfKperP1AO4LrvRUuNz6xaYvBBc",
   enableAutoSocialScheduling: true,
   googleSearchConsoleVerification: "gsc-verification-code-yieldnest-2026",
 };

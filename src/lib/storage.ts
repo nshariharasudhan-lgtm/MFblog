@@ -9,6 +9,36 @@ const SOCIAL_KEY = "nivesh_social_v1";
 const SUBSCRIBERS_KEY = "nivesh_subscribers_v1";
 const ADMIN_SESSION_KEY = "nivesh_admin_session_v1";
 const ADMIN_CREDENTIALS_KEY = "nivesh_admin_creds_v1";
+const DELETED_POSTS_KEY = "yieldnest_deleted_posts_v2";
+
+export function getDeletedPostIdentifiers(): Set<string> {
+  try {
+    const raw = localStorage.getItem(DELETED_POSTS_KEY);
+    if (!raw) return new Set<string>();
+    const list: string[] = JSON.parse(raw);
+    return new Set(list.map((s) => String(s).toLowerCase().trim()));
+  } catch {
+    return new Set<string>();
+  }
+}
+
+export function addDeletedPostIdentifier(id: string, slug?: string) {
+  try {
+    const current = getDeletedPostIdentifiers();
+    if (id) current.add(String(id).toLowerCase().trim());
+    if (slug) current.add(String(slug).toLowerCase().trim());
+    localStorage.setItem(DELETED_POSTS_KEY, JSON.stringify(Array.from(current)));
+  } catch {}
+}
+
+export function removeDeletedPostIdentifier(id: string, slug?: string) {
+  try {
+    const current = getDeletedPostIdentifiers();
+    if (id) current.delete(String(id).toLowerCase().trim());
+    if (slug) current.delete(String(slug).toLowerCase().trim());
+    localStorage.setItem(DELETED_POSTS_KEY, JSON.stringify(Array.from(current)));
+  } catch {}
+}
 
 // Default admin credentials requested by user
 export const DEFAULT_ADMIN_EMAIL = "ns.hariharasudhan@gmail.com";
@@ -196,17 +226,26 @@ export function logoutAdmin() {
 // -------------------------------------------------------------
 function getLocalPosts(): ArticlePost[] {
   try {
+    const deleted = getDeletedPostIdentifiers();
     const raw = localStorage.getItem(POSTS_KEY);
-    if (!raw) {
-      localStorage.setItem(POSTS_KEY, JSON.stringify(INITIAL_ARTICLES));
-      return INITIAL_ARTICLES;
-    }
-    const parsed: ArticlePost[] = JSON.parse(raw);
-    
-    // Check for any seed articles that don't yet exist in the user's localStorage
-    const existingIds = new Set(parsed.map((p) => p.id));
-    const missingSeedArticles = INITIAL_ARTICLES.filter((s) => !existingIds.has(s.id));
-    const allPosts = [...parsed, ...missingSeedArticles];
+    const parsed: ArticlePost[] = raw ? JSON.parse(raw) : [];
+
+    // Filter out permanently deleted articles
+    const validExisting = parsed.filter(
+      (p) => !deleted.has(String(p.id).toLowerCase()) && !deleted.has(String(p.slug).toLowerCase())
+    );
+
+    // Only add seed articles if NOT marked as deleted
+    const existingIds = new Set(validExisting.map((p) => String(p.id).toLowerCase()));
+    const existingSlugs = new Set(validExisting.map((p) => String(p.slug).toLowerCase()));
+    const missingSeedArticles = INITIAL_ARTICLES.filter(
+      (s) =>
+        !existingIds.has(String(s.id).toLowerCase()) &&
+        !existingSlugs.has(String(s.slug).toLowerCase()) &&
+        !deleted.has(String(s.id).toLowerCase()) &&
+        !deleted.has(String(s.slug).toLowerCase())
+    );
+    const allPosts = [...validExisting, ...missingSeedArticles];
 
     // Keep seed posts content, metadata, and snapshots up-to-date with latest pillar versions
     // Strictly enforce institutional Research Desk attribution; no individual names permitted
@@ -328,32 +367,62 @@ export function saveSiteSettings(settings: SiteSettings) {
 // Posts API with Supabase Sync
 // -------------------------------------------------------------
 export async function getAllPosts(): Promise<ArticlePost[]> {
+  const deleted = getDeletedPostIdentifiers();
+
+  // Helper to merge, deduplicate, filter deleted, and sort
+  const finalizePosts = (incoming: ArticlePost[]): ArticlePost[] => {
+    const postMap = new Map<string, ArticlePost>();
+
+    // 1. Baseline seed articles (if not deleted)
+    for (const seed of INITIAL_ARTICLES) {
+      const sId = String(seed.id).toLowerCase();
+      const sSlug = String(seed.slug).toLowerCase();
+      if (!deleted.has(sId) && !deleted.has(sSlug)) {
+        postMap.set(seed.slug, {
+          ...seed,
+          authorName: "Research Desk",
+          authorTitle: "YieldNest Research Desk",
+        });
+      }
+    }
+
+    // 2. Incoming database/server articles override baseline
+    for (const p of incoming) {
+      const pId = String(p.id).toLowerCase();
+      const pSlug = String(p.slug).toLowerCase();
+      if (!deleted.has(pId) && !deleted.has(pSlug)) {
+        postMap.set(p.slug, {
+          ...p,
+          authorName: "Research Desk",
+          authorTitle: "YieldNest Research Desk",
+        });
+      }
+    }
+
+    const sorted = Array.from(postMap.values()).sort((a, b) => {
+      const timeA = new Date(a.publishedAt || a.createdAt || 0).getTime();
+      const timeB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+      return timeB - timeA;
+    });
+
+    saveLocalPosts(sorted);
+    return sorted;
+  };
+
   // 1. Try unified server-side API proxy first (guarantees cross-device & production sync)
   try {
     const res = await fetch("/api/posts");
     if (res.ok) {
       const serverPosts: ArticlePost[] = await res.json();
       if (Array.isArray(serverPosts) && serverPosts.length > 0) {
-        const sorted = serverPosts
-          .map((p) => ({
-            ...p,
-            authorName: "Research Desk",
-            authorTitle: "YieldNest Research Desk",
-          }))
-          .sort((a, b) => {
-            const timeA = new Date(a.publishedAt || a.createdAt || 0).getTime();
-            const timeB = new Date(b.publishedAt || b.createdAt || 0).getTime();
-            return timeB - timeA;
-          });
-        saveLocalPosts(sorted);
-        return sorted;
+        return finalizePosts(serverPosts);
       }
     }
   } catch (apiErr) {
     console.warn("[Storage] /api/posts fetch error, attempting direct client fallback:", apiErr);
   }
 
-  // 2. Direct Supabase Client fallback
+  // 2. Direct Supabase Client fallback (for static Vercel / CDN visitor production environments)
   const settings = getSiteSettings();
   const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseAnonKey);
 
@@ -365,7 +434,7 @@ export async function getAllPosts(): Promise<ArticlePost[]> {
         .order("published_at", { ascending: false });
 
       if (!error && data && data.length > 0) {
-        const mapped = data.map((d: any) => ({
+        const mapped: ArticlePost[] = data.map((d: any) => ({
           id: d.id,
           slug: d.slug,
           title: d.title,
@@ -389,13 +458,7 @@ export async function getAllPosts(): Promise<ArticlePost[]> {
           createdAt: d.created_at,
           updatedAt: d.updated_at,
         }));
-        const sorted = mapped.sort((a, b) => {
-          const timeA = new Date(a.publishedAt || a.createdAt || 0).getTime();
-          const timeB = new Date(b.publishedAt || b.createdAt || 0).getTime();
-          return timeB - timeA;
-        });
-        saveLocalPosts(sorted);
-        return sorted;
+        return finalizePosts(mapped);
       }
     } catch (err) {
       console.warn("Supabase fetch failed, falling back to local store:", err);
@@ -411,8 +474,11 @@ export async function getPostBySlug(slug: string): Promise<ArticlePost | null> {
 }
 
 export async function savePost(post: ArticlePost): Promise<ArticlePost> {
+  // Clear from deleted tracking if re-saving
+  removeDeletedPostIdentifier(post.id, post.slug);
+
   const posts = getLocalPosts();
-  const index = posts.findIndex((p) => p.id === post.id);
+  const index = posts.findIndex((p) => p.id === post.id || p.slug === post.slug);
 
   let updatedPost = {
     ...post,
@@ -431,7 +497,7 @@ export async function savePost(post: ArticlePost): Promise<ArticlePost> {
   }
   saveLocalPosts(posts);
 
-  // 1. Sync via Server API (persists to Supabase reliably across networks)
+  // 1. Sync via Server API (persists to custom_posts.json & Supabase)
   try {
     await fetch("/api/posts", {
       method: "POST",
@@ -481,20 +547,49 @@ export async function savePost(post: ArticlePost): Promise<ArticlePost> {
   return updatedPost;
 }
 
-export async function deletePost(id: string): Promise<void> {
-  const post = getLocalPosts().find((p) => p.id === id);
-  const posts = getLocalPosts().filter((p) => p.id !== id);
-  saveLocalPosts(posts);
+export async function deletePost(id: string, slug?: string): Promise<boolean> {
+  const currentPosts = getLocalPosts();
+  const target = currentPosts.find(
+    (p) => String(p.id) === String(id) || (slug && String(p.slug) === String(slug))
+  );
+  const targetSlug = slug || target?.slug || "";
 
+  // 1. Add to permanent deleted tracking
+  addDeletedPostIdentifier(id, targetSlug);
+
+  // 2. Filter out from local store
+  const filtered = currentPosts.filter(
+    (p) =>
+      String(p.id) !== String(id) &&
+      (!targetSlug || String(p.slug) !== String(targetSlug))
+  );
+  saveLocalPosts(filtered);
+
+  // 3. Notify server API to remove and update sitemaps
+  try {
+    const deleteUrl = `/api/posts/${encodeURIComponent(id)}${targetSlug ? `?slug=${encodeURIComponent(targetSlug)}` : ""}`;
+    await fetch(deleteUrl, { method: "DELETE" });
+  } catch (apiErr) {
+    console.warn("[Storage] Server delete warning:", apiErr);
+  }
+
+  // 4. Delete directly from Supabase database
   const settings = getSiteSettings();
   const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseAnonKey);
-  if (supabase && post) {
+  if (supabase) {
     try {
-      await supabase.from("posts").delete().eq("slug", post.slug);
-    } catch (err) {
-      console.warn("Supabase delete failed:", err);
+      if (id) {
+        await supabase.from("posts").delete().eq("id", id);
+      }
+      if (targetSlug) {
+        await supabase.from("posts").delete().eq("slug", targetSlug);
+      }
+    } catch (sbErr) {
+      console.warn("[Storage] Supabase delete warning:", sbErr);
     }
   }
+
+  return true;
 }
 
 export async function incrementPostViews(id: string): Promise<void> {

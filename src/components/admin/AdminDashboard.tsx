@@ -33,7 +33,7 @@ interface AdminDashboardProps {
   settings: SiteSettings;
   adminUser: AdminUser | null;
   onSavePost: (post: ArticlePost) => Promise<void>;
-  onDeletePost: (id: string) => Promise<void>;
+  onDeletePost: (id: string, slug?: string) => Promise<void>;
   onViewPost: (post: ArticlePost) => void;
   onCloseAdmin: () => void;
   onLogoutAdmin: () => void;

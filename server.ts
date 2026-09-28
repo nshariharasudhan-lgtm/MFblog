@@ -17,6 +17,22 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.use(express.json({ limit: "10mb" }));
 
+// Canonical URL Normalization: 301 permanent redirect for trailing slashes (except root)
+app.use((req, res, next) => {
+  if (req.path.length > 1 && req.path.endsWith("/")) {
+    const query = req.url.slice(req.path.length);
+    const cleanPath = req.path.slice(0, -1);
+    return res.redirect(301, cleanPath + query);
+  }
+  next();
+});
+
+// Google Search Console HTML verification file endpoint
+app.get("/google:code.html", (req, res) => {
+  res.setHeader("Content-Type", "text/html; charset=utf-8");
+  return res.send(`google-site-verification: google${req.params.code}.html`);
+});
+
 // Server-side Gemini client with required User-Agent
 const apiKey = process.env.GEMINI_API_KEY || "";
 const ai = apiKey
@@ -722,188 +738,332 @@ app.post("/api/posts/sync-supabase", async (req, res) => {
 });
 
 // -------------------------------------------------------------
-// 7. Posts API (Server-Side Proxy for Production & Sync)
+// 7. Posts API & Storage Persistence
 // -------------------------------------------------------------
-app.get("/api/posts", async (_req, res) => {
-  try {
-    if (serverSupabase) {
-      const { data, error } = await serverSupabase
-        .from("posts")
-        .select("*")
-        .order("published_at", { ascending: false });
+const CUSTOM_POSTS_PATH = path.join(__dirname, "server_data", "custom_posts.json");
+const DELETED_POSTS_PATH = path.join(__dirname, "server_data", "deleted_post_ids.json");
 
-      if (!error && data && data.length > 0) {
-        const posts = data.map((d: any) => ({
-          id: d.id,
-          slug: d.slug,
-          title: d.title,
-          excerpt: d.excerpt,
-          content: d.content,
-          category: d.category,
-          tags: d.tags || [],
-          status: d.status,
-          authorName: "Research Desk",
-          authorTitle: "YieldNest Research Desk",
-          authorAvatar: d.author_avatar,
-          coverImage: d.cover_image,
-          readTimeMinutes: d.read_time_minutes || 5,
-          viewsCount: d.views_count || 0,
-          amfiSchemeCodes: d.amfi_scheme_codes || [],
-          amfiDataSnapshot: d.amfi_data_snapshot || [],
-          seoMetadata: d.seo_metadata || {},
-          socialSnippets: d.social_shares || {},
-          scheduledFor: d.scheduled_for,
-          publishedAt: d.published_at,
-          createdAt: d.created_at,
-          updatedAt: d.updated_at,
-        }));
-        return res.json(posts);
-      }
+function loadCustomPosts(): any[] {
+  try {
+    if (fs.existsSync(CUSTOM_POSTS_PATH)) {
+      const raw = fs.readFileSync(CUSTOM_POSTS_PATH, "utf-8");
+      return JSON.parse(raw);
     }
   } catch (err) {
-    console.warn("[/api/posts] Failed to fetch from Supabase:", err);
+    console.warn("[Storage] Failed to read custom_posts.json:", err);
   }
-  return res.json(
-    [...INITIAL_ARTICLES].sort(
-      (a, b) => new Date(b.publishedAt || b.createdAt || 0).getTime() - new Date(a.publishedAt || a.createdAt || 0).getTime()
-    )
+  return [];
+}
+
+function saveCustomPosts(posts: any[]) {
+  try {
+    const dir = path.dirname(CUSTOM_POSTS_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(CUSTOM_POSTS_PATH, JSON.stringify(posts, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("[Storage] Failed to save custom_posts.json:", err);
+  }
+}
+
+function loadDeletedPostIdentifiers(): Set<string> {
+  try {
+    if (fs.existsSync(DELETED_POSTS_PATH)) {
+      const raw = fs.readFileSync(DELETED_POSTS_PATH, "utf-8");
+      const list: string[] = JSON.parse(raw);
+      return new Set(list.map((s) => String(s).toLowerCase().trim()));
+    }
+  } catch (err) {
+    console.warn("[Storage] Failed to read deleted_post_ids.json:", err);
+  }
+  return new Set<string>();
+}
+
+function recordDeletedPostIdentifier(id?: string, slug?: string) {
+  try {
+    const set = loadDeletedPostIdentifiers();
+    if (id) set.add(String(id).toLowerCase().trim());
+    if (slug) set.add(String(slug).toLowerCase().trim());
+    const dir = path.dirname(DELETED_POSTS_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(DELETED_POSTS_PATH, JSON.stringify(Array.from(set), null, 2), "utf-8");
+  } catch (err) {
+    console.warn("[Storage] Failed to record deleted post identifier:", err);
+  }
+}
+
+function unrecordDeletedPostIdentifier(id?: string, slug?: string) {
+  try {
+    const set = loadDeletedPostIdentifiers();
+    if (id) set.delete(String(id).toLowerCase().trim());
+    if (slug) set.delete(String(slug).toLowerCase().trim());
+    const dir = path.dirname(DELETED_POSTS_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(DELETED_POSTS_PATH, JSON.stringify(Array.from(set), null, 2), "utf-8");
+  } catch {}
+}
+
+async function getAllAggregatedArticles(onlyPublished = false): Promise<any[]> {
+  const articlesMap = new Map<string, any>();
+  const deletedSet = loadDeletedPostIdentifiers();
+
+  // 1. Seed baseline articles
+  for (const art of INITIAL_ARTICLES) {
+    const aId = String(art.id).toLowerCase();
+    const aSlug = String(art.slug).toLowerCase();
+    if (deletedSet.has(aId) || deletedSet.has(aSlug)) continue;
+    if (onlyPublished && art.status !== "published") continue;
+
+    articlesMap.set(art.slug, {
+      ...art,
+      authorName: "YieldNest Research Desk",
+      authorTitle: "YieldNest Research Desk",
+      readTimeMinutes: art.readTimeMinutes || 6,
+    });
+  }
+
+  // 2. Custom local posts
+  const customPosts = loadCustomPosts();
+  for (const post of customPosts) {
+    const pId = String(post.id).toLowerCase();
+    const pSlug = String(post.slug).toLowerCase();
+    if (deletedSet.has(pId) || deletedSet.has(pSlug)) continue;
+    if (onlyPublished && post.status !== "published") continue;
+
+    articlesMap.set(post.slug, {
+      ...post,
+      authorName: "YieldNest Research Desk",
+      authorTitle: "YieldNest Research Desk",
+      readTimeMinutes: post.readTimeMinutes || 6,
+    });
+  }
+
+  // 3. Supabase posts
+  if (serverSupabase) {
+    try {
+      const query = serverSupabase.from("posts").select("*").order("published_at", { ascending: false });
+      if (onlyPublished) {
+        query.eq("status", "published");
+      }
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) {
+        for (const d of data) {
+          const dId = String(d.id).toLowerCase();
+          const dSlug = String(d.slug).toLowerCase();
+          if (deletedSet.has(dId) || deletedSet.has(dSlug)) continue;
+
+          articlesMap.set(d.slug, {
+            id: d.id,
+            slug: d.slug,
+            title: d.title,
+            excerpt: d.excerpt,
+            content: d.content,
+            category: d.category,
+            tags: d.tags || [],
+            status: d.status,
+            authorName: "YieldNest Research Desk",
+            authorTitle: "YieldNest Research Desk",
+            authorAvatar: d.author_avatar,
+            coverImage: d.cover_image,
+            readTimeMinutes: d.read_time_minutes || 6,
+            viewsCount: d.views_count || 0,
+            amfiSchemeCodes: d.amfi_scheme_codes || [],
+            amfiDataSnapshot: d.amfi_data_snapshot || [],
+            seoMetadata: d.seo_metadata || {},
+            socialSnippets: d.social_shares || {},
+            scheduledFor: d.scheduled_for,
+            publishedAt: d.published_at,
+            createdAt: d.created_at,
+            updatedAt: d.updated_at,
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("[Storage] Supabase fetch error in getAllAggregatedArticles:", err);
+    }
+  }
+
+  return Array.from(articlesMap.values()).sort(
+    (a, b) => new Date(b.publishedAt || b.createdAt || 0).getTime() - new Date(a.publishedAt || a.createdAt || 0).getTime()
   );
+}
+
+app.get("/api/posts", async (_req, res) => {
+  const posts = await getAllAggregatedArticles(false);
+  return res.json(posts);
 });
 
+// -------------------------------------------------------------
+// Category Taxonomy & Metadata
+// -------------------------------------------------------------
+const CATEGORY_META: Record<string, { name: string; title: string; description: string }> = {
+  "fund-comparison": {
+    name: "Fund Comparison",
+    title: "Fund Comparison Mutual Fund Research & Audits | YieldNest.online",
+    description: "Side-by-side mutual fund audits, 5-year rolling returns, downside capture, and AMFI scheme comparisons on YieldNest.online.",
+  },
+  "performance-analysis": {
+    name: "Performance Analysis",
+    title: "Performance Analysis & Rolling Return Audits | YieldNest.online",
+    description: "Quantitative mutual fund performance audits, risk-adjusted ratios (Sharpe, Sortino), and rolling return evaluations.",
+  },
+  "market-trends": {
+    name: "Market Trends",
+    title: "Market Trends & AMFI Mutual Fund Inflow Analytics | YieldNest.online",
+    description: "Analysis of Indian mutual fund market trends, AMFI monthly inflow trajectories, SIP book growth, and industry liquidity.",
+  },
+  "category-deep-dive": {
+    name: "Category Deep-Dive",
+    title: "Category Deep-Dive & Scheme Audits | YieldNest.online",
+    description: "Comprehensive deep-dives into Indian equity fund categories: Flexi Cap, Small Cap, Large & Mid Cap, and Index funds.",
+  },
+  "sip-strategies": {
+    name: "SIP Strategies",
+    title: "SIP Strategies & Compounding Wealth Tactics | YieldNest.online",
+    description: "Mathematical frameworks for systematic investment planning, step-up SIP compounding, and direct plan cost optimization.",
+  },
+};
+
+const CATEGORY_NAME_TO_SLUG: Record<string, string> = {
+  "Fund Comparison": "fund-comparison",
+  "Performance Analysis": "performance-analysis",
+  "Market Trends": "market-trends",
+  "Category Deep-Dive": "category-deep-dive",
+  "SIP Strategies": "sip-strategies",
+};
+
+// -------------------------------------------------------------
+// Article Retrieval & Aggregation (Supabase + Local + Seed)
+// -------------------------------------------------------------
+async function getPublishedArticlesList(): Promise<any[]> {
+  return getAllAggregatedArticles(true);
+}
+
+// -------------------------------------------------------------
+// POST /api/posts & DELETE /api/posts/:id Handlers
+// -------------------------------------------------------------
 app.post("/api/posts", async (req, res) => {
   const post = req.body;
   if (!post || !post.slug) {
     return res.status(400).json({ error: "Post data with slug is required" });
   }
 
+  // Strict slug sanitization for Google Search Console URL indexability
+  const sanitizedSlug = String(post.slug)
+    .toLowerCase()
+    .trim()
+    .replace(/^https?:\/\/[^/]+/i, "")
+    .replace(/^\/?(article|category)\//i, "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[\s_.]+/g, "-")
+    .replace(/[^a-z0-9-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  post.slug = sanitizedSlug;
+  post.authorName = "YieldNest Research Desk";
+  post.authorTitle = "YieldNest Research Desk";
+
+  // If article was previously marked deleted, unmark it
+  unrecordDeletedPostIdentifier(post.id, post.slug);
+
+  // 1. Save to local server file storage
+  const customPosts = loadCustomPosts();
+  const existingIdx = customPosts.findIndex((p: any) => p.slug === post.slug || p.id === post.id);
+  if (existingIdx >= 0) {
+    customPosts[existingIdx] = { ...customPosts[existingIdx], ...post, updatedAt: new Date().toISOString() };
+  } else {
+    customPosts.unshift({ ...post, createdAt: post.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString() });
+  }
+  saveCustomPosts(customPosts);
+
+  // 2. Upsert to Supabase if connected
   if (serverSupabase) {
     try {
-      const { data, error } = await serverSupabase
-        .from("posts")
-        .upsert(
-          {
-            slug: post.slug,
-            title: post.title,
-            excerpt: post.excerpt,
-            content: post.content,
-            category: post.category,
-            tags: post.tags,
-            status: post.status,
-            author_name: "Research Desk",
-            author_title: "YieldNest Research Desk",
-            author_avatar: post.authorAvatar,
-            cover_image: post.coverImage,
-            read_time_minutes: post.readTimeMinutes,
-            views_count: post.viewsCount,
-            amfi_scheme_codes: post.amfiSchemeCodes,
-            amfi_data_snapshot: post.amfiDataSnapshot,
-            seo_metadata: post.seoMetadata,
-            social_shares: post.socialSnippets,
-            scheduled_for: post.scheduledFor,
-            published_at: post.publishedAt || new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          { onConflict: "slug" }
-        )
-        .select()
-        .single();
-
-      if (!error && data) {
-        return res.json({ success: true, post: data });
-      } else if (error) {
-        console.error("[/api/posts] Supabase upsert error:", error);
-      }
+      await serverSupabase.from("posts").upsert(
+        {
+          slug: post.slug,
+          title: post.title,
+          excerpt: post.excerpt,
+          content: post.content,
+          category: post.category,
+          tags: post.tags,
+          status: post.status,
+          author_name: "Research Desk",
+          author_title: "YieldNest Research Desk",
+          author_avatar: post.authorAvatar,
+          cover_image: post.coverImage,
+          read_time_minutes: post.readTimeMinutes,
+          views_count: post.viewsCount,
+          amfi_scheme_codes: post.amfiSchemeCodes,
+          amfi_data_snapshot: post.amfiDataSnapshot,
+          seo_metadata: post.seoMetadata,
+          social_shares: post.socialSnippets,
+          scheduled_for: post.scheduledFor,
+          published_at: post.publishedAt || new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: "slug" }
+      );
     } catch (dbErr: any) {
-      console.error("[/api/posts] Database error:", dbErr);
+      console.warn("[/api/posts] Supabase upsert error:", dbErr);
     }
   }
+
+  // 3. Auto-sync static sitemap and LLMs file
+  syncStaticSitemapAndLlms().catch((err) => console.warn("Sitemap sync warning:", err));
+
   return res.json({ success: true, post });
 });
 
-// -------------------------------------------------------------
-// SEO, Crawlers & LLM Endpoints (sitemap.xml, robots.txt, llms.txt)
-// -------------------------------------------------------------
+app.delete("/api/posts/:id", async (req, res) => {
+  const { id } = req.params;
+  const slug = (req.query.slug as string) || "";
 
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+  // 1. Record identifier in deleted set to block resurrection
+  recordDeletedPostIdentifier(id, slug);
 
-async function getPublishedArticlesList() {
+  // 2. Remove from server file storage
+  const customPosts = loadCustomPosts();
+  const filtered = customPosts.filter(
+    (p: any) => p.id !== id && (!slug || p.slug !== slug) && p.slug !== id
+  );
+  saveCustomPosts(filtered);
+
+  // 3. Delete from Supabase database
   if (serverSupabase) {
     try {
-      const { data, error } = await serverSupabase
-        .from("posts")
-        .select("slug, title, excerpt, category, published_at, updated_at, cover_image, author_name, author_title")
-        .eq("status", "published")
-        .order("published_at", { ascending: false });
-      if (!error && data && data.length > 0) {
-        return data.map((d: any) => ({
-          slug: d.slug,
-          title: d.title,
-          excerpt: d.excerpt,
-          category: d.category,
-          publishedAt: d.published_at,
-          updatedAt: d.updated_at,
-          coverImage: d.cover_image,
-          authorName: d.author_name,
-          authorTitle: d.author_title,
-        }));
+      if (id) {
+        await serverSupabase.from("posts").delete().eq("id", id);
+        await serverSupabase.from("posts").delete().eq("slug", id);
+      }
+      if (slug) {
+        await serverSupabase.from("posts").delete().eq("slug", slug);
       }
     } catch (err) {
-      console.warn("[Sitemap] Supabase fallback to seed data:", err);
+      console.warn("[/api/posts/:id] Supabase delete warning:", err);
     }
   }
-  return INITIAL_ARTICLES.map((a) => ({
-    slug: a.slug,
-    title: a.title,
-    excerpt: a.excerpt,
-    category: a.category,
-    publishedAt: a.publishedAt || a.createdAt,
-    updatedAt: a.updatedAt || a.createdAt,
-    coverImage: a.coverImage,
-    authorName: a.authorName,
-    authorTitle: a.authorTitle,
-  }));
-}
 
-// 1. Robots.txt
-app.get("/robots.txt", (_req, res) => {
-  const robotsPath = path.join(__dirname, "public", "robots.txt");
-  if (fs.existsSync(robotsPath)) {
-    res.setHeader("Content-Type", "text/plain; charset=utf-8");
-    return res.sendFile(robotsPath);
-  }
-  const fallback = `# robots.txt for YieldNest.online
-User-agent: *
-Allow: /
-Disallow: /admin
-Disallow: /api/
-
-Sitemap: https://yieldnest.online/sitemap.xml
-`;
-  res.setHeader("Content-Type", "text/plain; charset=utf-8");
-  return res.send(fallback);
+  // 4. Update sitemaps
+  syncStaticSitemapAndLlms().catch((err) => console.warn("Sitemap sync warning:", err));
+  return res.json({ success: true, message: "Article permanently deleted." });
 });
 
-// 2. Dynamic Sitemap.xml
-app.get("/sitemap.xml", async (_req, res) => {
-  try {
-    const articles = await getPublishedArticlesList();
-    const categories = [
-      "fund-comparison",
-      "performance-analysis",
-      "market-trends",
-      "category-deep-dive",
-      "sip-strategies",
-    ];
-    const today = new Date().toISOString().split("T")[0];
+// -------------------------------------------------------------
+// Sitemap & LLMs Generation & Sync
+// -------------------------------------------------------------
+function buildSitemapXmlString(articles: any[]): string {
+  const today = new Date().toISOString().split("T")[0];
+  const categories = Object.keys(CATEGORY_META);
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -919,14 +1079,15 @@ ${categories
     (cat) => `  <url>
     <loc>https://yieldnest.online/category/${cat}</loc>
     <lastmod>${today}</lastmod>
-    <changefreq>weekly</changefreq>
+    <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>`
   )
   .join("\n")}
 ${articles
   .map((art) => {
-    const lastMod = (art.updatedAt || art.publishedAt || today).split("T")[0];
+    const rawDate = art.updatedAt || art.publishedAt || today;
+    const lastMod = rawDate.split("T")[0];
     return `  <url>
     <loc>https://yieldnest.online/article/${encodeURIComponent(art.slug)}</loc>
     <lastmod>${lastMod}</lastmod>
@@ -936,9 +1097,83 @@ ${articles
   })
   .join("\n")}
 </urlset>`;
+}
 
+async function syncStaticSitemapAndLlms() {
+  try {
+    const articles = await getPublishedArticlesList();
+    const xml = buildSitemapXmlString(articles);
+    const publicSitemapPath = path.join(__dirname, "public", "sitemap.xml");
+    fs.writeFileSync(publicSitemapPath, xml, "utf-8");
+
+    // Also sync public/llms.txt
+    const llmsLines: string[] = [
+      "# YieldNest.online",
+      "",
+      "> Independent Mutual Fund Research & Analytics Platform for Indian Equity & Debt Schemes.",
+      "",
+      "YieldNest.online provides independent, quantitative, data-driven research on Indian Mutual Funds. Our articles analyze 3-year and 5-year rolling returns, downside capture ratios, standard deviation, portfolio overlap, expense ratio (TER) compounding drag, and AMFI India liquidity stress test disclosures.",
+      "",
+      "We are strictly an investor education and quantitative research publication. Not registered with SEBI or AMFI; no financial advisory services, distributor commissions, or solicitation.",
+      "",
+      "## Core Research Articles",
+      "",
+      ...articles.map((art) => `- [${art.title}](https://yieldnest.online/article/${art.slug}): ${art.excerpt}`),
+      "",
+      "## Research Categories",
+      "",
+      "- [Fund Comparison](https://yieldnest.online/category/fund-comparison): Side-by-side quantitative audits of peer mutual fund schemes.",
+      "- [Performance Analysis](https://yieldnest.online/category/performance-analysis): Rolling return analysis, factor exposures, and risk-adjusted metrics.",
+      "- [Market Trends](https://yieldnest.online/category/market-trends): AMFI inflows, SIP book trajectories, and macro liquidity trends.",
+      "- [Category Deep-Dive](https://yieldnest.online/category/category-deep-dive): Audits of Flexi Cap, Small Cap, Large & Mid Cap, and Index fund universes.",
+      "- [SIP Strategies](https://yieldnest.online/category/sip-strategies): Systematic investment planning tactics, step-up SIP compounding, and direct plan optimization.",
+      "",
+      "## Full Documentation Archive",
+      "",
+      "- [Full Content Archive](https://yieldnest.online/llms-full.txt): Complete unabridged text of all research papers for AI model synthesis.",
+      "",
+    ];
+
+    const publicLlmsPath = path.join(__dirname, "public", "llms.txt");
+    fs.writeFileSync(publicLlmsPath, llmsLines.join("\n"), "utf-8");
+  } catch (err) {
+    console.warn("[Sync] Failed to sync static sitemap / llms:", err);
+  }
+}
+
+// -------------------------------------------------------------
+// SEO Endpoints (robots.txt, sitemap.xml, llms.txt)
+// -------------------------------------------------------------
+app.get("/robots.txt", (_req, res) => {
+  const robotsPath = path.join(__dirname, "public", "robots.txt");
+  if (fs.existsSync(robotsPath)) {
+    res.setHeader("Content-Type", "text/plain; charset=utf-8");
+    return res.sendFile(robotsPath);
+  }
+  const fallback = `# robots.txt for YieldNest.online
+User-agent: *
+Allow: /
+Disallow: /admin
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+
+User-agent: Google-InspectionTool
+Allow: /
+
+Sitemap: https://yieldnest.online/sitemap.xml
+`;
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  return res.send(fallback);
+});
+
+app.get("/sitemap.xml", async (_req, res) => {
+  try {
+    const articles = await getPublishedArticlesList();
+    const xml = buildSitemapXmlString(articles);
     res.setHeader("Content-Type", "application/xml; charset=utf-8");
-    res.setHeader("Cache-Control", "public, max-age=3600, s-maxage=3600");
+    res.setHeader("Cache-Control", "public, max-age=1800, s-maxage=1800");
     return res.status(200).send(xml);
   } catch (err: any) {
     console.error("Failed to generate sitemap.xml:", err);
@@ -946,7 +1181,6 @@ ${articles
   }
 });
 
-// 3. LLMs.txt & LLMs-full.txt
 app.get(["/llms.txt", "/.well-known/llms.txt"], (_req, res) => {
   const llmsPath = path.join(__dirname, "public", "llms.txt");
   if (fs.existsSync(llmsPath)) {
@@ -967,35 +1201,307 @@ app.get("/llms-full.txt", (_req, res) => {
   return res.send("# YieldNest.online - Full Content Archive");
 });
 
+// -------------------------------------------------------------
+// Markdown-to-Semantic-HTML Server-Side Renderer
+// -------------------------------------------------------------
+function escapeHtml(str: string): string {
+  if (!str) return "";
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function renderMarkdownToHtml(markdown: string): string {
+  if (!markdown) return "";
+  let html = markdown
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  // Code blocks
+  html = html.replace(/```([a-z0-9_-]*)\n([\s\S]*?)```/gi, (_m, _lang, code) => {
+    return `<pre style="background:#1c1a17;color:#f3f1e9;padding:1rem;border-radius:0.75rem;overflow-x:auto;font-size:0.8rem;margin:1.25rem 0;"><code>${code.trim()}</code></pre>`;
+  });
+  html = html.replace(/`([^`]+)`/g, `<code style="background:#eae8e0;padding:0.15rem 0.35rem;border-radius:0.25rem;font-size:0.85em;">$1</code>`);
+
+  // Headings
+  html = html.replace(/^### (.*$)/gim, `<h3 style="font-size:1.15rem;font-weight:600;margin-top:1.5rem;margin-bottom:0.5rem;color:#1a1a1a;">$1</h3>`);
+  html = html.replace(/^## (.*$)/gim, `<h2 style="font-size:1.4rem;font-weight:600;margin-top:2rem;margin-bottom:0.75rem;padding-bottom:0.25rem;border-bottom:1px solid #eae8e0;color:#1a1a1a;">$1</h2>`);
+  html = html.replace(/^# (.*$)/gim, `<h1 style="font-size:1.75rem;font-weight:700;margin-top:2rem;margin-bottom:1rem;color:#1a1a1a;">$1</h1>`);
+
+  // Blockquotes
+  html = html.replace(/^> (.*$)/gim, `<blockquote style="border-left:4px solid #d97706;padding:0.5rem 1rem;margin:1rem 0;background:#fffbeb;font-style:italic;color:#451a03;border-radius:0 0.5rem 0.5rem 0;">$1</blockquote>`);
+
+  // Horizontal rules
+  html = html.replace(/^---$/gim, `<hr style="margin:1.75rem 0;border:0;border-top:1px solid #eae8e0;" />`);
+
+  // Bold & Italic
+  html = html.replace(/\*\*([^*]+)\*\*/g, `<strong>$1</strong>`);
+  html = html.replace(/\*([^*]+)\*/g, `<em>$1</em>`);
+
+  // Links
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, `<a href="$2" style="color:#065f46;text-decoration:underline;font-weight:500;">$1</a>`);
+
+  // Tables
+  const lines = html.split("\n");
+  const parsedLines: string[] = [];
+  let inTable = false;
+  let tableHeaderDone = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (line.startsWith("|") && line.endsWith("|")) {
+      const cells = line.slice(1, -1).split("|").map((c) => c.trim());
+      if (cells.every((c) => /^:?-+:?$/.test(c))) {
+        continue;
+      }
+      if (!inTable) {
+        inTable = true;
+        tableHeaderDone = false;
+        parsedLines.push(`<div style="overflow-x:auto;margin:1.5rem 0;"><table style="width:100%;font-size:0.85rem;border-collapse:collapse;border:1px solid #e5e3dc;background:#ffffff;border-radius:0.5rem;">`);
+      }
+      if (!tableHeaderDone) {
+        tableHeaderDone = true;
+        parsedLines.push(`<thead style="background:#f4f2eb;font-weight:600;border-bottom:1px solid #e5e3dc;"><tr>${cells.map((c) => `<th style="padding:0.6rem 0.8rem;text-align:left;">${c}</th>`).join("")}</tr></thead><tbody>`);
+      } else {
+        parsedLines.push(`<tr style="border-bottom:1px solid #f0eee6;">${cells.map((c) => `<td style="padding:0.6rem 0.8rem;">${c}</td>`).join("")}</tr>`);
+      }
+    } else {
+      if (inTable) {
+        inTable = false;
+        parsedLines.push(`</tbody></table></div>`);
+      }
+      parsedLines.push(lines[i]);
+    }
+  }
+  if (inTable) {
+    parsedLines.push(`</tbody></table></div>`);
+  }
+  html = parsedLines.join("\n");
+
+  // Paragraphs & Lists
+  const paragraphs = html.split(/\n\s*\n/);
+  html = paragraphs
+    .map((p) => {
+      const trimmed = p.trim();
+      if (!trimmed) return "";
+      if (
+        trimmed.startsWith("<h") ||
+        trimmed.startsWith("<table") ||
+        trimmed.startsWith("<div") ||
+        trimmed.startsWith("<blockquote") ||
+        trimmed.startsWith("<hr") ||
+        trimmed.startsWith("<pre") ||
+        trimmed.startsWith("<ul") ||
+        trimmed.startsWith("<ol")
+      ) {
+        return trimmed;
+      }
+      if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
+        const items = trimmed.split("\n").filter((l) => l.trim().startsWith("- ") || l.trim().startsWith("* "));
+        return `<ul style="margin:1rem 0;padding-left:1.5rem;line-height:1.7;">${items.map((it) => `<li>${it.replace(/^[-*]\s+/, "")}</li>`).join("")}</ul>`;
+      }
+      return `<p style="margin-bottom:1.15rem;line-height:1.75;color:#2d2a26;">${trimmed.replace(/\n/g, "<br />")}</p>`;
+    })
+    .join("\n");
+
+  return html;
+}
+
+// -------------------------------------------------------------
+// HTML Injection: Article Page (SSR for Googlebot & Users)
+// -------------------------------------------------------------
 function injectArticleMeta(html: string, article: any): string {
   const title = `${escapeHtml(article.title)} | YieldNest.online`;
   const description = escapeHtml(article.excerpt || "Independent mutual fund research on YieldNest.online.");
   const url = `https://yieldnest.online/article/${encodeURIComponent(article.slug)}`;
   const datePublished = new Date(article.publishedAt || article.createdAt || Date.now()).toISOString();
   const dateModified = new Date(article.updatedAt || article.createdAt || Date.now()).toISOString();
+  const catSlug = CATEGORY_NAME_TO_SLUG[article.category] || "fund-comparison";
+  const catUrl = `https://yieldnest.online/category/${catSlug}`;
 
   const schemaJson = JSON.stringify({
     "@context": "https://schema.org",
-    "@type": "FinancialArticle",
-    "headline": article.title,
-    "description": article.excerpt,
-    "url": url,
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": url,
-    },
-    "datePublished": datePublished,
-    "dateModified": dateModified,
-    "author": {
-      "@type": "Organization",
-      "name": "YieldNest Research Desk",
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "YieldNest.online",
-      "url": "https://yieldnest.online",
-    },
-    "articleSection": article.category,
+    "@graph": [
+      {
+        "@type": "FinancialArticle",
+        "@id": `${url}#article`,
+        "isPartOf": {
+          "@type": "WebPage",
+          "@id": url,
+          "url": url,
+          "name": title,
+        },
+        "headline": article.title,
+        "description": article.excerpt,
+        "url": url,
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": url,
+        },
+        "datePublished": datePublished,
+        "dateModified": dateModified,
+        "author": {
+          "@type": "Organization",
+          "name": "YieldNest Research Desk",
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "YieldNest.online",
+          "url": "https://yieldnest.online",
+        },
+        "articleSection": article.category,
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${url}#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://yieldnest.online/",
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": article.category,
+            "item": catUrl,
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": article.title,
+            "item": url,
+          },
+        ],
+      },
+    ],
+  });
+
+  let modified = html;
+  modified = modified.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${url}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${url}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:type["'][\s\S]*?>/i, `<meta property="og:type" content="article" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:title["'][\s\S]*?>/i, `<meta name="twitter:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:description["'][\s\S]*?>/i, `<meta name="twitter:description" content="${description}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  // Pre-render semantic HTML inside #root for instant indexability by Googlebot
+  const renderedContent = renderMarkdownToHtml(article.content || "");
+  const formattedDate = new Date(article.publishedAt || article.createdAt || Date.now()).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  const ssrBody = `<div class="max-w-4xl mx-auto px-4 py-8 font-serif-editorial">
+    <nav aria-label="Breadcrumb" style="font-size:0.75rem;font-family:monospace;margin-bottom:1.5rem;color:#78716c;">
+      <a href="/" style="color:#44403c;text-decoration:underline;">Home</a> / <a href="${catUrl}" style="color:#44403c;text-decoration:underline;">${escapeHtml(article.category)}</a> / <span style="color:#1c1917;">${escapeHtml(article.title)}</span>
+    </nav>
+    <article>
+      <header style="margin-bottom:2rem;border-bottom:1px solid #eae8e0;padding-bottom:1.5rem;">
+        <div style="display:inline-block;padding:0.2rem 0.6rem;background:#eae8e0;color:#1c1917;border-radius:0.25rem;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;">
+          ${escapeHtml(article.category)}
+        </div>
+        <h1 style="font-size:2.2rem;font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:1rem;">
+          ${escapeHtml(article.title)}
+        </h1>
+        <div style="font-size:0.8rem;font-family:monospace;color:#78716c;display:flex;gap:0.75rem;flex-wrap:wrap;align-items:center;">
+          <span>By <strong>YieldNest Research Desk</strong></span>
+          <span>•</span>
+          <time datetime="${datePublished}">${formattedDate}</time>
+          <span>•</span>
+          <span>${article.readTimeMinutes || 6} min read</span>
+          <span>•</span>
+          <span style="color:#059669;font-weight:600;">AMFI Scheme Verified</span>
+        </div>
+        <p style="font-size:1.05rem;line-height:1.6;color:#57534e;margin-top:1rem;font-style:italic;">
+          ${escapeHtml(article.excerpt)}
+        </p>
+      </header>
+      <div class="article-body">
+        ${renderedContent}
+      </div>
+      <footer style="margin-top:3rem;padding:1.5rem;background:#ffffff;border:1px solid #e5e3dc;border-radius:0.75rem;font-size:0.75rem;color:#57534e;line-height:1.6;">
+        <strong style="color:#1c1917;">Statutory Disclosure:</strong> YieldNest.online is an independent quantitative investor education platform and is not SEBI or AMFI registered. Mutual fund investments are subject to market risks; read all scheme related documents carefully before investing.
+      </footer>
+    </article>
+  </div>`;
+
+  modified = modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+  return modified;
+}
+
+// -------------------------------------------------------------
+// HTML Injection: Category Page (SSR for Googlebot & Users)
+// -------------------------------------------------------------
+function injectCategoryMeta(html: string, categorySlug: string, articles: any[]): string {
+  const meta = CATEGORY_META[categorySlug];
+  if (!meta) return html;
+
+  const title = `${meta.title}`;
+  const description = `${meta.description}`;
+  const url = `https://yieldnest.online/category/${categorySlug}`;
+  const categoryArticles = articles.filter(
+    (a) => (CATEGORY_NAME_TO_SLUG[a.category] || "").toLowerCase() === categorySlug.toLowerCase()
+  );
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${url}#collection`,
+        "url": url,
+        "name": title,
+        "description": description,
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": "https://yieldnest.online/#website",
+          "name": "YieldNest.online",
+          "url": "https://yieldnest.online",
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${url}#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://yieldnest.online/",
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": meta.name,
+            "item": url,
+          },
+        ],
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${url}#itemlist`,
+        "name": `${meta.name} Research Articles`,
+        "itemListElement": categoryArticles.map((art, idx) => ({
+          "@type": "ListItem",
+          "position": idx + 1,
+          "name": art.title,
+          "url": `https://yieldnest.online/article/${encodeURIComponent(art.slug)}`,
+        })),
+      },
+    ],
   });
 
   let modified = html;
@@ -1011,6 +1517,171 @@ function injectArticleMeta(html: string, article: any): string {
   const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
   modified = modified.replace("</head>", `${schemaScript}</head>`);
 
+  // Pre-render semantic HTML category listing
+  const ssrBody = `<div class="max-w-5xl mx-auto px-4 py-8 font-serif-editorial">
+    <nav aria-label="Breadcrumb" style="font-size:0.75rem;font-family:monospace;margin-bottom:1.5rem;color:#78716c;">
+      <a href="/" style="color:#44403c;text-decoration:underline;">Home</a> / <span style="color:#1c1917;">${escapeHtml(meta.name)}</span>
+    </nav>
+    <header style="margin-bottom:2.5rem;border-bottom:1px solid #eae8e0;padding-bottom:1.5rem;">
+      <span style="display:inline-block;padding:0.25rem 0.6rem;background:#1a1a1a;color:#ffffff;border-radius:0.25rem;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;">
+        Research Category
+      </span>
+      <h1 style="font-size:2.2rem;font-weight:700;color:#1a1a1a;margin-bottom:0.5rem;">
+        ${escapeHtml(meta.name)} Mutual Fund Audits
+      </h1>
+      <p style="font-size:1rem;color:#57534e;line-height:1.6;max-w-2xl;">
+        ${escapeHtml(meta.description)}
+      </p>
+    </header>
+    <section>
+      <h2 style="font-size:1.1rem;font-family:monospace;font-weight:600;color:#44403c;margin-bottom:1.25rem;text-transform:uppercase;letter-spacing:0.05em;">
+        Published Papers (${categoryArticles.length})
+      </h2>
+      <div style="display:flex;flex-direction:column;gap:1.5rem;">
+        ${categoryArticles
+          .map(
+            (art) => `<article style="padding:1.5rem;background:#fbfaf8;border:1px solid #eae8e0;border-radius:0.75rem;">
+              <h3 style="font-size:1.3rem;font-weight:600;margin-bottom:0.5rem;">
+                <a href="/article/${encodeURIComponent(art.slug)}" style="color:#1a1a1a;text-decoration:underline;">${escapeHtml(art.title)}</a>
+              </h3>
+              <p style="font-size:0.9rem;color:#57534e;line-height:1.6;margin-bottom:0.75rem;">
+                ${escapeHtml(art.excerpt)}
+              </p>
+              <div style="font-size:0.75rem;font-family:monospace;color:#78716c;">
+                <span>Published: ${new Date(art.publishedAt).toLocaleDateString()}</span> • <span>${art.readTimeMinutes || 6} min read</span>
+              </div>
+            </article>`
+          )
+          .join("\n")}
+      </div>
+    </section>
+  </div>`;
+
+  modified = modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+  return modified;
+}
+
+// -------------------------------------------------------------
+// HTML Injection: Homepage (SSR for Googlebot & Users)
+// -------------------------------------------------------------
+function injectHomepageMeta(html: string, articles: any[]): string {
+  const title = "YieldNest.online – Independent Mutual Fund Research & Analytics";
+  const description = "Data-driven research on Indian Mutual Funds. Unbiased fund comparisons, rolling return audits, portfolio overlap checks, and market analytics on YieldNest.online.";
+  const url = "https://yieldnest.online/";
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${url}#website`,
+        "name": "YieldNest.online",
+        "url": url,
+        "description": description,
+        "publisher": {
+          "@type": "Organization",
+          "name": "YieldNest.online",
+          "url": url,
+        },
+        "inLanguage": "en-IN",
+      },
+      {
+        "@type": "Organization",
+        "@id": `${url}#organization`,
+        "name": "YieldNest.online",
+        "url": url,
+        "description": "Independent Quantitative Mutual Fund Research & Analytics Publication",
+      },
+    ],
+  });
+
+  let modified = html;
+  modified = modified.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${url}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${url}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  // Pre-render semantic HTML for homepage
+  const ssrBody = `<div class="max-w-5xl mx-auto px-4 py-8 font-serif-editorial">
+    <header style="text-align:center;margin-bottom:3rem;padding-bottom:2rem;border-bottom:1px solid #eae8e0;">
+      <h1 style="font-size:2.5rem;font-weight:700;color:#1a1a1a;margin-bottom:0.5rem;">
+        YieldNest.online
+      </h1>
+      <p style="font-size:1.1rem;color:#57534e;max-w-2xl;margin:0 auto;line-height:1.6;">
+        ${escapeHtml(description)}
+      </p>
+      <nav aria-label="Research Categories" style="margin-top:1.5rem;display:flex;justify-content:center;gap:0.75rem;flex-wrap:wrap;font-size:0.8rem;font-family:monospace;">
+        <a href="/category/fund-comparison" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">Fund Comparisons</a>
+        <a href="/category/performance-analysis" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">Performance Audits</a>
+        <a href="/category/market-trends" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">Market Trends</a>
+        <a href="/category/category-deep-dive" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">Category Audits</a>
+        <a href="/category/sip-strategies" style="color:#1a1a1a;padding:0.35rem 0.75rem;background:#eae8e0;border-radius:0.5rem;text-decoration:none;">SIP Tactics</a>
+      </nav>
+    </header>
+    <main>
+      <h2 style="font-size:1.2rem;font-family:monospace;font-weight:600;margin-bottom:1.5rem;text-transform:uppercase;letter-spacing:0.05em;color:#292524;">
+        Latest Research Audits
+      </h2>
+      <div style="display:flex;flex-direction:column;gap:1.5rem;">
+        ${articles
+          .map(
+            (art) => `<article style="padding:1.5rem;background:#fbfaf8;border:1px solid #eae8e0;border-radius:0.75rem;">
+              <div style="font-size:0.75rem;font-family:monospace;color:#047857;font-weight:600;margin-bottom:0.35rem;">
+                ${escapeHtml(art.category)}
+              </div>
+              <h3 style="font-size:1.35rem;font-weight:600;margin-bottom:0.5rem;">
+                <a href="/article/${encodeURIComponent(art.slug)}" style="color:#1a1a1a;text-decoration:underline;">${escapeHtml(art.title)}</a>
+              </h3>
+              <p style="font-size:0.95rem;color:#57534e;line-height:1.6;margin-bottom:0.75rem;">
+                ${escapeHtml(art.excerpt)}
+              </p>
+              <div style="font-size:0.75rem;font-family:monospace;color:#78716c;">
+                <span>Published: ${new Date(art.publishedAt).toLocaleDateString()}</span> • <span>${art.readTimeMinutes || 6} min read</span>
+              </div>
+            </article>`
+          )
+          .join("\n")}
+      </div>
+    </main>
+  </div>`;
+
+  modified = modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+  return modified;
+}
+
+// -------------------------------------------------------------
+// HTML Injection: Clean 404 (Soft 404 Prevention for Search Console)
+// -------------------------------------------------------------
+function renderNotFoundHtml(html: string, attemptedUrl: string): string {
+  const title = "404 - Page Not Found | YieldNest.online";
+  const description = "The requested research article or category was not found on YieldNest.online.";
+
+  let modified = html;
+  modified = modified.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+name=["']robots["'][\s\S]*?>/i, `<meta name="robots" content="noindex, follow" />`);
+  if (!modified.includes('content="noindex, follow"')) {
+    modified = modified.replace("</head>", '<meta name="robots" content="noindex, follow" />\n</head>');
+  }
+
+  const ssrBody = `<div class="max-w-xl mx-auto px-4 py-16 text-center font-serif-editorial">
+    <div style="font-family:monospace;font-size:3rem;font-weight:700;color:#dc2626;margin-bottom:0.5rem;">404</div>
+    <h1 style="font-size:1.8rem;font-weight:700;color:#1c1917;margin-bottom:1rem;">Page Not Found</h1>
+    <p style="font-size:1rem;color:#57534e;margin-bottom:1.5rem;line-height:1.6;">
+      The URL <code style="background:#eae8e0;padding:0.2rem 0.4rem;border-radius:0.25rem;font-size:0.85em;">${escapeHtml(attemptedUrl)}</code> could not be found or may have been updated.
+    </p>
+    <div style="display:flex;justify-content:center;gap:1rem;font-size:0.85rem;font-family:monospace;">
+      <a href="/" style="background:#1c1917;color:#ffffff;padding:0.5rem 1rem;border-radius:0.5rem;text-decoration:none;">Return to Homepage</a>
+      <a href="/sitemap.xml" style="background:#eae8e0;color:#1c1917;padding:0.5rem 1rem;border-radius:0.5rem;text-decoration:none;">Browse Sitemap</a>
+    </div>
+  </div>`;
+
+  modified = modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
   return modified;
 }
 
@@ -1018,6 +1689,9 @@ function injectArticleMeta(html: string, article: any): string {
 // Vite Middleware / Static Server setup
 // -------------------------------------------------------------
 async function startServer() {
+  // Sync static sitemap and llms.txt on launch
+  syncStaticSitemapAndLlms().catch((err) => console.warn("Initial sitemap sync error:", err));
+
   if (process.env.NODE_ENV !== "production") {
     const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
@@ -1025,16 +1699,61 @@ async function startServer() {
       appType: "spa",
     });
 
-    // Server-side injected HTML for individual articles in Dev
+    // 1. Homepage SSR
+    app.get("/", async (req, res, next) => {
+      try {
+        const articles = await getPublishedArticlesList();
+        const indexHtmlPath = path.join(__dirname, "index.html");
+        let html = fs.readFileSync(indexHtmlPath, "utf-8");
+        html = injectHomepageMeta(html, articles);
+        html = await vite.transformIndexHtml(req.originalUrl, html);
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.status(200).send(html);
+      } catch (err) {
+        return next(err);
+      }
+    });
+
+    // 2. Category SSR
+    app.get("/category/:categorySlug", async (req, res, next) => {
+      try {
+        const catSlug = req.params.categorySlug.toLowerCase();
+        const indexHtmlPath = path.join(__dirname, "index.html");
+        let html = fs.readFileSync(indexHtmlPath, "utf-8");
+
+        if (!CATEGORY_META[catSlug]) {
+          html = renderNotFoundHtml(html, req.originalUrl);
+          html = await vite.transformIndexHtml(req.originalUrl, html);
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          return res.status(404).send(html);
+        }
+
+        const articles = await getPublishedArticlesList();
+        html = injectCategoryMeta(html, catSlug, articles);
+        html = await vite.transformIndexHtml(req.originalUrl, html);
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.status(200).send(html);
+      } catch (err) {
+        return next(err);
+      }
+    });
+
+    // 3. Article SSR
     app.get("/article/:slug", async (req, res, next) => {
       try {
         const slug = req.params.slug;
         const articles = await getPublishedArticlesList();
         const article = articles.find((a) => a.slug === slug);
-        if (!article) return next();
-
         const indexHtmlPath = path.join(__dirname, "index.html");
         let html = fs.readFileSync(indexHtmlPath, "utf-8");
+
+        if (!article) {
+          html = renderNotFoundHtml(html, req.originalUrl);
+          html = await vite.transformIndexHtml(req.originalUrl, html);
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          return res.status(404).send(html);
+        }
+
         html = injectArticleMeta(html, article);
         html = await vite.transformIndexHtml(req.originalUrl, html);
         res.setHeader("Content-Type", "text/html; charset=utf-8");
@@ -1046,19 +1765,61 @@ async function startServer() {
 
     app.use(vite.middlewares);
   } else {
-    // Server-side injected HTML for individual articles in Production
+    // Production SSR Server
+    const indexPath = path.join(__dirname, "dist", "index.html");
+
+    // 1. Homepage SSR
+    app.get("/", async (_req, res, next) => {
+      try {
+        if (!fs.existsSync(indexPath)) return next();
+        const articles = await getPublishedArticlesList();
+        let html = fs.readFileSync(indexPath, "utf-8");
+        html = injectHomepageMeta(html, articles);
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.status(200).send(html);
+      } catch (err) {
+        return next(err);
+      }
+    });
+
+    // 2. Category SSR
+    app.get("/category/:categorySlug", async (req, res, next) => {
+      try {
+        if (!fs.existsSync(indexPath)) return next();
+        const catSlug = req.params.categorySlug.toLowerCase();
+        let html = fs.readFileSync(indexPath, "utf-8");
+
+        if (!CATEGORY_META[catSlug]) {
+          html = renderNotFoundHtml(html, req.originalUrl);
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          return res.status(404).send(html);
+        }
+
+        const articles = await getPublishedArticlesList();
+        html = injectCategoryMeta(html, catSlug, articles);
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.status(200).send(html);
+      } catch (err) {
+        return next(err);
+      }
+    });
+
+    // 3. Article SSR
     app.get("/article/:slug", async (req, res, next) => {
       try {
+        if (!fs.existsSync(indexPath)) return next();
         const slug = req.params.slug;
         const articles = await getPublishedArticlesList();
         const article = articles.find((a) => a.slug === slug);
-        const indexPath = path.join(__dirname, "dist", "index.html");
-        if (!fs.existsSync(indexPath)) return next();
-
         let html = fs.readFileSync(indexPath, "utf-8");
-        if (article) {
-          html = injectArticleMeta(html, article);
+
+        if (!article) {
+          html = renderNotFoundHtml(html, req.originalUrl);
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          return res.status(404).send(html);
         }
+
+        html = injectArticleMeta(html, article);
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         return res.status(200).send(html);
       } catch (err) {
@@ -1078,3 +1839,4 @@ async function startServer() {
 }
 
 startServer();
+

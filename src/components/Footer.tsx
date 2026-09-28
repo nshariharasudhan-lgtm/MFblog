@@ -17,6 +17,14 @@ export function Footer({ settings, onSelectCategory }: FooterProps) {
     "SIP Strategies",
   ];
 
+  const categoryMap: Record<ArticleCategory, string> = {
+    "Fund Comparison": "fund-comparison",
+    "Performance Analysis": "performance-analysis",
+    "Market Trends": "market-trends",
+    "Category Deep-Dive": "category-deep-dive",
+    "SIP Strategies": "sip-strategies",
+  };
+
   const siteName = settings.siteName || "YieldNest.online";
 
   return (
@@ -44,46 +52,49 @@ export function Footer({ settings, onSelectCategory }: FooterProps) {
             <ul className="space-y-1.5">
               {categories.map((cat) => (
                 <li key={cat}>
-                  <button
-                    onClick={() => {
-                      onSelectCategory(cat);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
+                  <a
+                    href={`/category/${categoryMap[cat]}`}
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                        e.preventDefault();
+                        onSelectCategory(cat);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
                     }}
-                    className="text-stone-600 hover:text-black transition-colors"
+                    className="text-stone-600 hover:text-black transition-colors no-underline block"
                   >
                     {cat}
-                  </button>
+                  </a>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* About Publication */}
+          {/* About Publication & Crawl Endpoints */}
           <div className="md:col-span-3 space-y-3">
             <div className="font-semibold text-stone-900 font-mono-data uppercase tracking-wider text-[11px]">
-              Editorial Scope
+              Editorial & Indexing
             </div>
             <ul className="space-y-1.5 text-stone-600 text-xs">
               <li>Educational Mutual Fund Research</li>
               <li>Factual Rolling Return Calculations</li>
               <li>Portfolio Expense &amp; TER Analysis</li>
-              <li>Public AMFI Data Visualizations</li>
+              <li className="pt-2 border-t border-stone-300/60 flex items-center gap-2 font-mono-data text-[11px]">
+                <a href="/sitemap.xml" className="text-stone-600 hover:text-black underline" target="_blank" rel="noopener noreferrer">Sitemap.xml</a>
+                <span>•</span>
+                <a href="/robots.txt" className="text-stone-600 hover:text-black underline" target="_blank" rel="noopener noreferrer">Robots.txt</a>
+                <span>•</span>
+                <a href="/llms.txt" className="text-stone-600 hover:text-black underline" target="_blank" rel="noopener noreferrer">LLMs.txt</a>
+              </li>
             </ul>
           </div>
         </div>
 
-        {/* Prominent Statutory & Non-Registration Disclaimer */}
-        <div className="p-5 rounded-2xl bg-white border border-[#E3DFC2] text-xs text-stone-700 leading-relaxed space-y-2 shadow-xs">
-          <div className="flex items-center gap-2 font-semibold text-stone-900 font-mono-data uppercase tracking-wider text-[11px]">
-            <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>Statutory Disclosure &amp; Non-Registration Notice</span>
-          </div>
-          <p>
-            <strong>Important Regulatory Notice:</strong> We are <strong>not AMFI or SEBI registered analysts, investment advisers, or mutual fund distributors</strong>. 
-            The analyses, comparisons, metrics, and articles published on {siteName} (yieldnest.online) are strictly formulated for <strong>educational and informational awareness purposes only</strong>. None of the content on this platform should be construed as investment advice, a financial recommendation, or a solicitation to buy, sell, or switch any mutual fund units or financial securities.
-          </p>
-          <p className="text-[11px] text-stone-500">
-            Mutual fund investments are subject to market risks; read all scheme related documents carefully before investing. Historical NAV performance and rolling compound annual growth rates (CAGR) are provided for factual illustration and educational study and do not guarantee future returns. Please consult an independent, qualified SEBI-registered Investment Adviser (RIA) or financial planner before making any investment decisions.
+        {/* Concise Statutory Disclosure (1-2 lines) */}
+        <div className="p-3 sm:py-2.5 sm:px-4 rounded-xl bg-white border border-[#EAE8E0] text-[11px] text-stone-600 leading-snug flex items-start sm:items-center gap-2 shadow-xs">
+          <ShieldAlert className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
+          <p className="m-0">
+            <strong className="text-stone-800">Statutory Notice:</strong> Not SEBI or AMFI registered. Content on {siteName} is strictly for quantitative investor education &amp; research, not financial advice. Mutual fund investments are subject to market risks; read all scheme related documents carefully.
           </p>
         </div>
 

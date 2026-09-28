@@ -20,7 +20,7 @@ interface PostManagerProps {
   posts: ArticlePost[];
   onEditPost: (post: ArticlePost) => void;
   onNewPost: () => void;
-  onDeletePost: (id: string) => void;
+  onDeletePost: (id: string, slug?: string) => Promise<void> | void;
   onViewPost: (post: ArticlePost) => void;
   onToggleStatus: (post: ArticlePost, newStatus: ArticlePost["status"]) => void;
 }
@@ -36,6 +36,7 @@ export function PostManager({
   const [filter, setFilter] = useState<"all" | "published" | "draft" | "scheduled">("all");
   const [search, setSearch] = useState("");
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const filteredPosts = posts.filter((p) => {
     if (filter !== "all" && p.status !== filter) return false;
@@ -51,7 +52,7 @@ export function PostManager({
   });
 
   const handleCopyUrl = (slug: string, id: string) => {
-    const url = `${window.location.origin}/article/${slug}`;
+    const url = `https://yieldnest.online/article/${slug}`;
     navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -216,9 +217,17 @@ export function PostManager({
                           <Edit3 className="w-3.5 h-3.5" />
                         </button>
                         <button
-                          onClick={() => onDeletePost(post.id)}
-                          className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                          title="Delete"
+                          onClick={async () => {
+                            setDeletingId(post.id);
+                            try {
+                              await onDeletePost(post.id, post.slug);
+                            } finally {
+                              setDeletingId(null);
+                            }
+                          }}
+                          disabled={deletingId === post.id}
+                          className="p-1.5 text-stone-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-50"
+                          title="Delete article"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
                         </button>

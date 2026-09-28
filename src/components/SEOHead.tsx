@@ -86,8 +86,11 @@ export function resolveSocialImageUrl(imageUrl?: string, fallbackOrigin?: string
 }
 
 export function SEOHead({ post, settings, customTitle, customDescription, urlPath = "" }: SEOHeadProps) {
-  const origin = typeof window !== "undefined" ? window.location.origin : "https://yieldnest.online";
-  const fullUrl = `${origin}${urlPath || (typeof window !== "undefined" ? window.location.pathname : "")}`;
+  // Canonical origin is strictly the primary domain for Google Search Console
+  const canonicalOrigin = "https://yieldnest.online";
+  const currentPath = urlPath || (typeof window !== "undefined" ? window.location.pathname : "/");
+  const cleanPath = currentPath.length > 1 ? currentPath.replace(/\/+$/, "") : currentPath;
+  const fullUrl = `${canonicalOrigin}${cleanPath}`;
 
   // 1. Automated Title Generation
   const rawTitle = post
@@ -101,10 +104,10 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
     : (customDescription || settings.description);
 
   // 3. Image check (do not create or force images for articles)
-  const socialImage = post?.coverImage ? resolveSocialImageUrl(post.coverImage, origin) : null;
+  const socialImage = post?.coverImage ? resolveSocialImageUrl(post.coverImage, canonicalOrigin) : null;
 
   // 4. Author & Attribution (Strictly institutional desk, no individual names)
-  const authorName = "Research Desk";
+  const authorName = "YieldNest Research Desk";
 
   useEffect(() => {
     // A. Update Document Title
@@ -258,36 +261,46 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
           "@type": "Organization",
           "name": "YieldNest Research Desk",
         },
-        "publisher": {
+        publisher: {
           "@type": "Organization",
           "name": settings.siteName,
-          "url": origin,
+          "url": canonicalOrigin,
         },
-        "mainEntityOfPage": {
+        mainEntityOfPage: {
           "@type": "WebPage",
           "@id": fullUrl,
         },
-        "articleSection": post.category,
-        "keywords": [
+        articleSection: post.category,
+        keywords: [
           post.category,
           post.seoMetadata?.primaryKeyword,
           ...(post.seoMetadata?.secondaryKeywords || []),
           ...(post.tags || []),
         ].filter(Boolean).join(", "),
-        "about": {
+        about: {
           "@type": "Thing",
-          "name": post.category,
+          name: post.category,
         },
       };
 
       if (socialImage) {
         articleNode["image"] = {
           "@type": "ImageObject",
-          "url": socialImage,
-          "width": 1200,
-          "height": 630,
+          url: socialImage,
+          width: 1200,
+          height: 630,
         };
       }
+
+      const categorySlugMap: Record<string, string> = {
+        "Fund Comparison": "fund-comparison",
+        "Performance Analysis": "performance-analysis",
+        "Market Trends": "market-trends",
+        "Category Deep-Dive": "category-deep-dive",
+        "SIP Strategies": "sip-strategies",
+      };
+      const catSlug = categorySlugMap[post.category] || "fund-comparison";
+      const categoryCanonicalUrl = `${canonicalOrigin}/category/${catSlug}`;
 
       const articleSchema = {
         "@context": "https://schema.org",
@@ -296,24 +309,24 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
           {
             "@type": "BreadcrumbList",
             "@id": `${fullUrl}#breadcrumb`,
-            "itemListElement": [
+            itemListElement: [
               {
                 "@type": "ListItem",
-                "position": 1,
-                "name": "Home",
-                "item": origin,
+                position: 1,
+                name: "Home",
+                item: canonicalOrigin,
               },
               {
                 "@type": "ListItem",
-                "position": 2,
-                "name": post.category,
-                "item": `${origin}/?category=${encodeURIComponent(post.category)}`,
+                position: 2,
+                name: post.category,
+                item: categoryCanonicalUrl,
               },
               {
                 "@type": "ListItem",
-                "position": 3,
-                "name": post.title,
-                "item": fullUrl,
+                position: 3,
+                name: post.title,
+                item: fullUrl,
               },
             ],
           },
@@ -326,16 +339,16 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
         "@graph": [
           {
             "@type": "WebSite",
-            "@id": `${origin}#website`,
-            "name": settings.siteName,
-            "url": origin,
-            "description": settings.description,
-            "publisher": {
+            "@id": `${canonicalOrigin}#website`,
+            name: settings.siteName,
+            url: canonicalOrigin,
+            description: settings.description,
+            publisher: {
               "@type": "Organization",
-              "name": settings.siteName,
-              "url": origin,
+              name: settings.siteName,
+              url: canonicalOrigin,
             },
-            "inLanguage": "en-IN",
+            inLanguage: "en-IN",
           },
         ],
       };

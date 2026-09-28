@@ -21,13 +21,13 @@ export function Navbar({
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const categories: Array<{ id: ArticleCategory | "all"; label: string }> = [
-    { id: "all", label: "All Research" },
-    { id: "Fund Comparison", label: "Fund Comparisons" },
-    { id: "Performance Analysis", label: "Performance Audits" },
-    { id: "Market Trends", label: "Market Trends" },
-    { id: "Category Deep-Dive", label: "Category Audits" },
-    { id: "SIP Strategies", label: "SIP Tactics" },
+  const categories: Array<{ id: ArticleCategory | "all"; label: string; href: string }> = [
+    { id: "all", label: "All Research", href: "/" },
+    { id: "Fund Comparison", label: "Fund Comparisons", href: "/category/fund-comparison" },
+    { id: "Performance Analysis", label: "Performance Audits", href: "/category/performance-analysis" },
+    { id: "Market Trends", label: "Market Trends", href: "/category/market-trends" },
+    { id: "Category Deep-Dive", label: "Category Audits", href: "/category/category-deep-dive" },
+    { id: "SIP Strategies", label: "SIP Tactics", href: "/category/sip-strategies" },
   ];
 
   return (
@@ -99,17 +99,23 @@ export function Navbar({
       <nav className="w-full border-t border-[#EAE8E0] bg-[#FAF9F5] py-2 px-4 hidden sm:block">
         <div className="max-w-6xl mx-auto flex items-center justify-center gap-1 sm:gap-2 text-xs whitespace-nowrap overflow-x-auto no-scrollbar">
           {categories.map((cat) => (
-            <button
+            <a
               key={cat.id}
-              onClick={() => onSelectCategory(cat.id)}
-              className={`px-3.5 py-1.5 rounded-md transition-all font-medium text-xs tracking-wide ${
+              href={cat.href}
+              onClick={(e) => {
+                if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                  e.preventDefault();
+                  onSelectCategory(cat.id);
+                }
+              }}
+              className={`px-3.5 py-1.5 rounded-md transition-all font-medium text-xs tracking-wide no-underline ${
                 currentCategory === cat.id
                   ? "bg-[#1A1A1A] text-white shadow-xs font-semibold"
                   : "text-[#5A574E] hover:text-[#1A1A1A] hover:bg-[#EFECE3]"
               }`}
             >
               {cat.label}
-            </button>
+            </a>
           ))}
         </div>
       </nav>
@@ -122,20 +128,24 @@ export function Navbar({
           </div>
           <div className="grid grid-cols-2 gap-1.5">
             {categories.map((cat) => (
-              <button
+              <a
                 key={cat.id}
-                onClick={() => {
-                  onSelectCategory(cat.id);
-                  setMobileMenuOpen(false);
+                href={cat.href}
+                onClick={(e) => {
+                  if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                    e.preventDefault();
+                    onSelectCategory(cat.id);
+                    setMobileMenuOpen(false);
+                  }
                 }}
-                className={`text-center px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                className={`text-center px-3 py-2 rounded-lg text-xs font-medium transition-colors no-underline ${
                   currentCategory === cat.id
                     ? "bg-[#1A1A1A] text-white"
                     : "bg-white border border-stone-200 text-[#4A4740] hover:bg-[#EFECE3]"
                 }`}
               >
                 {cat.label}
-              </button>
+              </a>
             ))}
           </div>
         </div>

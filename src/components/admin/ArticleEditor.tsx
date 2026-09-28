@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { ArticleCategory, ArticlePost, AMFISchemeData, KeywordResearchResult, SiteSettings } from "../../types";
 import { cleanSocialExcerpt } from "../SEOHead";
+import { sanitizeSlug, validateSlug, getCanonicalArticleUrl } from "../../lib/slugUtils";
 
 interface ArticleEditorProps {
   post?: ArticlePost | null;
@@ -81,17 +82,11 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
     setContent((prev) => prev ? `${prev}\n\n${markdownLink}` : markdownLink);
   };
 
-  // Auto-generate slug from title if empty
+  // Auto-generate clean, SEO-optimized slug from title if not custom-locked
   const handleTitleChange = (val: string) => {
     setTitle(val);
-    if (!post && (!slug || slug === title.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-"))) {
-      setSlug(
-        val
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/--+/g, "-")
-      );
+    if (!post && (!slug || slug === sanitizeSlug(title))) {
+      setSlug(sanitizeSlug(val));
     }
     if (!metaTitle) {
       setMetaTitle(val.slice(0, 60));
@@ -243,8 +238,31 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
       return;
     }
 
+    const cleanedSlug = sanitizeSlug(slug || title);
+    if (!cleanedSlug) {
+      alert("Please provide a valid title or URL slug for Google Search Console indexing.");
+      return;
+    }
+
+    const otherSlugs = allPosts
+      .filter((p) => !post || p.id !== post.id)
+      .map((p) => p.slug);
+
+    const validation = validateSlug(cleanedSlug, otherSlugs, post?.id);
+    if (!validation.valid) {
+      if (validation.suggestedSlug && confirm(`${validation.message}\n\nWould you like to use the suggested unique slug "/article/${validation.suggestedSlug}" instead?`)) {
+        setSlug(validation.suggestedSlug);
+        setIsSaving(false);
+        return;
+      } else {
+        alert(validation.message);
+        setIsSaving(false);
+        return;
+      }
+    }
+
     setIsSaving(true);
-    const cleanedSlug = slug.trim() || title.toLowerCase().replace(/[^\w\s-]/g, "").replace(/\s+/g, "-");
+    setSlug(cleanedSlug);
 
     const postPayload: ArticlePost = {
       id: post?.id || "post-" + Date.now(),
@@ -467,17 +485,31 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
             {/* Slug & Category */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-stone-700 mb-1 font-mono-data">
-                  Google Search Console Slug *
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-semibold text-stone-700 font-mono-data">
+                    Google Search Console Slug *
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setSlug(sanitizeSlug(slug || title))}
+                    className="text-[10px] text-stone-500 hover:text-stone-900 underline font-mono-data"
+                  >
+                    Auto-Sanitize Slug
+                  </button>
+                </div>
                 <div className="flex items-center rounded-xl border border-stone-200 bg-[#FAF9F5] px-3 py-2 text-xs">
                   <span className="text-stone-400 font-mono-data">/article/</span>
                   <input
                     type="text"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
+                    onBlur={() => setSlug(sanitizeSlug(slug))}
+                    placeholder="clean-article-slug"
                     className="w-full bg-transparent font-mono-data text-stone-900 focus:outline-none ml-1"
                   />
+                </div>
+                <div className="text-[10px] font-mono-data text-stone-500 mt-1 truncate">
+                  Canonical: <span className="text-stone-700">https://yieldnest.online/article/{sanitizeSlug(slug || "slug")}</span>
                 </div>
               </div>
 

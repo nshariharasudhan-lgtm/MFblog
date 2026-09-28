@@ -463,18 +463,11 @@ export function ArticleReader({
           {renderMarkdown(post.content)}
         </div>
 
-        {/* Prominent Statutory & Non-Registration Regulatory Notice */}
-        <div className="my-10 p-5 sm:p-6 rounded-2xl bg-[#F8F7F2] border border-[#E3DFC2] text-xs text-stone-700 leading-relaxed space-y-2 shadow-xs">
-          <div className="flex items-center gap-2 font-mono-data font-semibold text-stone-900 uppercase tracking-wider text-[11px]">
-            <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
-            <span>Statutory Disclosure & Non-Registration Notice</span>
-          </div>
-          <p>
-            <strong>Important Notice:</strong> We are <strong>not AMFI or SEBI registered analysts, investment advisers, or mutual fund distributors</strong>. 
-            All insights, comparative data, rolling return metrics, and scheme evaluations published on {settings.siteName} are strictly formulated for <strong>educational, research, and investor awareness purposes only</strong>.
-          </p>
-          <p className="text-stone-500 text-[11px] leading-relaxed">
-            This publication does not constitute personalized financial planning, investment advice, or a recommendation to buy, sell, or switch any financial instruments or mutual fund units. Mutual fund investments are subject to market risks; read all scheme-related documents (SID, KIM) carefully before investing. Historical performance does not guarantee future results. Please consult an independent, qualified SEBI-registered Investment Adviser (RIA) or financial planner before making any investment decisions.
+        {/* Concise Statutory Disclosure (1-2 lines) */}
+        <div className="my-8 p-3 sm:py-2.5 sm:px-4 rounded-xl bg-[#FAF9F5] border border-[#EAE8E0] text-[11px] text-stone-600 leading-snug flex items-start sm:items-center gap-2 shadow-xs">
+          <ShieldAlert className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
+          <p className="m-0">
+            <strong className="text-stone-800">Statutory Notice:</strong> Not SEBI or AMFI registered. Published insights are strictly for quantitative investor education &amp; research, not investment advice. Mutual fund investments are subject to market risks; read all scheme related documents carefully.
           </p>
         </div>
 
