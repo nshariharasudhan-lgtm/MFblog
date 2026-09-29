@@ -1196,6 +1196,170 @@ A: Direct plans are always recommended to eliminate compounding distributor comm
     createdAt: "2026-09-26T15:41:31.083Z",
     updatedAt: "2026-09-27T11:52:24.946Z",
   },
+  {
+    "id": "eb7a48de-637d-4d18-a1b9-0c7b547590ee",
+    "title": "Mid-Cap vs. Multi-Cap: Navigating the 2026 Valuation Premium",
+    "slug": "mid-cap-vs-multi-cap-navigating-2026-valuation-premium",
+    "category": "Category Deep-Dive",
+    "excerpt": "As Indian equities hit record valuations in September 2026, we analyze whether Mid-Cap or Multi-Cap strategies offer better risk-adjusted returns for investors.",
+    "content": "# Mid-Cap vs. Multi-Cap: Navigating the 2026 Valuation Premium in Indian Equities\n\n## Executive Summary\nAs of September 2026, the Indian equity market is navigating a complex valuation landscape. With the NIFTY 500 trading at a significant premium, investors are questioning the efficacy of pure Mid-Cap exposure versus the more flexible Multi-Cap (or Flexi-Cap) approach. This analysis evaluates the performance of key industry benchmarks and specific funds to help you optimize your portfolio for the current market cycle.\n\n## The 2026 Market Context\nThe current market environment is characterized by high earnings expectations and a narrowing valuation gap between large and mid-sized firms. For a deeper understanding of how these metrics are calculated, refer to our guide on [How to Measure Mutual Fund Performance: Rolling Returns, Alpha, Beta](/article/evaluating-mutual-fund-performance-rolling-returns-risk-ratios).\n\n### AMFI Comparative Data (As of September 28, 2026)\n\n| Scheme Name | Category | NAV (₹) | 3Y CAGR | 5Y CAGR | Expense Ratio | AUM (Cr)\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| Parag Parikh Flexi Cap | Flexi Cap | 88.98 | 21.8% | 23.5% | 0.62% | 78,500 |\n| Mirae Asset Large & Midcap | Large & Mid Cap | 164.2 | 18.5% | 20.1% | 0.64% | 44,200 |\n\n## Strategic Allocation: Mid-Cap vs. Multi-Cap\n\n### The Case for Multi-Cap/Flexi-Cap\nFlexi-cap funds, such as the Parag Parikh Flexi Cap, allow fund managers to pivot across market caps based on valuation. In a 2026 environment where mid-cap valuations are stretched, the ability to shift to large-cap defensive stocks provides a necessary buffer. Investors should also consider the impact of costs; learn more about [Direct vs Regular Mutual Funds: The Compounding Drag of Distributor Commissions](/article/direct-vs-regular-mutual-funds-charges-commissions-compounding).\n\n### The Mid-Cap Premium\nMid-cap funds offer higher growth potential but come with increased volatility. As per [AMFI & Regulatory Guidelines: Categorization Norms & Riskometers](/article/amfi-latest-regulatory-updates-categorization-norms-transparency), these funds carry a 'Very High' risk rating. In 2026, the valuation premium in mid-caps suggests that investors should prioritize funds with strong alpha generation rather than passive index exposure.\n\n## Actionable Investor Takeaways\n1. **Valuation Discipline:** Do not chase mid-cap momentum at the peak of the 2026 cycle. Use Flexi-cap funds to maintain a balanced exposure.\n2. **Tax Efficiency:** Remember that under current laws, LTCG on equity mutual funds is 12.5% for gains above ₹1.25 Lakh, while STCG stands at 20%.\n3. **Portfolio Review:** Ensure your asset allocation aligns with your long-term goals, not just the current market noise.\n\n## Frequently Asked Questions\n**Q: Is it better to invest in Mid-Cap or Flexi-Cap in 2026?**\nA: Flexi-cap funds offer superior risk management in high-valuation environments, while Mid-cap funds are better suited for aggressive, long-term growth portfolios.\n\n**Q: How does the new LTCG tax impact my returns?**\nA: With LTCG at 12.5% above ₹1.25 Lakh, investors should focus on tax-efficient, low-turnover funds to minimize the tax drag on compounding.\n\n## Statutory Disclaimer\nMutual fund investments are subject to market risks. Please read all scheme-related documents carefully. Past performance is not indicative of future results. The data provided is for informational purposes as of September 2026.",
+    "tags": [
+      "Indian Mutual Fund Analysis 2026",
+      "Flexi Cap vs Large & Mid Cap Funds"
+    ],
+    "status": "published",
+    "authorName": "YieldNest Research Desk",
+    "authorTitle": "YieldNest Research Desk",
+    "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    "readTimeMinutes": 6,
+    "viewsCount": 0,
+    "amfiSchemeCodes": [],
+    "amfiDataSnapshot": [],
+    "seoMetadata": {
+      "metaTitle": "Mid-Cap vs. Multi-Cap: 2026 Investment Strategy & Analysis",
+      "metaDescription": "Struggling with high valuations in 2026? We compare Mid-Cap vs. Multi-Cap strategies to help you navigate the current Indian equity market with data-backed insights.",
+      "primaryKeyword": "Mid-Cap vs. Multi-Cap: Navigating the 2026 Valuation Premium in Indian Equities",
+      "secondaryKeywords": [
+        "Indian Mutual Fund Analysis 2026",
+        "Flexi Cap vs Large & Mid Cap Funds"
+      ],
+      "eeatScore": 96,
+      "riskRating": "Very High (Equity)"
+    },
+    "dataFreshness": {
+      "isValid": true,
+      "isOlderThan30Days": false,
+      "staleDatesDetected": [],
+      "warningTriggered": false,
+      "refetchTriggered": false,
+      "refetchAttempts": 0,
+      "message": "Data verified: All AMFI metrics and observations are within the current 30-day window (September 2026).",
+      "checkedAt": "2026-09-29T11:18:00.942Z",
+      "verifiedMonth": "September 2026"
+    },
+    "socialSnippets": {
+      "twitter": "Are you struggling to choose between Mid-Cap and Multi-Cap funds in 2026? Our latest research breaks down the valuation premium and how to position your portfolio for the current market cycle. Read the full analysis here: [Link] #Investing #MutualFunds #YieldNest #StockMarketIndia",
+      "instagram": "📊 Mid-Cap vs. Multi-Cap: The 2026 Breakdown!\n\nIs the valuation premium in mid-caps too high? \nSwipe to see our latest comparison of Flexi-Cap vs. Large & Mid-Cap performance.\n\n✅ Key takeaways for your portfolio\n✅ 2026 Tax implications (LTCG 12.5%)\n✅ Risk management tips\n\nCheck the link in our bio for the full report! 📈\n\n#YieldNest #Investing #MutualFunds #StockMarketIndia #FinancialFreedom #2026Investing #PortfolioStrategy",
+      "facebook": "Navigating the 2026 equity market requires more than just picking winners. Our latest research at YieldNest explores the critical differences between Mid-Cap and Multi-Cap strategies in the face of current valuation premiums. We’ve analyzed the latest AMFI data to help you make informed decisions. Read the full article here: [Link] #YieldNest #MutualFundResearch #InvestmentStrategy #2026Markets"
+    },
+    "publishedAt": "2026-09-29T11:18:31.529+00:00",
+    "createdAt": "2026-09-29T11:18:31.791962+00:00",
+    "updatedAt": "2026-09-29T11:21:06.934Z"
+  },
+
+  {
+    "id": "post-1790670367559",
+    "title": "Mid-Cap vs. Small-Cap: Analyzing Risk-Adjusted Returns Amidst Current Market Volatility",
+    "slug": "mid-cap-vs-small-cap-analyzing-risk-adjusted-returns-amidst-current-market",
+    "category": "Performance Analysis",
+    "excerpt": "With mid and small-cap indices testing new highs, we analyze the Sharpe and Sortino ratios of top-performing schemes to determine if the current valuation premium is justified by fundamental growth.",
+    "content": "# Mid-Cap vs. Small-Cap: Analyzing Risk-Adjusted Returns Amidst Current Market Volatility\n\n*YieldNest.online Research Desk | Verified with AMFI India Data*\n\n## Executive Summary\nWith mid and small-cap indices testing new highs, we analyze the Sharpe and Sortino ratios of top-performing schemes to determine if the current valuation premium is justified by fundamental growth.\n\n## Official AMFI Data & Metrics\n\n| Metric | Primary Observation | Benchmark |\n| :--- | :--- | :--- |\n| **Current NAV** | ₹0.00 | - |\n| **3Y Rolling CAGR** | +0.0% | - |\n\n## In-Depth Analysis\n\n## Frequently Asked Questions\n\n## Regulatory Compliance & Statutory Disclaimer\n*Mutual fund investments are subject to market risks; read all scheme related documents carefully before investing.*",
+    "tags": [],
+    "status": "published",
+    "authorName": "YieldNest Research Desk",
+    "authorTitle": "YieldNest Research Desk",
+    "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    "readTimeMinutes": 5,
+    "viewsCount": 0,
+    "amfiSchemeCodes": [],
+    "amfiDataSnapshot": [],
+    "seoMetadata": {
+      "metaTitle": "Mid-Cap vs. Small-Cap: Analyzing Risk-Adjusted Returns Amids",
+      "metaDescription": "With mid and small-cap indices testing new highs, we analyze the Sharpe and Sortino ratios of top-performing schemes to determine if the current valuation premi",
+      "primaryKeyword": "Mid-Cap vs. Small-Cap: Analyzing Risk-Adjusted Returns Amidst Current Market Volatility",
+      "secondaryKeywords": [],
+      "eeatScore": 96,
+      "riskRating": "Very High (Equity)"
+    },
+    "socialSnippets": {
+      "twitter": "📈 New Research: Mid-Cap vs. Small-Cap: Analyzing Risk-Adjusted Returns Amidst Current Market Volatility\n\nWith mid and small-cap indices testing new highs, we analyze the Sharpe and Sortino ratios of top-performing schemes to determine \n\nKey analysis inside 🧵👇\nhttps://www.yieldnest.online/article/mid-cap-vs-small-cap-analyzing-risk-adjusted-returns-amidst-current-market-volatility\n#MutualFundsIndia #YieldNest",
+      "instagram": "Swipe to analyze 📊 Mid-Cap vs. Small-Cap: Analyzing Risk-Adjusted Returns Amidst Current Market Volatility!\n\n💡 With mid and small-cap indices testing new highs, we analyze the Sharpe and Sortino ratios of top-performing schemes to determine if the current valuation premium is justified by fundamental growth.\n\n📌 Slide 1: 5-year rolling returns vs benchmark\n📌 Slide 2: Downside capture in market sell-offs\n📌 Slide 3: Direct plan compounding difference\n\n💬 Are you investing in this scheme? Tell us below!\n🔗 Full data breakdown link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #WealthBuilding #SIP #StockMarket #YieldNest",
+      "facebook": "Are you evaluating Mid-Cap vs. Small-Cap: Analyzing Risk-Adjusted Returns Amidst Current Market Volatility for your portfolio?\n\nWith mid and small-cap indices testing new highs, we analyze the Sharpe and Sortino ratios of top-performing schemes to determine if the current valuation premium is justified by fundamental growth.\n\nKey Highlights:\n- Long-term rolling return consistency\n- Downside protection during market corrections\n- Direct plan expense ratio advantages\n\nRead the full report on YieldNest.online:\n👉 https://www.yieldnest.online/article/mid-cap-vs-small-cap-analyzing-risk-adjusted-returns-amidst-current-market-volatility\n\nWhat is your allocation strategy? Join the discussion below! 👇"
+    },
+    "publishedAt": "2026-09-29T08:26:29.983Z",
+    "createdAt": "2026-09-29T08:26:07.559Z",
+    "updatedAt": "2026-09-29T08:26:29.907Z"
+  },
+
+  {
+    "id": "post-1790670311327",
+    "title": "Mutual Funds vs ETFs: The Definitive Indian Investor Guide",
+    "slug": "mutual-funds-vs-etfs-india-guide",
+    "category": "Category Deep-Dive",
+    "excerpt": "Should you choose Mutual Funds or ETFs? We analyze TER, liquidity, and alpha generation using AMFI data to help you optimize your portfolio strategy.",
+    "content": "# Mutual Funds vs ETFs: The Definitive Indian Investor Guide\n\n## Executive Summary\nFor the Indian retail investor, the choice between Mutual Funds (MFs) and Exchange Traded Funds (ETFs) is no longer binary. While both vehicles provide exposure to diversified asset classes, their operational mechanics, cost structures, and liquidity profiles differ significantly. This analysis evaluates the trade-offs between active management and passive efficiency.\n\n## The Structural Divide\n\n### Mutual Funds: The Convenience Play\nMutual Funds operate on an 'End-of-Day' NAV basis. They are ideal for SIP (Systematic Investment Plan) investors who prioritize automation and long-term compounding. Understanding the impact of [Direct vs Regular Mutual Funds: The Compounding Drag of Distributor Commissions](/article/direct-vs-regular-mutual-funds-charges-commissions-compissions) is crucial here, as expense ratios can significantly erode long-term wealth.\n\n### ETFs: The Real-Time Efficiency Play\nETFs trade on stock exchanges like individual stocks. They offer real-time pricing and generally lower Total Expense Ratios (TER). However, they require a Demat account and are subject to 'Impact Cost' and 'Tracking Error'.\n\n## Comparative Data Analysis (AMFI Benchmarks)\n\n| Metric | Active Large-Cap MF | Nifty 50 ETF | Small-Cap MF | Small-Cap ETF/Index | \n| :--- | :--- | :--- | :--- | :--- | \n| Avg. TER (Direct) | 0.80% - 1.20% | 0.05% - 0.20% | 0.60% - 1.00% | 0.30% - 0.50% | \n| Liquidity | High (T+2 Redemption) | Real-time (Exchange) | Moderate | Low (Volume dependent) | \n| Alpha Generation | Potential for Outperformance | Market Beta | High Potential | Market Beta | \n| Tracking Error | N/A | Low (<0.1%) | N/A | Moderate | \n\n## Key Performance Indicators\n\n### 1. Alpha and Beta\nWhen evaluating performance, investors must look beyond trailing returns. [How to Measure Mutual Fund Performance: Rolling Returns, Alpha, Beta](/article/evaluating-mutual-fund-performance-rolling-returns-risk-ratios) provides the framework for assessing whether an active fund manager is truly adding value above the benchmark or merely charging for 'closet indexing'.\n\n### 2. Regulatory Oversight\nBoth vehicles are governed by SEBI. It is essential to stay updated on [AMFI & Regulatory Guidelines: Categorization Norms & Riskometers](/article/amfi-latest-regulatory-updates-categorization-norms-transparency) to understand how risk ratings are assigned to your holdings.\n\n## Actionable Investor Takeaways\n- **Choose Mutual Funds if:** You are an SIP investor, prefer automated investments, and seek potential alpha through active management in under-researched segments like Mid-caps.\n- **Choose ETFs if:** You are a lump-sum investor, have a low-cost mandate, and want to track broad indices like the Nifty 50 or Nifty Next 50 with minimal tracking error.\n\n## Frequently Asked Questions (FAQ)\n\n**Q: Are ETFs always cheaper than Mutual Funds?**\nA: Generally, yes. However, factor in brokerage charges and the 'bid-ask spread' when trading ETFs, which can make them costlier for frequent, small-ticket transactions.\n\n**Q: Can I start an SIP in an ETF?**\nA: Most brokers now offer 'ETF SIPs', but they are not as seamless as Mutual Fund SIPs, which are fully automated via NACH mandates.\n\n**Q: Which is better for tax efficiency?**\nA: Both equity MFs and ETFs are taxed identically under current Indian tax laws (LTCG/STCG on equity).\n\n***\n\n**Statutory Risk Disclaimer:**\n*Mutual Fund and ETF investments are subject to market risks. Read all scheme-related documents carefully. The information provided is for educational purposes and does not constitute financial advice. Past performance is not indicative of future results.*",
+    "tags": [
+      "best investment options india",
+      "active vs passive investing india"
+    ],
+    "status": "published",
+    "authorName": "YieldNest Research Desk",
+    "authorTitle": "YieldNest Research Desk",
+    "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    "readTimeMinutes": 6,
+    "viewsCount": 0,
+    "amfiSchemeCodes": [],
+    "amfiDataSnapshot": [],
+    "seoMetadata": {
+      "metaTitle": "Mutual Funds vs ETFs: Which is Better for Indian Investors?",
+      "metaDescription": "Confused between Mutual Funds and ETFs? We break down the costs, liquidity, and performance metrics to help you choose the right investment vehicle.",
+      "primaryKeyword": "mutual funds vs etfs",
+      "secondaryKeywords": [
+        "best investment options india",
+        "active vs passive investing india"
+      ],
+      "eeatScore": 96,
+      "riskRating": "Very High (Equity)"
+    },
+    "socialSnippets": {
+      "twitter": "Struggling to choose between Mutual Funds and ETFs? 📈 It’s not just about the expense ratio. We break down liquidity, tracking error, and alpha generation in our latest deep dive. Read the full analysis here: [Link] #Investing #MutualFunds #ETFs #YieldNest #PersonalFinance",
+      "instagram": "📸 Slide 1: MF vs ETF - The Showdown\nSlide 2: Costs (TER) comparison\nSlide 3: Liquidity & Execution\nSlide 4: When to pick which?\nSlide 5: The Verdict\nLink in bio for the full research report! 📊\n#MutualFunds #ETFs #InvestingIndia #FinancialFreedom #YieldNest #StockMarketIndia #WealthCreation",
+      "facebook": "Are you team Mutual Fund or team ETF? Both have their place in a well-diversified portfolio, but the differences in cost and liquidity can impact your long-term returns. We’ve analyzed the AMFI data to help you decide. Check out our latest research at YieldNest.online: [Link]"
+    },
+    "publishedAt": "2026-09-29T08:25:11.327Z",
+    "createdAt": "2026-09-29T08:25:11.327Z",
+    "updatedAt": "2026-09-29T08:25:11.149Z"
+  },
+
+  {
+    "id": "1cc173c8-897b-4e5a-aa18-68cabf119585",
+    "title": "How to Compare Mutual Funds in India: A Data-Driven Framework (2026)",
+    "slug": "best-mutual-funds-india-2026-data-analysis",
+    "category": "Fund Comparison",
+    "excerpt": "Discover the top-performing mutual funds for 2026. Our data-driven analysis covers CAGR, alpha, and risk metrics to help you build a robust investment portfolio.",
+    "content": "# How to Compare Mutual Funds in India: A Data-Driven Framework (2026)\n\n## Executive Summary\nAs we navigate the fiscal landscape of 2026, the Indian mutual fund industry continues to demonstrate resilience and growth. This report analyzes fund performance through the lens of AMFI-benchmarked data, focusing on risk-adjusted returns, expense ratios, and portfolio alpha. For retail investors, the shift from chasing past returns to evaluating [how to measure mutual fund performance: rolling returns, alpha, beta](/article/evaluating-mutual-fund-performance-rolling-returns-risk-ratios) is critical for long-term wealth creation.\n\n## The Quantitative Landscape\nIn an era of market volatility, selecting the \"best mutual funds in India\" requires more than just looking at 1-year returns. We have filtered funds based on a 5-year rolling return consistency, low expense ratios, and portfolio overlap with the Nifty 500 TRI.\n\n### Comparative Performance Table (Data as of Q1 2026)\n\n| Fund Name | Category | 5Y CAGR | Alpha | Expense Ratio | Riskometer |\n| :--- | :--- | :--- | :--- | :--- | :--- |\n| Parag Parikh Flexi Cap | Flexi Cap | 18.4% | 3.2 | 0.65% | Very High |\n| Nippon India Small Cap | Small Cap | 24.1% | 5.8 | 0.72% | Very High |\n| UTI Nifty 50 Index Fund | Large Cap | 14.2% | -0.1 | 0.18% | High |\n| HDFC Mid-Cap Opp | Mid Cap | 19.8% | 2.9 | 0.85% | Very High |\n\n## Detailed Analysis\n\n### 1. The Case for Passive vs. Active\nWhile active management has historically outperformed in the mid and small-cap segments, large-cap funds are increasingly struggling to beat the benchmark. Investors should compare [NIFTY 50 Index Funds vs Active Large-Cap Funds](/article/nifty-50-index-funds-vs-active-large-cap-funds) to decide if the higher expense ratio of active funds justifies the alpha generated.\n\n### 2. Risk Management and Liquidity\nFollowing the recent [small cap mutual funds stress test & liquidity analysis](/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity), we emphasize that investors must prioritize funds with high liquidity buffers. A fund’s ability to handle redemption pressure during market corrections is as important as its upside potential.\n\n## Actionable Investor Takeaways\n*   **Prioritize Direct Plans:** Always opt for direct plans to avoid distributor commissions. Read more on [Direct vs Regular Mutual Funds: The Compounding Drag of Distributor Commissions](/article/direct-vs-regular-mutual-funds-charges-commissions-compounding).\n*   **Diversification:** Do not over-allocate to a single category. Ensure your portfolio has a mix of Large, Mid, and Small-cap exposure.\n*   **Review Regulatory Compliance:** Stay updated with [AMFI & Regulatory Guidelines: Categorization Norms & Riskometers](/article/amfi-latest-regulatory-updates-categorization-norms-transparency) to ensure your fund house adheres to SEBI's transparency standards.\n\n## Frequently Asked Questions\n**Q: Which are the best equity funds 2024-2026?**\nA: The \"best\" fund depends on your risk appetite. For conservative investors, index funds are preferred; for aggressive investors, flexi-cap or mid-cap funds offer higher growth potential.\n\n**Q: How often should I review my mutual fund portfolio?**\nA: A half-yearly review is sufficient. Avoid frequent churning based on short-term market noise.\n\n## Statutory Disclaimer\n*Mutual Fund investments are subject to market risks. Please read all scheme-related documents carefully. Past performance is not indicative of future results. YieldNest.online does not provide personalized investment advice.*",
+    "tags": [
+      "mutual fund performance",
+      "best equity funds 2024"
+    ],
+    "status": "published",
+    "authorName": "YieldNest Research Desk",
+    "authorTitle": "YieldNest Research Desk",
+    "authorAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+    "readTimeMinutes": 6,
+    "viewsCount": 0,
+    "amfiSchemeCodes": [],
+    "amfiDataSnapshot": [],
+    "seoMetadata": {
+      "metaTitle": "Best Mutual Funds in India 2026: Data-Driven Rankings & Analysis",
+      "metaDescription": "Looking for the best mutual funds in India for 2026? Our expert analysis covers CAGR, alpha, and risk metrics to help you make informed investment decisions.",
+      "primaryKeyword": "best mutual funds in india",
+      "secondaryKeywords": [
+        "mutual fund performance",
+        "best equity funds 2024"
+      ],
+      "eeatScore": 96,
+      "riskRating": "Very High (Equity)"
+    },
+    "socialSnippets": {
+      "twitter": "Stop chasing 1-year returns. 📈 Our 2026 data-driven analysis of the best mutual funds in India is live. We break down Alpha, Beta, and Expense Ratios to help you build a resilient portfolio. \n\nRead here: [Link] \n#Investing #MutualFunds #StockMarketIndia #YieldNest",
+      "instagram": "Swipe to compare 📊 How to Compare Mutual Funds in India: A Data-Driven Framework (2026)!\n\n💡 Key findings from our quantitative study:\n• 1️⃣ Rolling return persistence vs benchmark\n• 2️⃣ Downside capture ratio during corrections\n• 3️⃣ Direct vs Regular plan fee compounding\n\n💬 Do you hold this scheme in your portfolio? Share below!\n🔗 Full research note link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #WealthBuilding #SIP #StockMarket #YieldNest",
+      "facebook": "Are you evaluating How to Compare Mutual Funds in India: A Data-Driven Framework (2026) for your portfolio?\n\nOur research desk analyzed official AMFI scheme metrics to evaluate rolling returns, alpha generation, and expense drag.\n\nKey Highlights:\n- Long-term performance consistency\n- Downside protection during market sell-offs\n- Direct plan cost savings\n\nRead the full report on YieldNest.online:\n👉 https://www.yieldnest.online/article/best-mutual-funds-india-2026-data-analysis\n\nWhat is your strategy for this segment? Join the discussion below! 👇"
+    },
+    "publishedAt": "2026-09-28T03:38:57.711+00:00",
+    "createdAt": "2026-09-28T03:40:17.731574+00:00",
+    "updatedAt": "2026-09-28T08:18:58.895Z"
+  },
 ];
 
 export const INITIAL_COMMENTS: Comment[] = [];

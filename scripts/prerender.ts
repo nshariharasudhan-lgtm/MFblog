@@ -158,7 +158,7 @@ function loadAllArticles(): any[] {
 
   // 1. Load initial seed articles
   for (const art of INITIAL_ARTICLES) {
-    if (art.status === "published") {
+    if (art && art.status === "published") {
       articlesMap.set(art.slug, art);
     }
   }
@@ -170,7 +170,7 @@ function loadAllArticles(): any[] {
       const customs = JSON.parse(fs.readFileSync(customPostsFile, "utf-8"));
       if (Array.isArray(customs)) {
         for (const art of customs) {
-          if (art.status === "published") {
+          if (art && art.status === "published") {
             articlesMap.set(art.slug, art);
           }
         }
