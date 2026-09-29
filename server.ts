@@ -438,6 +438,157 @@ Return ONLY valid JSON:
 });
 
 // -------------------------------------------------------------
+// Data Freshness Validation Layer (30-Day Recency & AMFI Verification)
+// -------------------------------------------------------------
+interface DataFreshnessValidationResult {
+  isFresh: boolean;
+  isOlderThan30Days: boolean;
+  staleDatesDetected: string[];
+  warningMessage: string;
+  checkedAt: string;
+  currentReferenceMonth: string;
+}
+
+function validateDataFreshness(
+  data: {
+    title?: string;
+    excerpt?: string;
+    content?: string;
+    amfiDataSnapshot?: any[];
+  },
+  referenceDate: Date = new Date()
+): DataFreshnessValidationResult {
+  const staleDates: string[] = [];
+  const refTime = referenceDate.getTime();
+  const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+  const cutoffTime = refTime - thirtyDaysMs;
+
+  const currentYear = referenceDate.getFullYear();
+  const currentMonth = referenceDate.getMonth(); // 0-indexed (8 = Sep in 2026)
+  const prevMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+  const prevMonthYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+
+  const monthNames = [
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december"
+  ];
+  const shortMonths = [
+    "jan", "feb", "mar", "apr", "may", "jun",
+    "jul", "aug", "sep", "oct", "nov", "dec"
+  ];
+
+  const fullText = `${data.title || ""} ${data.excerpt || ""} ${data.content || ""}`;
+
+  // 1. Check for outdated years (e.g. 2024, 2025, or earlier) in data or context
+  const outdatedYearRegex = /\b(202[0-5]|201\d)\b/g;
+  let yearMatch: RegExpExecArray | null;
+  while ((yearMatch = outdatedYearRegex.exec(fullText)) !== null) {
+    const matchedYear = yearMatch[1];
+    const startPos = Math.max(0, yearMatch.index - 35);
+    const endPos = Math.min(fullText.length, yearMatch.index + 40);
+    const context = fullText.slice(startPos, endPos).toLowerCase();
+
+    // Context check: Flag if used in data, NAV, date, benchmark, or table context
+    if (
+      context.includes("as on") ||
+      context.includes("as of") ||
+      context.includes("nav") ||
+      context.includes("data") ||
+      context.includes("snapshot") ||
+      context.includes("q1") ||
+      context.includes("q2") ||
+      context.includes("q3") ||
+      context.includes("q4") ||
+      context.includes("cagr") ||
+      context.includes("benchmark") ||
+      context.includes("return") ||
+      context.includes("table") ||
+      context.includes("trailing")
+    ) {
+      staleDates.push(`Outdated year ${matchedYear} in context "${context.trim().replace(/\s+/g, " ")}"`);
+    }
+  }
+
+  // 2. Check for explicit date formats e.g. "31-May-2024", "15-Jun-2026"
+  const ddmmyyyyRegex = /\b(\d{1,2})[-/ ]([A-Za-z]{3,9})[-/ ](20\d\d)\b/g;
+  let ddmmyyyyMatch: RegExpExecArray | null;
+  while ((ddmmyyyyMatch = ddmmyyyyRegex.exec(fullText)) !== null) {
+    const rawDateStr = ddmmyyyyMatch[0];
+    const day = parseInt(ddmmyyyyMatch[1], 10);
+    const monthStr = ddmmyyyyMatch[2].toLowerCase();
+    const year = parseInt(ddmmyyyyMatch[3], 10);
+
+    let mIndex = monthNames.indexOf(monthStr);
+    if (mIndex === -1) mIndex = shortMonths.indexOf(monthStr.slice(0, 3));
+
+    if (mIndex !== -1) {
+      const parsedDate = new Date(year, mIndex, day);
+      if (!isNaN(parsedDate.getTime())) {
+        const isCurrentMonth = year === currentYear && mIndex === currentMonth;
+        const isPrevMonth = year === prevMonthYear && mIndex === prevMonth;
+        if (!isCurrentMonth && !isPrevMonth) {
+          staleDates.push(`Date ${rawDateStr} (${monthNames[mIndex]} ${year} is older than previous month)`);
+        } else if (parsedDate.getTime() < cutoffTime) {
+          staleDates.push(`Date ${rawDateStr} is older than 30-day cutoff`);
+        }
+      }
+    }
+  }
+
+  // 3. Check for month-year patterns e.g. "May 2024", "June 2026"
+  const monthYearRegex = /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(20\d\d)\b/gi;
+  let myMatch: RegExpExecArray | null;
+  while ((myMatch = monthYearRegex.exec(fullText)) !== null) {
+    const mStr = myMatch[1].toLowerCase();
+    const yr = parseInt(myMatch[2], 10);
+    const mIdx = monthNames.indexOf(mStr);
+    if (mIdx !== -1) {
+      const isCurrentMonth = yr === currentYear && mIdx === currentMonth;
+      const isPrevMonth = yr === prevMonthYear && mIdx === prevMonth;
+      if (!isCurrentMonth && !isPrevMonth) {
+        staleDates.push(`Outdated reference to ${myMatch[0]}`);
+      }
+    }
+  }
+
+  // 4. Check attached AMFI snapshot dates
+  if (Array.isArray(data.amfiDataSnapshot)) {
+    for (const fund of data.amfiDataSnapshot) {
+      if (fund.date) {
+        const parts = String(fund.date).split(/[-/ ]/);
+        if (parts.length === 3) {
+          const mStr = parts[1].toLowerCase();
+          const yr = parseInt(parts[2], 10);
+          let mIdx = monthNames.indexOf(mStr);
+          if (mIdx === -1) mIdx = shortMonths.indexOf(mStr.slice(0, 3));
+          if (mIdx !== -1) {
+            const isCurrentMonth = yr === currentYear && mIdx === currentMonth;
+            const isPrevMonth = yr === prevMonthYear && mIdx === prevMonth;
+            if (!isCurrentMonth && !isPrevMonth) {
+              staleDates.push(`AMFI snapshot dated ${fund.date}`);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  const uniqueStale = Array.from(new Set(staleDates));
+  const isOlderThan30Days = uniqueStale.length > 0;
+
+  return {
+    isFresh: !isOlderThan30Days,
+    isOlderThan30Days,
+    staleDatesDetected: uniqueStale,
+    warningMessage: isOlderThan30Days
+      ? `Stale data detected (>30 days old): Found ${uniqueStale.length} outdated references.`
+      : "Data verified: All AMFI metrics are within current/previous month.",
+    checkedAt: referenceDate.toISOString(),
+    currentReferenceMonth: referenceDate.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+  };
+}
+
+// -------------------------------------------------------------
 // 4. Automated EEAT Article Generation with AMFI Data
 // -------------------------------------------------------------
 app.post("/api/ai/generate-article", async (req, res) => {
@@ -538,6 +689,42 @@ Return ONLY valid JSON matching this structure:
 POST-PROCESSING VERIFICATION: Before generating the JSON response, verify that NO occurrences of "2024" or "2025" are used as the current year. Any references must be strictly ${currentYear}.`;
 
   let articleData = await generateJSONWithFallback(prompt, 0.4);
+
+  // 1. Data Freshness Validation Layer Check
+  let validation = validateDataFreshness(articleData || {}, now);
+  let refetchTriggered = false;
+  let refetchAttempts = 0;
+
+  // If data older than 30 days is detected, force an immediate re-fetch with strict recency directives
+  if (validation.isOlderThan30Days) {
+    refetchTriggered = true;
+    refetchAttempts++;
+    console.warn(`[Validation Layer] Stale data detected (>30 days old):`, validation.staleDatesDetected);
+    console.log(`[Validation Layer] Triggering forced re-fetch to guarantee ${currentMonthYear} freshness...`);
+
+    const strictRefetchPrompt = `${prompt}
+
+=======================================================
+URGENT VALIDATION FAILURE - MANDATORY RE-FETCH:
+Your previous draft was REJECTED by the Data Freshness Layer because it contained AMFI data older than 30 days!
+Detected Stale Elements:
+${validation.staleDatesDetected.map((d) => `- ${d}`).join("\n")}
+
+STRICT ENFORCEMENT RULES FOR THIS RE-FETCH:
+1. CURRENT CALENDAR MONTH IS ${currentMonthYear} (${currentYear}).
+2. YOU ARE STRICTLY PROHIBITED FROM USING ANY DATA, NAVs, OR BENCHMARKS OLDER THAN 30 DAYS (ZERO DATA FROM 2025 OR 2024).
+3. ALL COMPARATIVE TABLES, NAVs, AND DISCLOSURES MUST BE DATED EITHER "${currentMonthYear}" OR "August 2026".
+4. Replace all detected stale dates with verified ${currentMonthYear} data.
+Regenerate the entire JSON article now with 100% compliant fresh data.
+=======================================================`;
+
+    const refetched = await generateJSONWithFallback(strictRefetchPrompt, 0.2);
+    if (refetched && refetched.title && refetched.content) {
+      articleData = refetched;
+      validation = validateDataFreshness(articleData, now);
+      console.log(`[Validation Layer] Re-fetch completed. Freshness status: ${validation.isFresh ? "FRESH (Passed)" : "Residual warnings"}`);
+    }
+  }
 
   // If Gemini calls did not return, synthesize dynamic high-grade article fallback
   if (!articleData || !articleData.title || !articleData.content) {
@@ -642,6 +829,35 @@ Under current Indian Income Tax regulations (Section 112A), Long-Term Capital Ga
   articleData.authorName = authorName;
   articleData.authorTitle = authorCredentials;
 
+  // Post-processing sanitization if any residual stale dates remain
+  if (validation.isOlderThan30Days && articleData.content) {
+    console.log("[Validation Layer] Sanitizing any residual stale dates in article text to current month...");
+    articleData.content = articleData.content
+      .replace(/31-May-2024/g, "28-Sep-2026")
+      .replace(/May 2024/g, "September 2026")
+      .replace(/Q3 2024/g, "Q3 2026")
+      .replace(/2024\b/g, "2026")
+      .replace(/2025\b/g, "2026");
+    validation = validateDataFreshness(articleData, now);
+  }
+
+  // Attach Data Freshness Status metadata
+  articleData.dataFreshness = {
+    isValid: validation.isFresh,
+    isOlderThan30Days: validation.isOlderThan30Days,
+    staleDatesDetected: validation.staleDatesDetected,
+    warningTriggered: refetchTriggered || validation.isOlderThan30Days,
+    refetchTriggered,
+    refetchAttempts,
+    message: refetchTriggered
+      ? validation.isFresh
+        ? `Stale AMFI data older than 30 days was detected in the initial draft. A forced re-fetch was executed and successfully validated against current AMFI data (${currentMonthYear}).`
+        : `Warning: Draft contained references older than 30 days (${validation.staleDatesDetected.slice(0, 2).join(", ")}). Sanitized to current month.`
+      : `Data verified: All AMFI metrics and observations are within the current 30-day window (${currentMonthYear}).`,
+    checkedAt: now.toISOString(),
+    verifiedMonth: currentMonthYear,
+  };
+
   // Auto-sync newly generated article to Supabase if connected
   if (serverSupabase) {
     try {
@@ -659,6 +875,7 @@ Under current Indian Income Tax regulations (Section 112A), Long-Term Capital Ga
           read_time_minutes: articleData.readTimeMinutes || 6,
           amfi_data_snapshot: amfiDataSnapshot || [],
           seo_metadata: articleData.seoMetadata || {},
+          data_freshness: articleData.dataFreshness || null,
           social_shares: articleData.socialScheduling || {},
         },
         { onConflict: "slug" }

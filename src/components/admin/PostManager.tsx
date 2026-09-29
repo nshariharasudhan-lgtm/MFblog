@@ -184,14 +184,36 @@ export function PostManager({
                     </td>
 
                     <td className="py-3.5 px-3">
-                      {post.amfiDataSnapshot && post.amfiDataSnapshot.length > 0 ? (
-                        <span className="text-[11px] font-mono text-emerald-700 font-medium flex items-center gap-1">
-                          <BarChart2 className="w-3 h-3" />
-                          {post.amfiDataSnapshot.length} Schemes
-                        </span>
-                      ) : (
-                        <span className="text-[11px] text-stone-400 font-mono">None</span>
-                      )}
+                      <div className="space-y-1">
+                        {post.amfiDataSnapshot && post.amfiDataSnapshot.length > 0 ? (
+                          <span className="text-[11px] font-mono text-emerald-700 font-medium flex items-center gap-1">
+                            <BarChart2 className="w-3 h-3" />
+                            {post.amfiDataSnapshot.length} Schemes
+                          </span>
+                        ) : (
+                          <span className="text-[11px] text-stone-400 font-mono">Curated Index</span>
+                        )}
+
+                        {post.dataFreshness?.isOlderThan30Days ? (
+                          <span
+                            className="inline-block text-[10px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded"
+                            title={post.dataFreshness.message}
+                          >
+                            ⚠️ &gt;30d Stale
+                          </span>
+                        ) : post.dataFreshness?.refetchTriggered ? (
+                          <span
+                            className="inline-block text-[10px] font-mono text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded"
+                            title="Auto-refetched during AI creation to meet 30-day freshness rule"
+                          >
+                            ⚡ Auto-Refetched
+                          </span>
+                        ) : (
+                          <span className="inline-block text-[10px] font-mono text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.2 rounded">
+                            ✓ Current Month
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     <td className="py-3.5 px-3 font-mono-data text-stone-600">

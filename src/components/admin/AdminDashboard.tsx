@@ -15,6 +15,8 @@ import {
   Users,
   LogOut,
   Key,
+  ShieldCheck,
+  AlertTriangle,
 } from "lucide-react";
 import { ArticlePost, Comment, ContentSuggestion, SiteSettings, AdminUser } from "../../types";
 import { PostManager } from "./PostManager";
@@ -227,6 +229,40 @@ export function AdminDashboard({
               Investor Inquiries
             </div>
           </div>
+        </div>
+
+        {/* Data Freshness Validation Layer Status Strip */}
+        <div className="bg-white rounded-xl border border-[#EAE8E0] p-3.5 sm:p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+          <div className="flex items-start sm:items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-semibold text-stone-900 font-mono-data">
+                  Data Freshness Layer: Active
+                </span>
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 font-semibold px-2 py-0.5 rounded-full border border-emerald-200">
+                  30-Day Window Enforced
+                </span>
+                <span className="text-[10px] text-stone-500 font-mono-data">
+                  Current Reference: September 2026
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-500 font-sans mt-0.5">
+                All AI article creation is strictly validated against current & previous month AMFI data. Stale data triggers automated re-fetches.
+              </p>
+            </div>
+          </div>
+
+          {posts.filter((p) => p.dataFreshness?.isOlderThan30Days).length > 0 && (
+            <div className="bg-amber-50 border border-amber-300 text-amber-900 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 font-medium shrink-0">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>
+                {posts.filter((p) => p.dataFreshness?.isOlderThan30Days).length} article(s) flagged with stale data
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Tab Navigation */}

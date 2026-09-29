@@ -20,8 +20,9 @@ import {
   Link2,
   Copy,
   Check,
+  AlertTriangle,
 } from "lucide-react";
-import { ArticleCategory, ArticlePost, AMFISchemeData, KeywordResearchResult, SiteSettings } from "../../types";
+import { ArticleCategory, ArticlePost, AMFISchemeData, KeywordResearchResult, SiteSettings, DataFreshnessStatus } from "../../types";
 import { cleanSocialExcerpt } from "../SEOHead";
 import { sanitizeSlug, validateSlug, getCanonicalArticleUrl } from "../../lib/slugUtils";
 
@@ -75,6 +76,11 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
   );
   const [copiedSocialKey, setCopiedSocialKey] = useState<string | null>(null);
   const [isGeneratingSocial, setIsGeneratingSocial] = useState(false);
+
+  // AMFI Data Freshness Validation Layer State
+  const [dataFreshnessStatus, setDataFreshnessStatus] = useState<DataFreshnessStatus | null>(
+    post?.dataFreshness || null
+  );
 
   const handleCopySnippet = (key: string, text: string) => {
     if (!text) return;
@@ -208,8 +214,8 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
     }
   };
 
-  // AI Generate Article
-  const handleGenerateAIArticle = async (overrideTopic?: string) => {
+  // AI Generate Article with Data Freshness Validation Layer
+  const handleGenerateAIArticle = async (overrideTopic?: string, isForcedRecencyRetry = false) => {
     const targetTopic = (overrideTopic || aiTopicInput || title).trim();
     if (!targetTopic) {
       alert("Please enter a research topic or fund name (e.g. 'Parag Parikh vs Mirae Asset' or 'Best Mid Cap Funds for SIP').");
@@ -217,7 +223,11 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
     }
 
     setIsGeneratingArticle(true);
-    setGenerationNotice("Researching AMFI database & drafting comprehensive article... please wait.");
+    setGenerationNotice(
+      isForcedRecencyRetry
+        ? "⚠️ Stale data (>30 days) detected. Executing forced re-fetch with fresh AMFI data..."
+        : "Researching AMFI database & drafting comprehensive article... please wait."
+    );
     try {
       const res = await fetch("/api/ai/generate-article", {
         method: "POST",
@@ -254,8 +264,27 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
           if (data.socialScheduling.instagram) setInstagramCopy(data.socialScheduling.instagram);
           if (data.socialScheduling.facebook) setFacebookCopy(data.socialScheduling.facebook);
         }
-        setGenerationNotice("Research article successfully generated and populated into the editor!");
-        setTimeout(() => setGenerationNotice(null), 4000);
+
+        // Data Freshness Validation Layer Check
+        if (data.dataFreshness) {
+          setDataFreshnessStatus(data.dataFreshness);
+
+          // If the server reported data is still older than 30 days and we haven't retried yet, force re-fetch
+          if (data.dataFreshness.isOlderThan30Days && !isForcedRecencyRetry) {
+            console.warn("[Validation Layer] Data older than 30 days detected by client. Forcing automatic re-fetch...");
+            setTimeout(() => {
+              handleGenerateAIArticle(targetTopic, true);
+            }, 600);
+            return;
+          }
+        }
+
+        setGenerationNotice(
+          data.dataFreshness?.refetchTriggered
+            ? "Research draft generated! Stale data (>30 days) was detected and automatically re-fetched with current September 2026 AMFI data."
+            : "Research article successfully generated and verified fresh with official AMFI data!"
+        );
+        setTimeout(() => setGenerationNotice(null), 5000);
       } else {
         const errData = await res.json().catch(() => ({}));
         alert(`Generation notice: ${errData.error || "Please verify topic and retry."}`);
@@ -268,6 +297,10 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
     } finally {
       setIsGeneratingArticle(false);
     }
+  };
+
+  const handleForceFreshRefetch = () => {
+    handleGenerateAIArticle(aiTopicInput || title, true);
   };
 
   // Add Secondary Keyword
@@ -343,6 +376,7 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
         eeatScore: 96,
         riskRating: "Very High (Equity)",
       },
+      dataFreshness: dataFreshnessStatus || post?.dataFreshness,
       socialSnippets: {
         twitter:
           twitterCopy.trim() ||
@@ -422,6 +456,70 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
         <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 animate-fade-in font-medium">
           <CheckCircle2 className="w-4 h-4 text-emerald-600" />
           <span>Article saved and indexed successfully!</span>
+        </div>
+      )}
+
+      {/* AMFI Data Freshness Validation Layer Alert Banner */}
+      {dataFreshnessStatus && (
+        <div
+          className={`p-4 rounded-2xl border transition-all animate-fade-in ${
+            dataFreshnessStatus.isOlderThan30Days || dataFreshnessStatus.warningTriggered
+              ? "bg-amber-50 border-amber-300 text-amber-950"
+              : "bg-emerald-50/80 border-emerald-200 text-emerald-950"
+          }`}
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-start gap-2.5">
+              {dataFreshnessStatus.isOlderThan30Days || dataFreshnessStatus.warningTriggered ? (
+                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+              ) : (
+                <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+              )}
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="font-semibold text-xs tracking-wide uppercase font-mono-data">
+                    Data Freshness Guard (30-Day Recency)
+                  </span>
+                  <span
+                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                      dataFreshnessStatus.isOlderThan30Days
+                        ? "bg-amber-100 text-amber-900 border-amber-300"
+                        : dataFreshnessStatus.refetchTriggered
+                        ? "bg-amber-100 text-amber-900 border-amber-300"
+                        : "bg-emerald-100 text-emerald-800 border-emerald-300"
+                    }`}
+                  >
+                    {dataFreshnessStatus.isOlderThan30Days
+                      ? "⚠️ Stale Data Warning (>30 Days)"
+                      : dataFreshnessStatus.refetchTriggered
+                      ? "⚡ Stale Data Detected & Auto-Refetched"
+                      : "✓ 30-Day Recency Verified (Current Month)"}
+                  </span>
+                </div>
+                <p className="text-xs text-stone-700 leading-relaxed font-sans">
+                  {dataFreshnessStatus.message}
+                </p>
+                {dataFreshnessStatus.staleDatesDetected && dataFreshnessStatus.staleDatesDetected.length > 0 && (
+                  <div className="text-[11px] font-mono-data text-amber-900 bg-amber-100/70 px-2.5 py-1 rounded-lg border border-amber-200 mt-1">
+                    <span className="font-semibold">Detected Stale Elements:</span>{" "}
+                    {dataFreshnessStatus.staleDatesDetected.join(", ")}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+              <button
+                onClick={handleForceFreshRefetch}
+                disabled={isGeneratingArticle}
+                className="bg-white hover:bg-stone-50 border border-stone-300 text-stone-800 text-xs px-3 py-1.5 rounded-xl font-medium flex items-center gap-1.5 transition-colors shadow-xs disabled:opacity-50"
+                title="Force complete re-fetch with verified September 2026 AMFI data"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isGeneratingArticle ? "animate-spin" : ""}`} />
+                <span>Force Fresh Re-Fetch</span>
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

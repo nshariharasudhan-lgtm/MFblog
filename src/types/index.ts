@@ -39,6 +39,18 @@ export interface SocialSnippet {
   status?: "draft" | "scheduled" | "published";
 }
 
+export interface DataFreshnessStatus {
+  isValid: boolean;
+  isOlderThan30Days: boolean;
+  staleDatesDetected?: string[];
+  warningTriggered?: boolean;
+  refetchTriggered?: boolean;
+  refetchAttempts?: number;
+  message?: string;
+  checkedAt?: string;
+  verifiedMonth?: string;
+}
+
 export interface ArticlePost {
   id: string;
   slug: string;
@@ -57,6 +69,7 @@ export interface ArticlePost {
   amfiSchemeCodes?: string[];
   amfiDataSnapshot?: AMFISchemeData[];
   seoMetadata: SEOMetadata;
+  dataFreshness?: DataFreshnessStatus;
   socialSnippets?: {
     twitter?: string;
     instagram?: string;
