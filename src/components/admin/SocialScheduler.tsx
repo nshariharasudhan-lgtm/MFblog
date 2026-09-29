@@ -57,7 +57,7 @@ export function SocialScheduler({ posts = [] }: SocialSchedulerProps) {
       } else if (currentPlatform === "facebook" && target.socialSnippets.facebook) {
         setCopyText(target.socialSnippets.facebook);
       } else {
-        setCopyText(`New Research: ${target.title}\n\n${target.excerpt}\n\nRead more at https://yieldnest.online/article/${target.slug}`);
+        setCopyText(`New Research: ${target.title}\n\n${target.excerpt}\n\nRead more at https://www.yieldnest.online/article/${target.slug}`);
       }
     }
   };

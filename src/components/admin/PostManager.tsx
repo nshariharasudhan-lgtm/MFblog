@@ -57,7 +57,7 @@ export function PostManager({
   });
 
   const handleCopyUrl = (slug: string, id: string) => {
-    const url = `https://yieldnest.online/article/${slug}`;
+    const url = `https://www.yieldnest.online/article/${slug}`;
     navigator.clipboard.writeText(url);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);

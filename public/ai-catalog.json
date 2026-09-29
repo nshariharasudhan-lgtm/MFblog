@@ -1,0 +1,32 @@
+{
+  "$schema": "https://ard.dev/schema/v0.9/ai-catalog.json",
+  "name": "YieldNest.online",
+  "description": "Independent Quantitative Mutual Fund Research & Analytics Platform for Indian Equity & Debt Schemes.",
+  "version": "1.0.0",
+  "publisher": {
+    "name": "YieldNest.online",
+    "url": "https://www.yieldnest.online",
+    "email": "research@yieldnest.online"
+  },
+  "documentation": {
+    "llms": "https://www.yieldnest.online/llms.txt",
+    "llmsFull": "https://www.yieldnest.online/llms-full.txt",
+    "sitemap": "https://www.yieldnest.online/sitemap.xml"
+  },
+  "capabilities": [
+    {
+      "id": "mutual-fund-research",
+      "type": "dataset",
+      "name": "Mutual Fund Research & Analytics",
+      "description": "Quantitative analysis, rolling returns, downside capture ratios, expense ratio impact, and AMFI India liquidity stress tests.",
+      "url": "https://www.yieldnest.online"
+    },
+    {
+      "id": "amfi-data-snapshot",
+      "type": "api",
+      "name": "AMFI Mutual Fund Analytics API",
+      "description": "Scheme categorization, rolling return benchmarks, and NAV comparisons.",
+      "url": "https://www.yieldnest.online/api/posts"
+    }
+  ]
+}

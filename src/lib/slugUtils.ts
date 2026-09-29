@@ -111,9 +111,9 @@ export function validateSlug(slug: string, existingSlugs: string[] = [], current
 
 export function getCanonicalArticleUrl(slug: string): string {
   const clean = sanitizeSlug(slug);
-  return `https://yieldnest.online/article/${clean}`;
+  return `https://www.yieldnest.online/article/${clean}`;
 }
 
 export function getCanonicalCategoryUrl(categorySlug: string): string {
-  return `https://yieldnest.online/category/${categorySlug}`;
+  return `https://www.yieldnest.online/category/${categorySlug}`;
 }

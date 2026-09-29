@@ -224,6 +224,10 @@ export function logoutAdmin() {
 // -------------------------------------------------------------
 // Local Storage Initializers
 // -------------------------------------------------------------
+export function getInitialPosts(): ArticlePost[] {
+  return getLocalPosts();
+}
+
 function getLocalPosts(): ArticlePost[] {
   try {
     const deleted = getDeletedPostIdentifiers();
@@ -670,7 +674,7 @@ export function getSocialSchedules(): Array<{
           postId: "post-1",
           postTitle: "Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap",
           platform: "twitter" as const,
-          copy: "📊 Mutual Fund Analysis: Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap.\n\nWe evaluated 5-year rolling returns against official AMFI India datasets. Full thread inside 🧵👇 https://yieldnest.online/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap\n\n#MutualFunds #InvestingIndia",
+          copy: "📊 Mutual Fund Analysis: Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap.\n\nWe evaluated 5-year rolling returns against official AMFI India datasets. Full thread inside 🧵👇 https://www.yieldnest.online/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap\n\n#MutualFunds #InvestingIndia",
           scheduledTime: new Date(Date.now() + 86400000 * 1).toISOString(),
           status: "scheduled" as const,
         },
@@ -697,7 +701,7 @@ export function getSocialSchedules(): Array<{
           postId: "post-4",
           postTitle: "Direct vs Regular Plans Wealth Comparison",
           platform: "facebook" as const,
-          copy: "Are you quietly losing over ₹40 Lakhs to distributor commissions?\n\nMany mutual fund investors don't realize that Regular Plans deduct 0.5%–1.2% every single day from your fund's NAV as distributor trail commission.\n\nHere is what our mathematical analysis revealed:\n• A ₹25,000 monthly SIP over 20 years at 12% gross returns:\n- Direct Plan Corpus: ₹2.49 Crore\n- Regular Plan Corpus: ₹2.08 Crore\n- Total Wealth Forfeited: Over ₹41 Lakhs for the exact same fund and same stocks!\n\nCheck your statement: If your fund name doesn't say 'Direct - Growth', you are paying commissions. Read the full step-by-step transition guide on YieldNest.online:\n👉 https://yieldnest.online/article/direct-vs-regular-mutual-funds-charges-commissions-compounding\n\nWhat percentage of your portfolio is in Direct plans today? Share below! 👇",
+          copy: "Are you quietly losing over ₹40 Lakhs to distributor commissions?\n\nMany mutual fund investors don't realize that Regular Plans deduct 0.5%–1.2% every single day from your fund's NAV as distributor trail commission.\n\nHere is what our mathematical analysis revealed:\n• A ₹25,000 monthly SIP over 20 years at 12% gross returns:\n- Direct Plan Corpus: ₹2.49 Crore\n- Regular Plan Corpus: ₹2.08 Crore\n- Total Wealth Forfeited: Over ₹41 Lakhs for the exact same fund and same stocks!\n\nCheck your statement: If your fund name doesn't say 'Direct - Growth', you are paying commissions. Read the full step-by-step transition guide on YieldNest.online:\n👉 https://www.yieldnest.online/article/direct-vs-regular-mutual-funds-charges-commissions-compounding\n\nWhat percentage of your portfolio is in Direct plans today? Share below! 👇",
           scheduledTime: new Date(Date.now() + 86400000 * 4).toISOString(),
           status: "scheduled" as const,
         },

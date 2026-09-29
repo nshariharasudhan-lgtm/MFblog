@@ -17,8 +17,12 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 app.use(express.json({ limit: "10mb" }));
 
-// Canonical URL Normalization: 301 permanent redirect for trailing slashes (except root)
+// Canonical Host & URL Normalization: 301 redirect naked domain to www.yieldnest.online & strip trailing slashes
 app.use((req, res, next) => {
+  const host = (req.headers.host || "").toLowerCase();
+  if (host === "yieldnest.online") {
+    return res.redirect(301, `https://www.yieldnest.online${req.originalUrl}`);
+  }
   if (req.path.length > 1 && req.path.endsWith("/")) {
     const query = req.url.slice(req.path.length);
     const cleanPath = req.path.slice(0, -1);
@@ -603,9 +607,9 @@ Under current Indian Income Tax regulations (Section 112A), Long-Term Capital Ga
         riskRating: "Very High (Equity)",
       },
       socialScheduling: {
-        twitter: `📈 Deep-Dive: ${cleanTopic}\n\nDoes the data back up the hype? We analyzed official AMFI numbers, rolling returns, and expense ratios.\n\nKey takeaways inside 🧵👇\nhttps://yieldnest.online/article/${slug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`,
+        twitter: `📈 Deep-Dive: ${cleanTopic}\n\nDoes the data back up the hype? We analyzed official AMFI numbers, rolling returns, and expense ratios.\n\nKey takeaways inside 🧵👇\nhttps://www.yieldnest.online/article/${slug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`,
         instagram: `Swipe to analyze 📊 ${cleanTopic}!\n\n💡 Key findings from our quantitative study:\n• 1️⃣ Rolling return persistence vs benchmark\n• 2️⃣ Downside capture ratio during market corrections\n• 3️⃣ Direct vs Regular plan wealth difference\n\n💬 Do you hold this in your mutual fund portfolio? Drop your thoughts below!\n\n🔗 Full article link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #WealthBuilding #SIP #StockMarketIndia #YieldNest`,
-        facebook: `Are you evaluating ${cleanTopic} for your mutual fund portfolio?\n\nOur latest research paper analyzes rolling returns, risk-adjusted metrics, and expense ratio compounding based on official AMFI disclosures.\n\nKey Highlights:\n- Historical performance consistency across market cycles\n- Expense ratio impact on 15-20 year wealth compounding\n- Key allocation takeaways for retail investors\n\nRead the complete research report here: https://yieldnest.online/article/${slug}\n\nWhat has been your experience with this strategy? Let us know in the comments! 👇`,
+        facebook: `Are you evaluating ${cleanTopic} for your mutual fund portfolio?\n\nOur latest research paper analyzes rolling returns, risk-adjusted metrics, and expense ratio compounding based on official AMFI disclosures.\n\nKey Highlights:\n- Historical performance consistency across market cycles\n- Expense ratio impact on 15-20 year wealth compounding\n- Key allocation takeaways for retail investors\n\nRead the complete research report here: https://www.yieldnest.online/article/${slug}\n\nWhat has been your experience with this strategy? Let us know in the comments! 👇`,
       },
     };
   }
@@ -657,7 +661,7 @@ app.post("/api/social/generate-snippets", async (req, res) => {
   const fallbackSnippets = {
     twitter: `📈 Deep Dive: ${title}\n\n${excerpt ? excerpt.slice(0, 140) : ""}\n\nKey takeaways with verified AMFI data on YieldNest.online 🧵👇\n#MutualFundsIndia #StockMarketIndia #YieldNest`,
     instagram: `Swipe for key takeaways 📊 ${title}\n\n${excerpt ? `💡 ${excerpt}\n\n` : ""}📌 Slide 1: Historical 5-year rolling returns\n📌 Slide 2: Expense ratio compounding drag\n📌 Slide 3: Portfolio allocation recommendations\n\n💬 Have questions on this scheme? Comment below!\n🔗 Full data breakdown link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #WealthBuilding #SIP #StockMarket #YieldNest`,
-    facebook: `New Research: ${title}\n\n${excerpt || "Our research desk analyzed official AMFI scheme data to help retail investors make data-driven decisions."}\n\nKey highlights for investors:\n- Long-term rolling return consistency\n- Risk-adjusted Sharpe and Alpha metrics\n- Practical takeaways for your monthly SIP\n\nRead the complete research report: https://yieldnest.online\n\nWhat are your thoughts on this strategy? Join the discussion below! 👇`,
+    facebook: `New Research: ${title}\n\n${excerpt || "Our research desk analyzed official AMFI scheme data to help retail investors make data-driven decisions."}\n\nKey highlights for investors:\n- Long-term rolling return consistency\n- Risk-adjusted Sharpe and Alpha metrics\n- Practical takeaways for your monthly SIP\n\nRead the complete research report: https://www.yieldnest.online\n\nWhat are your thoughts on this strategy? Join the discussion below! 👇`,
     suggestedTimes: [
       "Today at 08:30 AM IST (Pre-market morning opening)",
       "Today at 06:15 PM IST (Post-market closing analysis)",
@@ -1069,7 +1073,7 @@ function buildSitemapXmlString(articles: any[]): string {
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
-    <loc>https://yieldnest.online/</loc>
+    <loc>https://www.yieldnest.online/</loc>
     <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -1077,7 +1081,7 @@ function buildSitemapXmlString(articles: any[]): string {
 ${categories
   .map(
     (cat) => `  <url>
-    <loc>https://yieldnest.online/category/${cat}</loc>
+    <loc>https://www.yieldnest.online/category/${cat}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
@@ -1089,7 +1093,7 @@ ${articles
     const rawDate = art.updatedAt || art.publishedAt || today;
     const lastMod = rawDate.split("T")[0];
     return `  <url>
-    <loc>https://yieldnest.online/article/${encodeURIComponent(art.slug)}</loc>
+    <loc>https://www.yieldnest.online/article/${encodeURIComponent(art.slug)}</loc>
     <lastmod>${lastMod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -1118,19 +1122,19 @@ async function syncStaticSitemapAndLlms() {
       "",
       "## Core Research Articles",
       "",
-      ...articles.map((art) => `- [${art.title}](https://yieldnest.online/article/${art.slug}): ${art.excerpt}`),
+      ...articles.map((art) => `- [${art.title}](https://www.yieldnest.online/article/${art.slug}): ${art.excerpt}`),
       "",
       "## Research Categories",
       "",
-      "- [Fund Comparison](https://yieldnest.online/category/fund-comparison): Side-by-side quantitative comparisons of peer mutual fund schemes.",
-      "- [Performance Analysis](https://yieldnest.online/category/performance-analysis): Rolling return analysis, factor exposures, and risk-adjusted metrics.",
-      "- [Market Trends](https://yieldnest.online/category/market-trends): AMFI inflows, SIP book trajectories, and macro liquidity trends.",
-      "- [Category Deep-Dive](https://yieldnest.online/category/category-deep-dive): Deep dives into Flexi Cap, Small Cap, Large & Mid Cap, and Index fund universes.",
-      "- [SIP Strategies](https://yieldnest.online/category/sip-strategies): Systematic investment planning tactics, step-up SIP compounding, and direct plan optimization.",
+      "- [Fund Comparison](https://www.yieldnest.online/category/fund-comparison): Side-by-side quantitative comparisons of peer mutual fund schemes.",
+      "- [Performance Analysis](https://www.yieldnest.online/category/performance-analysis): Rolling return analysis, factor exposures, and risk-adjusted metrics.",
+      "- [Market Trends](https://www.yieldnest.online/category/market-trends): AMFI inflows, SIP book trajectories, and macro liquidity trends.",
+      "- [Category Deep-Dive](https://www.yieldnest.online/category/category-deep-dive): Deep dives into Flexi Cap, Small Cap, Large & Mid Cap, and Index fund universes.",
+      "- [SIP Strategies](https://www.yieldnest.online/category/sip-strategies): Systematic investment planning tactics, step-up SIP compounding, and direct plan optimization.",
       "",
       "## Full Documentation Archive",
       "",
-      "- [Full Content Archive](https://yieldnest.online/llms-full.txt): Complete unabridged text of all research papers for AI model synthesis.",
+      "- [Full Content Archive](https://www.yieldnest.online/llms-full.txt): Complete unabridged text of all research papers for AI model synthesis.",
       "",
     ];
 
@@ -1162,7 +1166,7 @@ Disallow: /admin
 User-agent: Google-InspectionTool
 Allow: /
 
-Sitemap: https://yieldnest.online/sitemap.xml
+Sitemap: https://www.yieldnest.online/sitemap.xml
 `;
   res.setHeader("Content-Type", "text/plain; charset=utf-8");
   return res.send(fallback);
@@ -1199,6 +1203,16 @@ app.get("/llms-full.txt", (_req, res) => {
   }
   res.setHeader("Content-Type", "text/plain; charset=utf-8");
   return res.send("# YieldNest.online - Full Content Archive");
+});
+
+app.get(["/.well-known/ai-catalog.json", "/.well-known/ard.json", "/ai-catalog.json"], (_req, res) => {
+  const catalogPath = path.join(__dirname, "public", ".well-known", "ai-catalog.json");
+  if (fs.existsSync(catalogPath)) {
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    return res.sendFile(catalogPath);
+  }
+  return res.status(404).json({ error: "Not found" });
 });
 
 // -------------------------------------------------------------
@@ -1317,11 +1331,11 @@ function renderMarkdownToHtml(markdown: string): string {
 function injectArticleMeta(html: string, article: any): string {
   const title = `${escapeHtml(article.title)} | YieldNest.online`;
   const description = escapeHtml(article.excerpt || "Independent mutual fund research on YieldNest.online.");
-  const url = `https://yieldnest.online/article/${encodeURIComponent(article.slug)}`;
+  const url = `https://www.yieldnest.online/article/${encodeURIComponent(article.slug)}`;
   const datePublished = new Date(article.publishedAt || article.createdAt || Date.now()).toISOString();
   const dateModified = new Date(article.updatedAt || article.createdAt || Date.now()).toISOString();
   const catSlug = CATEGORY_NAME_TO_SLUG[article.category] || "fund-comparison";
-  const catUrl = `https://yieldnest.online/category/${catSlug}`;
+  const catUrl = `https://www.yieldnest.online/category/${catSlug}`;
 
   const schemaJson = JSON.stringify({
     "@context": "https://schema.org",
@@ -1351,7 +1365,7 @@ function injectArticleMeta(html: string, article: any): string {
         "publisher": {
           "@type": "Organization",
           "name": "YieldNest.online",
-          "url": "https://yieldnest.online",
+          "url": "https://www.yieldnest.online",
         },
         "articleSection": article.category,
       },
@@ -1363,7 +1377,7 @@ function injectArticleMeta(html: string, article: any): string {
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://yieldnest.online/",
+            "item": "https://www.yieldnest.online/",
           },
           {
             "@type": "ListItem",
@@ -1451,7 +1465,7 @@ function injectCategoryMeta(html: string, categorySlug: string, articles: any[])
 
   const title = `${meta.title}`;
   const description = `${meta.description}`;
-  const url = `https://yieldnest.online/category/${categorySlug}`;
+  const url = `https://www.yieldnest.online/category/${categorySlug}`;
   const categoryArticles = articles.filter(
     (a) => (CATEGORY_NAME_TO_SLUG[a.category] || "").toLowerCase() === categorySlug.toLowerCase()
   );
@@ -1467,9 +1481,9 @@ function injectCategoryMeta(html: string, categorySlug: string, articles: any[])
         "description": description,
         "isPartOf": {
           "@type": "WebSite",
-          "@id": "https://yieldnest.online/#website",
+          "@id": "https://www.yieldnest.online/#website",
           "name": "YieldNest.online",
-          "url": "https://yieldnest.online",
+          "url": "https://www.yieldnest.online",
         },
       },
       {
@@ -1480,7 +1494,7 @@ function injectCategoryMeta(html: string, categorySlug: string, articles: any[])
             "@type": "ListItem",
             "position": 1,
             "name": "Home",
-            "item": "https://yieldnest.online/",
+            "item": "https://www.yieldnest.online/",
           },
           {
             "@type": "ListItem",
@@ -1498,7 +1512,7 @@ function injectCategoryMeta(html: string, categorySlug: string, articles: any[])
           "@type": "ListItem",
           "position": idx + 1,
           "name": art.title,
-          "url": `https://yieldnest.online/article/${encodeURIComponent(art.slug)}`,
+          "url": `https://www.yieldnest.online/article/${encodeURIComponent(art.slug)}`,
         })),
       },
     ],
@@ -1567,7 +1581,7 @@ function injectCategoryMeta(html: string, categorySlug: string, articles: any[])
 function injectHomepageMeta(html: string, articles: any[]): string {
   const title = "YieldNest.online – Independent Mutual Fund Research & Analytics";
   const description = "Data-driven research on Indian Mutual Funds. Unbiased fund comparisons, rolling return analyses, portfolio overlap checks, and market analytics on YieldNest.online.";
-  const url = "https://yieldnest.online/";
+  const url = "https://www.yieldnest.online/";
 
   const schemaJson = JSON.stringify({
     "@context": "https://schema.org",

@@ -80,17 +80,17 @@ export function resolveSocialImageUrl(imageUrl?: string, fallbackOrigin?: string
     return `https:${trimmed}`;
   }
 
-  const origin = fallbackOrigin || (typeof window !== "undefined" ? window.location.origin : "https://yieldnest.online");
+  const origin = fallbackOrigin || (typeof window !== "undefined" ? window.location.origin : "https://www.yieldnest.online");
   const cleanPath = trimmed.startsWith("/") ? trimmed : `/${trimmed}`;
   return `${origin}${cleanPath}`;
 }
 
 export function SEOHead({ post, settings, customTitle, customDescription, urlPath = "" }: SEOHeadProps) {
-  // Canonical origin is strictly the primary domain for Google Search Console
-  const canonicalOrigin = "https://yieldnest.online";
+  // Canonical origin is strictly the primary domain for Google Search Console & Vercel production
+  const canonicalOrigin = "https://www.yieldnest.online";
   const currentPath = urlPath || (typeof window !== "undefined" ? window.location.pathname : "/");
   const cleanPath = currentPath.length > 1 ? currentPath.replace(/\/+$/, "") : currentPath;
-  const fullUrl = `${canonicalOrigin}${cleanPath}`;
+  const fullUrl = cleanPath === "/" ? `${canonicalOrigin}/` : `${canonicalOrigin}${cleanPath}`;
 
   // 1. Automated Title Generation
   const rawTitle = post

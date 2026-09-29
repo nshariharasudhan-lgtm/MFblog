@@ -103,10 +103,10 @@ export function ArticleCard({ post, onOpen, featured = false }: ArticleCardProps
       <article className="flex flex-col justify-between h-full p-5 sm:p-6 bg-white rounded-xl border border-[#EAE8E0] hover:border-[#D1CDBC] hover:shadow-xs transition-all">
         <div className="space-y-3">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-xs font-semibold text-[#666258] uppercase tracking-wider font-mono-data">
+            <span className="text-xs font-semibold text-[#57534E] uppercase tracking-wider font-mono-data">
               {post.category}
             </span>
-            <span className="text-[#8C887B] font-mono-data text-[11px]">
+            <span className="text-[#57534E] font-mono-data text-[11px] font-medium">
               {post.readTimeMinutes} min read
             </span>
           </div>
@@ -115,21 +115,21 @@ export function ArticleCard({ post, onOpen, featured = false }: ArticleCardProps
             {post.title}
           </h3>
 
-          <p className="text-[#59564E] text-xs sm:text-sm leading-relaxed line-clamp-3">
+          <p className="text-[#44403C] text-xs sm:text-sm leading-relaxed line-clamp-3">
             {post.excerpt}
           </p>
 
           {primaryAmfi && (
-            <div className="pt-1.5 flex items-center justify-between text-[11px] font-mono-data text-stone-500 border-t border-stone-100">
+            <div className="pt-1.5 flex items-center justify-between text-[11px] font-mono-data text-stone-600 border-t border-stone-100">
               <span className="truncate max-w-[220px]">Scheme: {primaryAmfi.schemeName}</span>
-              <span className="text-[10px] text-stone-500 bg-stone-100 px-1.5 py-0.5 rounded shrink-0">
+              <span className="text-[10px] text-stone-700 bg-stone-100 px-1.5 py-0.5 rounded shrink-0">
                 AMFI Data Inside
               </span>
             </div>
           )}
         </div>
 
-        <div className="pt-4 mt-4 flex items-center justify-between border-t border-[#F0EFEA] text-xs text-[#736F65]">
+        <div className="pt-4 mt-4 flex items-center justify-between border-t border-[#F0EFEA] text-xs text-[#57534E]">
           <div className="flex items-center gap-2">
             <span className="font-medium text-[#1A1A1A]">Research Desk</span>
             <span>•</span>

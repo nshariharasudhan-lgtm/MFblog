@@ -37,4 +37,5 @@ User-agent: Applebot
 Allow: /
 
 # Canonical Sitemap and LLM context endpoints
-Sitemap: https://yieldnest.online/sitemap.xml
+Sitemap: https://www.yieldnest.online/sitemap.xml
+Agentmap: https://www.yieldnest.online/.well-known/ai-catalog.json

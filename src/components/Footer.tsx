@@ -49,7 +49,7 @@ export function Footer({ settings, onSelectCategory }: FooterProps) {
             <div className="font-semibold text-stone-900 font-mono-data uppercase tracking-wider text-[11px]">
               Research Categories
             </div>
-            <ul className="space-y-1.5">
+            <ul className="space-y-1">
               {categories.map((cat) => (
                 <li key={cat}>
                   <a
@@ -61,7 +61,7 @@ export function Footer({ settings, onSelectCategory }: FooterProps) {
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="text-stone-600 hover:text-black transition-colors no-underline block"
+                    className="text-stone-700 hover:text-black transition-colors no-underline py-2.5 px-1.5 min-h-[44px] flex items-center text-xs font-medium"
                   >
                     {cat}
                   </a>
@@ -75,16 +75,16 @@ export function Footer({ settings, onSelectCategory }: FooterProps) {
             <div className="font-semibold text-stone-900 font-mono-data uppercase tracking-wider text-[11px]">
               Editorial & Indexing
             </div>
-            <ul className="space-y-1.5 text-stone-600 text-xs">
-              <li>Educational Mutual Fund Research</li>
-              <li>Factual Rolling Return Calculations</li>
-              <li>Portfolio Expense &amp; TER Analysis</li>
+            <ul className="space-y-2 text-stone-600 text-xs">
+              <li className="py-1">Educational Mutual Fund Research</li>
+              <li className="py-1">Factual Rolling Return Calculations</li>
+              <li className="py-1">Portfolio Expense &amp; TER Analysis</li>
               <li className="pt-2 border-t border-stone-300/60 flex items-center gap-2 font-mono-data text-[11px]">
-                <a href="/sitemap.xml" className="text-stone-600 hover:text-black underline" target="_blank" rel="noopener noreferrer">Sitemap.xml</a>
+                <a href="/sitemap.xml" className="text-stone-700 hover:text-black underline py-2 min-h-[44px] inline-flex items-center" target="_blank" rel="noopener noreferrer">Sitemap.xml</a>
                 <span>•</span>
-                <a href="/robots.txt" className="text-stone-600 hover:text-black underline" target="_blank" rel="noopener noreferrer">Robots.txt</a>
+                <a href="/robots.txt" className="text-stone-700 hover:text-black underline py-2 min-h-[44px] inline-flex items-center" target="_blank" rel="noopener noreferrer">Robots.txt</a>
                 <span>•</span>
-                <a href="/llms.txt" className="text-stone-600 hover:text-black underline" target="_blank" rel="noopener noreferrer">LLMs.txt</a>
+                <a href="/llms.txt" className="text-stone-700 hover:text-black underline py-2 min-h-[44px] inline-flex items-center" target="_blank" rel="noopener noreferrer">LLMs.txt</a>
               </li>
             </ul>
           </div>

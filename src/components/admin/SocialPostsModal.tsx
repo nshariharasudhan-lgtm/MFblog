@@ -24,7 +24,7 @@ export function SocialPostsModal({ post, onClose, onUpdatePostSocial }: SocialPo
   // Editable copies
   const [twitterText, setTwitterText] = useState(
     post.socialSnippets?.twitter ||
-      `📈 Deep Dive: ${post.title}\n\n${post.excerpt.slice(0, 140)}\n\nKey takeaways with verified AMFI data on YieldNest.online 🧵👇\nhttps://yieldnest.online/article/${post.slug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`
+      `📈 Deep Dive: ${post.title}\n\n${post.excerpt.slice(0, 140)}\n\nKey takeaways with verified AMFI data on YieldNest.online 🧵👇\nhttps://www.yieldnest.online/article/${post.slug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`
   );
 
   const [instagramText, setInstagramText] = useState(
@@ -34,7 +34,7 @@ export function SocialPostsModal({ post, onClose, onUpdatePostSocial }: SocialPo
 
   const [facebookText, setFacebookText] = useState(
     post.socialSnippets?.facebook ||
-      `New Research: ${post.title}\n\n${post.excerpt}\n\nKey highlights for mutual fund investors:\n- Long-term rolling return consistency against benchmarks\n- Risk-adjusted Sharpe and Alpha performance\n- Direct plan cost savings over 15-20 years\n\nRead the complete research report on YieldNest.online:\n👉 https://yieldnest.online/article/${post.slug}\n\nWhat are your thoughts on this strategy? Join the discussion below! 👇`
+      `New Research: ${post.title}\n\n${post.excerpt}\n\nKey highlights for mutual fund investors:\n- Long-term rolling return consistency against benchmarks\n- Risk-adjusted Sharpe and Alpha performance\n- Direct plan cost savings over 15-20 years\n\nRead the complete research report on YieldNest.online:\n👉 https://www.yieldnest.online/article/${post.slug}\n\nWhat are your thoughts on this strategy? Join the discussion below! 👇`
   );
 
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
@@ -43,7 +43,7 @@ export function SocialPostsModal({ post, onClose, onUpdatePostSocial }: SocialPo
   const [saveFeedback, setSaveFeedback] = useState<string | null>(null);
   const [scheduleFeedback, setScheduleFeedback] = useState<string | null>(null);
 
-  const articleUrl = `https://yieldnest.online/article/${post.slug}`;
+  const articleUrl = `https://www.yieldnest.online/article/${post.slug}`;
 
   const handleCopy = (key: string, text: string) => {
     if (!text) return;

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ArticleCategory, ArticlePost, Comment, SiteSettings, AdminUser } from "./types";
 import {
   getAllPosts,
+  getInitialPosts,
   savePost,
   deletePost,
   incrementPostViews,
@@ -37,7 +38,7 @@ const CATEGORY_TO_SLUG: Record<ArticleCategory, string> = {
 };
 
 export default function App() {
-  const [posts, setPosts] = useState<ArticlePost[]>([]);
+  const [posts, setPosts] = useState<ArticlePost[]>(() => getInitialPosts());
   const [comments, setComments] = useState<Comment[]>([]);
   const [settings, setSettings] = useState<SiteSettings>(getSiteSettings());
   const [currentCategory, setCurrentCategory] = useState<ArticleCategory | "all">("all");
@@ -47,7 +48,7 @@ export default function App() {
   const [adminInitialTab, setAdminInitialTab] = useState<string>("posts");
   const [adminUser, setAdminUser] = useState<AdminUser | null>(getCurrentAdminSession());
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Initialize and handle URL routing (History API)
   useEffect(() => {
@@ -62,7 +63,6 @@ export default function App() {
   }, []);
 
   const loadData = async () => {
-    setLoading(true);
     const loadedPosts = await getAllPosts();
     const loadedComments = await getAllComments();
     const loadedSettings = getSiteSettings();
@@ -70,7 +70,6 @@ export default function App() {
     setComments(loadedComments);
     setSettings(loadedSettings);
     setAdminUser(getCurrentAdminSession());
-    setLoading(false);
   };
 
   const handleRouteFromUrl = async () => {

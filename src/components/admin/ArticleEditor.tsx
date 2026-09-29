@@ -58,7 +58,7 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
   const [twitterCopy, setTwitterCopy] = useState(
     post?.socialSnippets?.twitter ||
       (post?.title
-        ? `📈 Deep-Dive: ${post.title}\n\n${(post.excerpt || "").slice(0, 140)}\n\nKey takeaways with verified AMFI data 🧵👇\nhttps://yieldnest.online/article/${post.slug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`
+        ? `📈 Deep-Dive: ${post.title}\n\n${(post.excerpt || "").slice(0, 140)}\n\nKey takeaways with verified AMFI data 🧵👇\nhttps://www.yieldnest.online/article/${post.slug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`
         : "")
   );
   const [instagramCopy, setInstagramCopy] = useState(
@@ -70,7 +70,7 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
   const [facebookCopy, setFacebookCopy] = useState(
     post?.socialSnippets?.facebook ||
       (post?.title
-        ? `Are you evaluating ${post.title} for your mutual fund portfolio?\n\nOur research desk analyzed official AMFI scheme metrics to evaluate rolling returns, alpha generation, and expense drag.\n\nKey Highlights:\n- Long-term performance consistency\n- Downside protection during market sell-offs\n- Direct plan cost savings\n\nRead the complete research report here: https://yieldnest.online/article/${post.slug}\n\nWhat has been your experience with this strategy? Let us know in the comments! 👇`
+        ? `Are you evaluating ${post.title} for your mutual fund portfolio?\n\nOur research desk analyzed official AMFI scheme metrics to evaluate rolling returns, alpha generation, and expense drag.\n\nKey Highlights:\n- Long-term performance consistency\n- Downside protection during market sell-offs\n- Direct plan cost savings\n\nRead the complete research report here: https://www.yieldnest.online/article/${post.slug}\n\nWhat has been your experience with this strategy? Let us know in the comments! 👇`
         : "")
   );
   const [copiedSocialKey, setCopiedSocialKey] = useState<string | null>(null);
@@ -346,13 +346,13 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
       socialSnippets: {
         twitter:
           twitterCopy.trim() ||
-          `📈 Deep-Dive: ${title.trim()}\n\n${(excerpt.trim() || content.slice(0, 140)).replace(/[#*`]/g, "")}\n\nKey takeaways with verified AMFI data 🧵👇\nhttps://yieldnest.online/article/${cleanedSlug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`,
+          `📈 Deep-Dive: ${title.trim()}\n\n${(excerpt.trim() || content.slice(0, 140)).replace(/[#*`]/g, "")}\n\nKey takeaways with verified AMFI data 🧵👇\nhttps://www.yieldnest.online/article/${cleanedSlug}\n#MutualFundsIndia #StockMarketIndia #YieldNest`,
         instagram:
           instagramCopy.trim() ||
           `Swipe to analyze 📊 ${title.trim()}!\n\n💡 ${(excerpt.trim() || content.slice(0, 160)).replace(/[#*`]/g, "")}\n\n📌 Slide 1: Historical 5-year rolling returns\n📌 Slide 2: Downside capture in market sell-offs\n📌 Slide 3: Direct plan compounding difference\n\n💬 Do you hold this in your mutual fund portfolio? Share below!\n🔗 Full article link in bio 👉 yieldnest.online\n\n#MutualFunds #InvestingIndia #FinancialLiteracy #WealthBuilding #SIP #StockMarket #YieldNest`,
         facebook:
           facebookCopy.trim() ||
-          `Are you evaluating ${title.trim()} for your mutual fund portfolio?\n\nOur research desk analyzed official AMFI scheme metrics to evaluate rolling returns, alpha generation, and expense drag.\n\nKey Highlights:\n- Long-term performance consistency\n- Downside protection during market sell-offs\n- Direct plan cost savings\n\nRead the complete research report here: https://yieldnest.online/article/${cleanedSlug}\n\nWhat has been your experience with this strategy? Let us know in the comments! 👇`,
+          `Are you evaluating ${title.trim()} for your mutual fund portfolio?\n\nOur research desk analyzed official AMFI scheme metrics to evaluate rolling returns, alpha generation, and expense drag.\n\nKey Highlights:\n- Long-term performance consistency\n- Downside protection during market sell-offs\n- Direct plan cost savings\n\nRead the complete research report here: https://www.yieldnest.online/article/${cleanedSlug}\n\nWhat has been your experience with this strategy? Let us know in the comments! 👇`,
       },
       publishedAt: publishStatus === "published" ? (post?.publishedAt || new Date().toISOString()) : undefined,
       createdAt: post?.createdAt || new Date().toISOString(),
@@ -570,7 +570,7 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
                   />
                 </div>
                 <div className="text-[10px] font-mono-data text-stone-500 mt-1 truncate">
-                  Canonical: <span className="text-stone-700">https://yieldnest.online/article/{sanitizeSlug(slug || "slug")}</span>
+                  Canonical: <span className="text-stone-700">https://www.yieldnest.online/article/{sanitizeSlug(slug || "slug")}</span>
                 </div>
               </div>
 

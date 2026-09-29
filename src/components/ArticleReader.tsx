@@ -57,7 +57,7 @@ export function ArticleReader({
 
   const articleUrl = typeof window !== "undefined"
     ? `${window.location.origin}/article/${post.slug}`
-    : `https://yieldnest.online/article/${post.slug}`;
+    : `https://www.yieldnest.online/article/${post.slug}`;
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(articleUrl);
