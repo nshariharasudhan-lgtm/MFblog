@@ -16,10 +16,12 @@ import { SEOHead } from "./components/SEOHead";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { ArticleCard } from "./components/ArticleCard";
-import { ArticleReader } from "./components/ArticleReader";
 import { NewsletterSignup } from "./components/NewsletterSignup";
 
-// Code-split heavy admin modules away from initial public visitor bundle
+// Code-split heavy components away from initial public visitor bundle
+const ArticleReader = lazy(() =>
+  import("./components/ArticleReader").then((m) => ({ default: m.ArticleReader }))
+);
 const AdminDashboard = lazy(() =>
   import("./components/admin/AdminDashboard").then((m) => ({ default: m.AdminDashboard }))
 );
@@ -292,16 +294,18 @@ export default function App() {
         </Suspense>
       ) : selectedArticle ? (
         /* Single Article View */
-        <ArticleReader
-          post={selectedArticle}
-          onBack={handleBackToHome}
-          settings={settings}
-          onOpenCategory={(cat) => {
-            handleSelectCategory(cat);
-          }}
-          allPosts={posts}
-          onNavigateArticle={handleOpenArticle}
-        />
+        <Suspense fallback={<div className="min-h-screen py-24 text-center text-xs font-mono-data text-stone-500">Loading research report...</div>}>
+          <ArticleReader
+            post={selectedArticle}
+            onBack={handleBackToHome}
+            settings={settings}
+            onOpenCategory={(cat) => {
+              handleSelectCategory(cat);
+            }}
+            allPosts={posts}
+            onNavigateArticle={handleOpenArticle}
+          />
+        </Suspense>
       ) : (
         /* Blog Main Homepage */
         <>

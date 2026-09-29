@@ -584,7 +584,29 @@ async function runPrerender() {
     process.exit(1);
   }
 
-  const baseHtml = fs.readFileSync(baseIndexPath, "utf-8");
+  let baseHtml = fs.readFileSync(baseIndexPath, "utf-8");
+
+  // Inlining critical CSS into <style> to eliminate the 150-200ms render-blocking stylesheet network request
+  const assetsDir = path.join(distDir, "assets");
+  let inlinedCss = "";
+  if (fs.existsSync(assetsDir)) {
+    const cssFiles = fs.readdirSync(assetsDir).filter((f) => f.endsWith(".css"));
+    if (cssFiles.length > 0) {
+      const primaryCssPath = path.join(assetsDir, cssFiles[0]);
+      inlinedCss = fs.readFileSync(primaryCssPath, "utf-8");
+      console.log(`  ✓ Read ${cssFiles[0]} (${(inlinedCss.length / 1024).toFixed(1)} KB) for critical CSS inlining`);
+    }
+  }
+
+  if (inlinedCss) {
+    const cssLinkRegex = /<link[^>]+rel=["']stylesheet["'][^>]*href=["'][^"']*\/assets\/[^"']+\.css["'][^>]*>/gi;
+    baseHtml = baseHtml.replace(
+      cssLinkRegex,
+      `<style id="inlined-critical-css">${inlinedCss}</style>`
+    );
+    console.log("  ✓ Inlined critical CSS into <style> to eliminate render-blocking network request");
+  }
+
   const articles = loadAllArticles();
   console.log(`📑 [Prerender] Loaded ${articles.length} published research articles.`);
 

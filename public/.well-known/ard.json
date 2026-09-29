@@ -1,19 +1,10 @@
 {
   "specVersion": "1.0",
-  "host": {
-    "identifier": "did:web:www.yieldnest.online",
-    "displayName": "YieldNest.online"
-  },
-  "documentation": {
-    "llms": "https://www.yieldnest.online/llms.txt",
-    "llmsFull": "https://www.yieldnest.online/llms-full.txt",
-    "sitemap": "https://www.yieldnest.online/sitemap.xml"
-  },
   "entries": [
     {
-      "identifier": "urn:ai:yieldnest:mutual-fund-research",
+      "identifier": "urn:air:yieldnest:research:mutual-fund-analyst",
       "displayName": "Indian Mutual Fund Research & Analytics",
-      "type": "text/markdown",
+      "type": "text/markdown; profile=\"urn:air:agent-skills\"",
       "url": "https://www.yieldnest.online/llms-full.txt",
       "representativeQueries": [
         "What are the top performing mutual funds in India based on AMFI data?",
@@ -22,9 +13,9 @@
       ]
     },
     {
-      "identifier": "urn:ai:yieldnest:amfi-data-snapshot",
+      "identifier": "urn:air:yieldnest:analytics:amfi-data-feed",
       "displayName": "AMFI Scheme Performance & Categorization Feed",
-      "type": "application/json",
+      "type": "application/agent-card+json",
       "url": "https://www.yieldnest.online/api/posts",
       "representativeQueries": [
         "Get AMFI historical NAVs and 3Y 5Y rolling returns for Indian equity funds",
