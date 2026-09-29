@@ -688,43 +688,6 @@ async function runPrerender() {
   fs.writeFileSync(path.join(apiDir, "posts"), postsJson, "utf-8");
   console.log("  ✓ Generated static edge API endpoint at /api/posts.json and /api/posts");
 
-  // 9. Generate static api/market/snapshot for edge response without cold start
-  const marketApiDir = path.join(apiDir, "market");
-  const publicMarketApiDir = path.join(publicApiDir, "market");
-  fs.mkdirSync(marketApiDir, { recursive: true });
-  fs.mkdirSync(publicMarketApiDir, { recursive: true });
-  const now = new Date();
-  const marketSnapshot = JSON.stringify({
-    timestamp: now.toISOString(),
-    lastUpdated: now.toISOString(),
-    formattedDate: now.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
-    source: "Association of Mutual Funds in India (AMFI) & National Stock Exchange (NSE)",
-    marketStatus: "closed",
-    eeatVerification: {
-      status: "verified",
-      maxCacheAgeHours: 4,
-      auditStandard: "Google EEAT YMYL Financial Accuracy Mandate",
-      verifiedAt: now.toISOString(),
-    },
-    indices: [
-      { name: "NIFTY 50", value: 25842.1, change: 118.45, percentChange: 0.46, updatedAt: now.toISOString() },
-      { name: "NIFTY Midcap 150", value: 21980.35, change: 165.2, percentChange: 0.76, updatedAt: now.toISOString() },
-      { name: "NIFTY Smallcap 250", value: 18450.9, change: 210.15, percentChange: 1.15, updatedAt: now.toISOString() },
-      { name: "S&P BSE SENSEX", value: 84650.25, change: 345.8, percentChange: 0.41, updatedAt: now.toISOString() },
-    ],
-    funds: [
-      { schemeCode: "122639", schemeName: "Parag Parikh Flexi Cap Fund", fundHouse: "PPFAS Mutual Fund", category: "Equity: Flexi Cap", nav: 88.98, date: "28-Sep-2026", cagr1Y: 28.4, cagr3Y: 21.8, cagr5Y: 23.5, expenseRatio: 0.62, aumCr: 78500, riskRating: "Very High", benchmark: "NIFTY 500 TRI" },
-      { schemeCode: "118834", schemeName: "Mirae Asset Large & Midcap Fund", fundHouse: "Mirae Asset Mutual Fund", category: "Equity: Large & Mid Cap", nav: 164.2, date: "28-Sep-2026", cagr1Y: 26.2, cagr3Y: 18.5, cagr5Y: 20.1, expenseRatio: 0.64, aumCr: 44200, riskRating: "Very High", benchmark: "NIFTY LargeMidcap 250 TRI" },
-      { schemeCode: "118989", schemeName: "HDFC Top 100 Fund", fundHouse: "HDFC Mutual Fund", category: "Equity: Large Cap", nav: 1248.5, date: "28-Sep-2026", cagr1Y: 24.1, cagr3Y: 19.3, cagr5Y: 18.4, expenseRatio: 0.95, aumCr: 39800, riskRating: "Very High", benchmark: "NIFTY 100 TRI" },
-      { schemeCode: "120828", schemeName: "Quant Small Cap Fund", fundHouse: "Quant Mutual Fund", category: "Equity: Small Cap", nav: 298.4, date: "28-Sep-2026", cagr1Y: 34.6, cagr3Y: 27.9, cagr5Y: 36.2, expenseRatio: 0.77, aumCr: 24100, riskRating: "Very High", benchmark: "NIFTY Smallcap 250 TRI" },
-      { schemeCode: "118778", schemeName: "Nippon India Small Cap Fund", fundHouse: "Nippon India Mutual Fund", category: "Equity: Small Cap", nav: 194.8, date: "28-Sep-2026", cagr1Y: 32.8, cagr3Y: 26.1, cagr5Y: 33.7, expenseRatio: 0.68, aumCr: 60200, riskRating: "Very High", benchmark: "NIFTY Smallcap 250 TRI" },
-    ],
-  });
-  fs.writeFileSync(path.join(marketApiDir, "snapshot.json"), marketSnapshot, "utf-8");
-  fs.writeFileSync(path.join(publicMarketApiDir, "snapshot.json"), marketSnapshot, "utf-8");
-  fs.writeFileSync(path.join(marketApiDir, "snapshot"), marketSnapshot, "utf-8");
-  console.log("  ✓ Generated static edge API endpoint at /api/market/snapshot");
-
   console.log("✨ [Prerender] All static SEO pages successfully pre-rendered with zero redirects!");
 }
 

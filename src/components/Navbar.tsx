@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Search, Menu, X } from "lucide-react";
 import { ArticleCategory, SiteSettings } from "../types";
 import { YieldNestLogo } from "./YieldNestLogo";
-import { MarketDataTicker } from "./MarketDataTicker";
 
 interface NavbarProps {
   currentCategory: ArticleCategory | "all";
@@ -40,9 +39,6 @@ export function Navbar({
           <strong className="text-stone-200">Statutory Notice:</strong> Not SEBI or AMFI registered • Strictly for investor education
         </span>
       </div>
-
-      {/* Real-Time Market Feed & EEAT 4-Hour Compliance Ticker */}
-      <MarketDataTicker />
 
       {/* Main Centered Masthead */}
       <div className="max-w-6xl mx-auto px-4 pt-4 sm:pt-6 pb-3 sm:pb-4 flex flex-col items-center justify-center relative">
