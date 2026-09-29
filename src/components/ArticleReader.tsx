@@ -379,7 +379,7 @@ export function ArticleReader({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
               {post.amfiDataSnapshot.map((fund, idx) => {
-                const asOnDate = fund.date || "31-May-2024";
+                const asOnDate = fund.date || "28-Sep-2026";
                 return (
                   <div key={idx} className="bg-[#FAF9F5] p-4 rounded-xl border border-[#EAE8E0] space-y-3">
                     <div className="flex items-start justify-between gap-2">

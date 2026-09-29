@@ -1,32 +1,35 @@
 {
-  "$schema": "https://ard.dev/schema/v0.9/ai-catalog.json",
-  "name": "YieldNest.online",
-  "description": "Independent Quantitative Mutual Fund Research & Analytics Platform for Indian Equity & Debt Schemes.",
-  "version": "1.0.0",
-  "publisher": {
-    "name": "YieldNest.online",
-    "url": "https://www.yieldnest.online",
-    "email": "research@yieldnest.online"
+  "specVersion": "1.0",
+  "host": {
+    "identifier": "did:web:www.yieldnest.online",
+    "displayName": "YieldNest.online"
   },
   "documentation": {
     "llms": "https://www.yieldnest.online/llms.txt",
     "llmsFull": "https://www.yieldnest.online/llms-full.txt",
     "sitemap": "https://www.yieldnest.online/sitemap.xml"
   },
-  "capabilities": [
+  "entries": [
     {
-      "id": "mutual-fund-research",
-      "type": "dataset",
-      "name": "Mutual Fund Research & Analytics",
-      "description": "Quantitative analysis, rolling returns, downside capture ratios, expense ratio impact, and AMFI India liquidity stress tests.",
-      "url": "https://www.yieldnest.online"
+      "identifier": "urn:ai:yieldnest:mutual-fund-research",
+      "displayName": "Indian Mutual Fund Research & Analytics",
+      "type": "text/markdown",
+      "url": "https://www.yieldnest.online/llms-full.txt",
+      "representativeQueries": [
+        "What are the top performing mutual funds in India based on AMFI data?",
+        "Compare Quant Small Cap vs Nippon India Small Cap returns and risk ratios",
+        "How does Total Expense Ratio (TER) impact mutual fund compounding in Direct vs Regular plans?"
+      ]
     },
     {
-      "id": "amfi-data-snapshot",
-      "type": "api",
-      "name": "AMFI Mutual Fund Analytics API",
-      "description": "Scheme categorization, rolling return benchmarks, and NAV comparisons.",
-      "url": "https://www.yieldnest.online/api/posts"
+      "identifier": "urn:ai:yieldnest:amfi-data-snapshot",
+      "displayName": "AMFI Scheme Performance & Categorization Feed",
+      "type": "application/json",
+      "url": "https://www.yieldnest.online/api/posts",
+      "representativeQueries": [
+        "Get AMFI historical NAVs and 3Y 5Y rolling returns for Indian equity funds",
+        "Fetch quantitative mutual fund categorization updates and SEBI stress test data"
+      ]
     }
   ]
 }

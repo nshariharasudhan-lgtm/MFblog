@@ -3,14 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-8TSJVS8X60"></script>
+    <!-- Google tag (gtag.js) - Defer to eliminate forced reflow & render blocking -->
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-8TSJVS8X60');
+
+      (function() {
+        var loaded = false;
+        function loadGtag() {
+          if (loaded) return;
+          loaded = true;
+          var s = document.createElement('script');
+          s.async = true;
+          s.src = 'https://www.googletagmanager.com/gtag/js?id=G-8TSJVS8X60';
+          document.head.appendChild(s);
+        }
+        if ('requestIdleCallback' in window) {
+          requestIdleCallback(function() { setTimeout(loadGtag, 1800); });
+        } else {
+          window.addEventListener('load', function() { setTimeout(loadGtag, 1800); });
+        }
+        ['pointerdown', 'scroll', 'keydown', 'touchstart'].forEach(function(evt) {
+          window.addEventListener(evt, loadGtag, { once: true, passive: true });
+        });
+      })();
     </script>
     <title>YieldNest.online - Mutual Fund Research &amp; Analytics</title>
     <meta name="description" content="Independent data-driven research on Indian Mutual Funds, performance analysis, and market trends on YieldNest.online." />

@@ -804,12 +804,12 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
                     </button>
                     <div className="font-semibold text-xs text-stone-900 pr-6">{fund.schemeName}</div>
                     <div className="text-[10px] text-stone-500 font-mono-data">
-                      Lagged Snapshot: As on {fund.date || "31-May-2024"}
+                      Lagged Snapshot: As on {fund.date || "28-Sep-2026"}
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-[11px] font-mono-data pt-1">
-                      <div>NAV: <span className="font-bold text-stone-900">₹{fund.nav.toFixed(2)}</span> <span className="text-[10px] text-stone-400">({fund.date || "31-May-2024"})</span></div>
-                      <div>3Y CAGR: <span className="font-bold text-emerald-700">+{fund.cagr3Y || 21.8}%</span> <span className="text-[10px] text-stone-400">({fund.date || "31-May-2024"})</span></div>
-                      <div>TER: <span className="text-stone-700">{fund.expenseRatio || 0.64}%</span> <span className="text-[10px] text-stone-400">({fund.date || "31-May-2024"})</span></div>
+                      <div>NAV: <span className="font-bold text-stone-900">₹{fund.nav.toFixed(2)}</span> <span className="text-[10px] text-stone-400">({fund.date || "28-Sep-2026"})</span></div>
+                      <div>3Y CAGR: <span className="font-bold text-emerald-700">+{fund.cagr3Y || 21.8}%</span> <span className="text-[10px] text-stone-400">({fund.date || "28-Sep-2026"})</span></div>
+                      <div>TER: <span className="text-stone-700">{fund.expenseRatio || 0.64}%</span> <span className="text-[10px] text-stone-400">({fund.date || "28-Sep-2026"})</span></div>
                       <div>Code: <span className="text-stone-700">{fund.schemeCode}</span></div>
                     </div>
                     <div className="text-[10px] text-stone-500 italic pt-1 border-t border-stone-100">

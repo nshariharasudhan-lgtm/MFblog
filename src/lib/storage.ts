@@ -11,15 +11,21 @@ const ADMIN_SESSION_KEY = "nivesh_admin_session_v1";
 const ADMIN_CREDENTIALS_KEY = "nivesh_admin_creds_v1";
 const DELETED_POSTS_KEY = "yieldnest_deleted_posts_v2";
 
+const DEFAULT_DISCARDED_IDENTIFIERS = [
+  "best-mutual-funds-india-performance-analysis-2024",
+  "f292ebb5-fa52-4220-8a43-e0d6021af6de",
+];
+
 export function getDeletedPostIdentifiers(): Set<string> {
+  const result = new Set<string>(DEFAULT_DISCARDED_IDENTIFIERS);
   try {
     const raw = localStorage.getItem(DELETED_POSTS_KEY);
-    if (!raw) return new Set<string>();
-    const list: string[] = JSON.parse(raw);
-    return new Set(list.map((s) => String(s).toLowerCase().trim()));
-  } catch {
-    return new Set<string>();
-  }
+    if (raw) {
+      const list: string[] = JSON.parse(raw);
+      list.forEach((s) => result.add(String(s).toLowerCase().trim()));
+    }
+  } catch {}
+  return result;
 }
 
 export function addDeletedPostIdentifier(id: string, slug?: string) {
@@ -368,108 +374,148 @@ export function saveSiteSettings(settings: SiteSettings) {
 }
 
 // -------------------------------------------------------------
-// Posts API with Supabase Sync
+// Posts API with Supabase Sync & High-Performance Caching
 // -------------------------------------------------------------
-export async function getAllPosts(): Promise<ArticlePost[]> {
-  const deleted = getDeletedPostIdentifiers();
+let inFlightGetAllPosts: Promise<ArticlePost[]> | null = null;
+let cachedPostsInMemory: ArticlePost[] | null = null;
+let lastCacheTime = 0;
+const CACHE_TTL_MS = 60000; // 1 minute in-memory cache
 
-  // Helper to merge, deduplicate, filter deleted, and sort
-  const finalizePosts = (incoming: ArticlePost[]): ArticlePost[] => {
-    const postMap = new Map<string, ArticlePost>();
+export function clearPostsMemoryCache() {
+  cachedPostsInMemory = null;
+  lastCacheTime = 0;
+}
 
-    // 1. Baseline seed articles (if not deleted)
-    for (const seed of INITIAL_ARTICLES) {
-      const sId = String(seed.id).toLowerCase();
-      const sSlug = String(seed.slug).toLowerCase();
-      if (!deleted.has(sId) && !deleted.has(sSlug)) {
-        postMap.set(seed.slug, {
-          ...seed,
-          authorName: "Research Desk",
-          authorTitle: "YieldNest Research Desk",
-        });
-      }
-    }
-
-    // 2. Incoming database/server articles override baseline
-    for (const p of incoming) {
-      const pId = String(p.id).toLowerCase();
-      const pSlug = String(p.slug).toLowerCase();
-      if (!deleted.has(pId) && !deleted.has(pSlug)) {
-        postMap.set(p.slug, {
-          ...p,
-          authorName: "Research Desk",
-          authorTitle: "YieldNest Research Desk",
-        });
-      }
-    }
-
-    const sorted = Array.from(postMap.values()).sort((a, b) => {
-      const timeA = new Date(a.publishedAt || a.createdAt || 0).getTime();
-      const timeB = new Date(b.publishedAt || b.createdAt || 0).getTime();
-      return timeB - timeA;
-    });
-
-    saveLocalPosts(sorted);
-    return sorted;
-  };
-
-  // 1. Try unified server-side API proxy first (guarantees cross-device & production sync)
-  try {
-    const res = await fetch("/api/posts");
-    if (res.ok) {
-      const serverPosts: ArticlePost[] = await res.json();
-      if (Array.isArray(serverPosts) && serverPosts.length > 0) {
-        return finalizePosts(serverPosts);
-      }
-    }
-  } catch (apiErr) {
-    console.warn("[Storage] /api/posts fetch error, attempting direct client fallback:", apiErr);
+export async function getAllPosts(forceRefresh = false): Promise<ArticlePost[]> {
+  const now = Date.now();
+  if (!forceRefresh && cachedPostsInMemory && now - lastCacheTime < CACHE_TTL_MS) {
+    return cachedPostsInMemory;
   }
 
-  // 2. Direct Supabase Client fallback (for static Vercel / CDN visitor production environments)
-  const settings = getSiteSettings();
-  const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseAnonKey);
+  if (inFlightGetAllPosts) {
+    return inFlightGetAllPosts;
+  }
 
-  if (supabase) {
+  inFlightGetAllPosts = (async () => {
     try {
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .order("published_at", { ascending: false });
+      const deleted = getDeletedPostIdentifiers();
 
-      if (!error && data && data.length > 0) {
-        const mapped: ArticlePost[] = data.map((d: any) => ({
-          id: d.id,
-          slug: d.slug,
-          title: d.title,
-          excerpt: d.excerpt,
-          content: d.content,
-          category: d.category,
-          tags: d.tags || [],
-          status: d.status,
-          authorName: "Research Desk",
-          authorTitle: "YieldNest Research Desk",
-          authorAvatar: d.author_avatar,
-          coverImage: d.cover_image,
-          readTimeMinutes: d.read_time_minutes || 5,
-          viewsCount: d.views_count || 0,
-          amfiSchemeCodes: d.amfi_scheme_codes || [],
-          amfiDataSnapshot: d.amfi_data_snapshot || [],
-          seoMetadata: d.seo_metadata || {},
-          socialSnippets: d.social_shares || {},
-          scheduledFor: d.scheduled_for,
-          publishedAt: d.published_at,
-          createdAt: d.created_at,
-          updatedAt: d.updated_at,
-        }));
-        return finalizePosts(mapped);
+      // Helper to merge, deduplicate, filter deleted, and sort
+      const finalizePosts = (incoming: ArticlePost[]): ArticlePost[] => {
+        const postMap = new Map<string, ArticlePost>();
+
+        // 1. Baseline seed articles (if not deleted)
+        for (const seed of INITIAL_ARTICLES) {
+          const sId = String(seed.id).toLowerCase();
+          const sSlug = String(seed.slug).toLowerCase();
+          if (!deleted.has(sId) && !deleted.has(sSlug)) {
+            postMap.set(seed.slug, {
+              ...seed,
+              authorName: "Research Desk",
+              authorTitle: "YieldNest Research Desk",
+            });
+          }
+        }
+
+        // 2. Incoming database/server articles override baseline
+        for (const p of incoming) {
+          const pId = String(p.id).toLowerCase();
+          const pSlug = String(p.slug).toLowerCase();
+          if (!deleted.has(pId) && !deleted.has(pSlug)) {
+            postMap.set(p.slug, {
+              ...p,
+              authorName: "Research Desk",
+              authorTitle: "YieldNest Research Desk",
+            });
+          }
+        }
+
+        const sorted = Array.from(postMap.values()).sort((a, b) => {
+          const timeA = new Date(a.publishedAt || a.createdAt || 0).getTime();
+          const timeB = new Date(b.publishedAt || b.createdAt || 0).getTime();
+          return timeB - timeA;
+        });
+
+        cachedPostsInMemory = sorted;
+        lastCacheTime = Date.now();
+        saveLocalPosts(sorted);
+        return sorted;
+      };
+
+      // 1. Try unified server-side API proxy first (guarantees cross-device & edge CDN sync)
+      try {
+        const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+        const timeoutId = controller ? setTimeout(() => controller.abort(), 2000) : null;
+        const res = await fetch("/api/posts", {
+          signal: controller?.signal,
+          headers: { Accept: "application/json" },
+        });
+        if (timeoutId) clearTimeout(timeoutId);
+
+        const contentType = res.headers.get("content-type") || "";
+        if (res.ok && contentType.includes("json")) {
+          const serverPosts: ArticlePost[] = await res.json();
+          if (Array.isArray(serverPosts) && serverPosts.length > 0) {
+            return finalizePosts(serverPosts);
+          }
+        }
+      } catch {
+        // Fallback silently without throwing or blocking
       }
-    } catch (err) {
-      console.warn("Supabase fetch failed, falling back to local store:", err);
-    }
-  }
 
-  return getLocalPosts();
+      // 2. Direct Supabase Client fallback (for dynamic updates if API proxy unavailable)
+      const settings = getSiteSettings();
+      const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseAnonKey);
+
+      if (supabase) {
+        try {
+          const { data, error } = await supabase
+            .from("posts")
+            .select("*")
+            .order("published_at", { ascending: false });
+
+          if (!error && data && data.length > 0) {
+            const mapped: ArticlePost[] = data.map((d: any) => ({
+              id: d.id,
+              slug: d.slug,
+              title: d.title,
+              excerpt: d.excerpt,
+              content: d.content,
+              category: d.category,
+              tags: d.tags || [],
+              status: d.status,
+              authorName: "Research Desk",
+              authorTitle: "YieldNest Research Desk",
+              authorAvatar: d.author_avatar,
+              coverImage: d.cover_image,
+              readTimeMinutes: d.read_time_minutes || 5,
+              viewsCount: d.views_count || 0,
+              amfiSchemeCodes: d.amfi_scheme_codes || [],
+              amfiDataSnapshot: d.amfi_data_snapshot || [],
+              seoMetadata: d.seo_metadata || {},
+              socialSnippets: d.social_shares || {},
+              scheduledFor: d.scheduled_for,
+              publishedAt: d.published_at,
+              createdAt: d.created_at,
+              updatedAt: d.updated_at,
+            }));
+            return finalizePosts(mapped);
+          }
+        } catch {
+          // Supabase fetch fallback
+        }
+      }
+
+      const local = getLocalPosts();
+      cachedPostsInMemory = local;
+      lastCacheTime = Date.now();
+      return local;
+    } finally {
+      inFlightGetAllPosts = null;
+    }
+  })();
+
+  return inFlightGetAllPosts;
 }
 
 export async function getPostBySlug(slug: string): Promise<ArticlePost | null> {
@@ -478,6 +524,7 @@ export async function getPostBySlug(slug: string): Promise<ArticlePost | null> {
 }
 
 export async function savePost(post: ArticlePost): Promise<ArticlePost> {
+  clearPostsMemoryCache();
   // Clear from deleted tracking if re-saving
   removeDeletedPostIdentifier(post.id, post.slug);
 
@@ -552,6 +599,7 @@ export async function savePost(post: ArticlePost): Promise<ArticlePost> {
 }
 
 export async function deletePost(id: string, slug?: string): Promise<boolean> {
+  clearPostsMemoryCache();
   const currentPosts = getLocalPosts();
   const target = currentPosts.find(
     (p) => String(p.id) === String(id) || (slug && String(p.slug) === String(slug))

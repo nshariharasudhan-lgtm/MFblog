@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense, lazy } from "react";
 import { ArticleCategory, ArticlePost, Comment, SiteSettings, AdminUser } from "./types";
 import {
   getAllPosts,
@@ -17,9 +17,15 @@ import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { ArticleCard } from "./components/ArticleCard";
 import { ArticleReader } from "./components/ArticleReader";
-import { AdminDashboard } from "./components/admin/AdminDashboard";
-import { AdminAuthModal } from "./components/admin/AdminAuthModal";
 import { NewsletterSignup } from "./components/NewsletterSignup";
+
+// Code-split heavy admin modules away from initial public visitor bundle
+const AdminDashboard = lazy(() =>
+  import("./components/admin/AdminDashboard").then((m) => ({ default: m.AdminDashboard }))
+);
+const AdminAuthModal = lazy(() =>
+  import("./components/admin/AdminAuthModal").then((m) => ({ default: m.AdminAuthModal }))
+);
 
 const CATEGORY_SLUG_MAP: Record<string, ArticleCategory> = {
   "fund-comparison": "Fund Comparison",
@@ -50,10 +56,21 @@ export default function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Initialize and handle URL routing (History API)
+  // Initialize and handle URL routing (Instant zero-delay resolution from preloaded state)
   useEffect(() => {
-    loadData();
-    handleRouteFromUrl();
+    // Resolve initial route immediately using synchronous baseline (0ms blocking)
+    handleRouteFromUrl(posts);
+
+    // Defer background data refresh to idle time to guarantee fast FCP/LCP
+    const runBackgroundSync = () => {
+      loadData();
+    };
+
+    if ("requestIdleCallback" in window) {
+      (window as any).requestIdleCallback(runBackgroundSync, { timeout: 2000 });
+    } else {
+      setTimeout(runBackgroundSync, 600);
+    }
 
     const handlePopState = () => {
       handleRouteFromUrl();
@@ -63,23 +80,29 @@ export default function App() {
   }, []);
 
   const loadData = async () => {
-    const loadedPosts = await getAllPosts();
-    const loadedComments = await getAllComments();
-    const loadedSettings = getSiteSettings();
-    setPosts(loadedPosts);
-    setComments(loadedComments);
-    setSettings(loadedSettings);
-    setAdminUser(getCurrentAdminSession());
+    try {
+      const loadedPosts = await getAllPosts();
+      const loadedComments = await getAllComments();
+      const loadedSettings = getSiteSettings();
+      setPosts(loadedPosts);
+      setComments(loadedComments);
+      setSettings(loadedSettings);
+      setAdminUser(getCurrentAdminSession());
+      // Re-check route with freshly loaded posts in case of deep direct link
+      handleRouteFromUrl(loadedPosts);
+    } catch (err) {
+      console.warn("Background posts sync notice:", err);
+    }
   };
 
-  const handleRouteFromUrl = async () => {
+  const handleRouteFromUrl = (availablePosts?: ArticlePost[]) => {
     const rawPath = window.location.pathname;
     const path = rawPath.replace(/\/+$/, "") || "/";
-    const loadedPosts = await getAllPosts();
+    const currentList = availablePosts && availablePosts.length > 0 ? availablePosts : posts;
 
     if (path.startsWith("/article/")) {
       const slug = path.replace(/^\/article\//, "").replace(/\/+$/, "");
-      const matched = loadedPosts.find((p) => p.slug === slug);
+      const matched = currentList.find((p) => p.slug === slug);
       if (matched) {
         setSelectedArticle(matched);
         setIsAdminView(false);
@@ -239,30 +262,34 @@ export default function App() {
 
       {/* Admin Authentication Login Modal (shown only when visiting /admin without active session) */}
       {showAuthModal && (
-        <AdminAuthModal
-          onSuccess={handleAuthSuccess}
-          onCancel={() => {
-            setShowAuthModal(false);
-            handleBackToHome();
-          }}
-        />
+        <Suspense fallback={null}>
+          <AdminAuthModal
+            onSuccess={handleAuthSuccess}
+            onCancel={() => {
+              setShowAuthModal(false);
+              handleBackToHome();
+            }}
+          />
+        </Suspense>
       )}
 
       {/* Admin View (strictly URL /admin accessible) */}
       {isAdminView && adminUser ? (
-        <AdminDashboard
-          posts={posts}
-          comments={comments}
-          settings={settings}
-          adminUser={adminUser}
-          onSavePost={handleSavePost}
-          onDeletePost={handleDeletePost}
-          onViewPost={handleOpenArticle}
-          onCloseAdmin={handleBackToHome}
-          onLogoutAdmin={handleLogout}
-          onUpdateSettings={handleUpdateSettings}
-          initialTab={adminInitialTab}
-        />
+        <Suspense fallback={<div className="p-16 text-center text-xs font-mono text-stone-500">Loading research management suite...</div>}>
+          <AdminDashboard
+            posts={posts}
+            comments={comments}
+            settings={settings}
+            adminUser={adminUser}
+            onSavePost={handleSavePost}
+            onDeletePost={handleDeletePost}
+            onViewPost={handleOpenArticle}
+            onCloseAdmin={handleBackToHome}
+            onLogoutAdmin={handleLogout}
+            onUpdateSettings={handleUpdateSettings}
+            initialTab={adminInitialTab}
+          />
+        </Suspense>
       ) : selectedArticle ? (
         /* Single Article View */
         <ArticleReader

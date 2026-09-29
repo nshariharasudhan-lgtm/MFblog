@@ -654,6 +654,18 @@ async function runPrerender() {
     fs.copyFileSync(rootCatalog, path.join(distDir, "ai-catalog.json"));
   }
 
+  // 8. Generate static api/posts.json for instant edge response on Vercel without cold start
+  const apiDir = path.join(distDir, "api");
+  const publicApiDir = path.join(rootDir, "public", "api");
+  fs.mkdirSync(apiDir, { recursive: true });
+  fs.mkdirSync(publicApiDir, { recursive: true });
+  const postsJson = JSON.stringify(articles);
+  fs.writeFileSync(path.join(apiDir, "posts.json"), postsJson, "utf-8");
+  fs.writeFileSync(path.join(publicApiDir, "posts.json"), postsJson, "utf-8");
+  // Also create dist/api/posts file for servers that serve exact path
+  fs.writeFileSync(path.join(apiDir, "posts"), postsJson, "utf-8");
+  console.log("  ✓ Generated static edge API endpoint at /api/posts.json and /api/posts");
+
   console.log("✨ [Prerender] All static SEO pages successfully pre-rendered with zero redirects!");
 }
 

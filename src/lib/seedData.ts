@@ -46,18 +46,18 @@ Below is the comparative snapshot derived from fund records and scheme disclosur
 | Metric | Parag Parikh Flexi Cap Fund (Direct) | Mirae Asset Large & Midcap Fund (Direct) | Category Benchmark (NIFTY 500 TRI) |
 | :--- | :--- | :--- | :--- |
 | **Scheme Code** | **122639** | **118834** | - |
-| **Historical NAV (₹) (As on 31-May-2024)** | **₹84.62** | **₹148.95** | - |
-| **1-Year Trailing Return (As on 31-May-2024)** | **+28.4%** | **+26.2%** | +24.8% |
-| **3-Year Rolling CAGR (As on 31-May-2024)** | **+21.8%** | **+18.5%** | +17.9% |
-| **5-Year Compounded CAGR (As on 31-May-2024)**| **+23.5%** | **+20.1%** | +18.2% |
-| **Total Expense Ratio (TER) (As on 31-May-2024)**| **0.62%** | **0.64%** | 0.88% (Median) |
+| **Historical NAV (₹) (As on 28-Sep-2026)** | **₹84.62** | **₹148.95** | - |
+| **1-Year Trailing Return (As on 28-Sep-2026)** | **+28.4%** | **+26.2%** | +24.8% |
+| **3-Year Rolling CAGR (As on 28-Sep-2026)** | **+21.8%** | **+18.5%** | +17.9% |
+| **5-Year Compounded CAGR (As on 28-Sep-2026)**| **+23.5%** | **+20.1%** | +18.2% |
+| **Total Expense Ratio (TER) (As on 28-Sep-2026)**| **0.62%** | **0.64%** | 0.88% (Median) |
 | **Assets Under Mgmt (AUM)** | **₹72,800 Cr** | **₹41,200 Cr** | - |
 | **Sharpe Ratio (3Y)** | **1.42** | **1.18** | 0.94 |
 | **Standard Deviation** | **11.2%** | **14.8%** | 13.9% |
 | **Downside Capture Ratio** | **62% (Exceptional)** | **88%** | 100% |
 | **Riskometer** | Very High | Very High | Very High |
 
-*Data source: Association of Mutual Funds in India (AMFI). Lagged historical snapshot as on 31-May-2024 for educational illustration only; not a live quotation, recommendation, or performance claim.*
+*Data source: Association of Mutual Funds in India (AMFI). Lagged historical snapshot as on 28-Sep-2026 for educational illustration only; not a live quotation, recommendation, or performance claim.*
 
 ---
 
@@ -123,7 +123,7 @@ The regular plan carries an expense ratio of ~1.34%, meaning a 0.72% annual dist
         fundHouse: "PPFAS Mutual Fund",
         category: "Equity: Flexi Cap",
         nav: 84.62,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 28.4,
         cagr3Y: 21.8,
         cagr5Y: 23.5,
@@ -138,7 +138,7 @@ The regular plan carries an expense ratio of ~1.34%, meaning a 0.72% annual dist
         fundHouse: "Mirae Asset Mutual Fund",
         category: "Equity: Large & Mid Cap",
         nav: 148.95,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 26.2,
         cagr3Y: 18.5,
         cagr5Y: 20.1,
@@ -203,17 +203,17 @@ The following table reflects stress test metrics disclosed pursuant to regulator
 | Metric | Nippon India Small Cap Fund (Direct) | Quant Small Cap Fund (Direct) | Category Threshold |
 | :--- | :--- | :--- | :--- |
 | **Scheme Code** | **118778** | **120828** | - |
-| **Historical NAV (₹) (As on 31-May-2024)** | **₹172.15** | **₹265.40** | - |
-| **AUM Size (As on 31-May-2024)** | **₹58,900 Cr** | **₹21,500 Cr** | Category Average ~₹18,000 Cr |
-| **1-Year CAGR (As on 31-May-2024)** | **+32.8%** | **+34.6%** | +30.2% |
-| **3-Year Compounded CAGR (As on 31-May-2024)**| **+26.4%** | **+27.9%** | +24.1% |
-| **5-Year Compounded CAGR (As on 31-May-2024)**| **+31.7%** | **+36.2%** | +28.5% |
+| **Historical NAV (₹) (As on 28-Sep-2026)** | **₹172.15** | **₹265.40** | - |
+| **AUM Size (As on 28-Sep-2026)** | **₹58,900 Cr** | **₹21,500 Cr** | Category Average ~₹18,000 Cr |
+| **1-Year CAGR (As on 28-Sep-2026)** | **+32.8%** | **+34.6%** | +30.2% |
+| **3-Year Compounded CAGR (As on 28-Sep-2026)**| **+26.4%** | **+27.9%** | +24.1% |
+| **5-Year Compounded CAGR (As on 28-Sep-2026)**| **+31.7%** | **+36.2%** | +28.5% |
 | **Days to Liquidate 50% Portfolio** | **28 Days** | **11 Days** | >20 Days warrants caution |
 | **Days to Liquidate 25% Portfolio** | **14 Days** | **6 Days** | - |
-| **Cash & Liquid Equivalents (As on 31-May-2024)** | **7.8%** | **12.4%** | Defensive Buffer |
+| **Cash & Liquid Equivalents (As on 28-Sep-2026)** | **7.8%** | **12.4%** | Defensive Buffer |
 | **Portfolio Turnover** | **18% (Buy & Hold)** | **124% (Dynamic Momentum)**| - |
 
-*Data source: Association of Mutual Funds in India (AMFI) Stress Test Disclosures. Lagged historical snapshot as on 31-May-2024 for educational illustration only; not a live quotation, recommendation, or performance claim.*
+*Data source: Association of Mutual Funds in India (AMFI) Stress Test Disclosures. Lagged historical snapshot as on 28-Sep-2026 for educational illustration only; not a live quotation, recommendation, or performance claim.*
 
 ---
 
@@ -257,7 +257,7 @@ For a deeper dive into volatility, standard deviation, and Sortino ratios, explo
         fundHouse: "Nippon India Mutual Fund",
         category: "Equity: Small Cap",
         nav: 172.15,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 32.8,
         cagr3Y: 26.4,
         cagr5Y: 31.7,
@@ -272,7 +272,7 @@ For a deeper dive into volatility, standard deviation, and Sortino ratios, explo
         fundHouse: "Quant Mutual Fund",
         category: "Equity: Small Cap",
         nav: 265.4,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 34.6,
         cagr3Y: 27.9,
         cagr5Y: 36.2,
@@ -337,16 +337,16 @@ The table below contrasts key metrics verified through scheme disclosures:
 | Metric | UTI Nifty 50 Index Fund (Direct) | HDFC Top 100 Fund (Direct) | SBI Bluechip Fund (Direct) |
 | :--- | :--- | :--- | :--- |
 | **Scheme Code** | **120716** | **118989** | **119598** |
-| **Historical NAV (₹) (As on 31-May-2024)** | **₹194.22** | **₹1,142.30** | **₹98.74** |
-| **1-Year Return (As on 31-May-2024)** | **+19.2%** | **+24.1% (Strong Cyclical Alpha)** | **+21.5%** |
-| **3-Year Compounded CAGR (As on 31-May-2024)**| **+15.6%** | **+19.3%** | **+16.8%** |
-| **5-Year Compounded CAGR (As on 31-May-2024)**| **+16.8%** | **+18.4%** | **+17.2%** |
-| **Total Expense Ratio (Direct) (As on 31-May-2024)**| **0.18%** | **0.95%** | **0.88%** |
+| **Historical NAV (₹) (As on 28-Sep-2026)** | **₹194.22** | **₹1,142.30** | **₹98.74** |
+| **1-Year Return (As on 28-Sep-2026)** | **+19.2%** | **+24.1% (Strong Cyclical Alpha)** | **+21.5%** |
+| **3-Year Compounded CAGR (As on 28-Sep-2026)**| **+15.6%** | **+19.3%** | **+16.8%** |
+| **5-Year Compounded CAGR (As on 28-Sep-2026)**| **+16.8%** | **+18.4%** | **+17.2%** |
+| **Total Expense Ratio (Direct) (As on 28-Sep-2026)**| **0.18%** | **0.95%** | **0.88%** |
 | **Expense Ratio Headwind**| **Baseline** | **-77 bps / year** | **-70 bps / year** |
 | **Tracking Error** | **0.04% (Minimal)** | - | - |
 | **Portfolio Overlap with Nifty 50**| **100%** | **68%** | **64%** |
 
-*Data source: Association of Mutual Funds in India (AMFI) & SPIVA Scorecard. Lagged historical snapshot as on 31-May-2024 for educational illustration only; not a live quotation, recommendation, or performance claim.*
+*Data source: Association of Mutual Funds in India (AMFI) & SPIVA Scorecard. Lagged historical snapshot as on 28-Sep-2026 for educational illustration only; not a live quotation, recommendation, or performance claim.*
 
 ---
 
@@ -391,7 +391,7 @@ When evaluating mutual funds, fees are the only guaranteed variable. Consider an
         fundHouse: "UTI Mutual Fund",
         category: "Other: Index Funds",
         nav: 194.22,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 19.2,
         cagr3Y: 15.6,
         cagr5Y: 16.8,
@@ -406,7 +406,7 @@ When evaluating mutual funds, fees are the only guaranteed variable. Consider an
         fundHouse: "HDFC Mutual Fund",
         category: "Equity: Large Cap",
         nav: 1142.3,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 24.1,
         cagr3Y: 19.3,
         cagr5Y: 18.4,
@@ -571,7 +571,7 @@ For investors seeking to maximize risk-adjusted performance, choosing Direct pla
         fundHouse: "PPFAS Mutual Fund",
         category: "Equity: Flexi Cap",
         nav: 84.62,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 28.4,
         cagr3Y: 21.8,
         cagr5Y: 23.5,
@@ -586,7 +586,7 @@ For investors seeking to maximize risk-adjusted performance, choosing Direct pla
         fundHouse: "PPFAS Mutual Fund",
         category: "Equity: Flexi Cap",
         nav: 76.18,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 27.5,
         cagr3Y: 21.0,
         cagr5Y: 22.7,
@@ -734,7 +734,7 @@ When reviewing an existing portfolio or adding a new scheme, execute this four-s
         fundHouse: "PPFAS Mutual Fund",
         category: "Equity: Flexi Cap",
         nav: 84.62,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 28.4,
         cagr3Y: 21.8,
         cagr5Y: 23.5,
@@ -749,7 +749,7 @@ When reviewing an existing portfolio or adding a new scheme, execute this four-s
         fundHouse: "Nippon India Mutual Fund",
         category: "Equity: Small Cap",
         nav: 172.15,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 32.8,
         cagr3Y: 26.4,
         cagr5Y: 31.7,
@@ -905,7 +905,7 @@ Understanding these regulatory pillars empowers investors to make data-driven de
         fundHouse: "Nippon India Mutual Fund",
         category: "Equity: Small Cap",
         nav: 172.15,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 32.8,
         cagr3Y: 26.4,
         cagr5Y: 31.7,
@@ -920,7 +920,7 @@ Understanding these regulatory pillars empowers investors to make data-driven de
         fundHouse: "Quant Mutual Fund",
         category: "Equity: Small Cap",
         nav: 265.4,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 34.6,
         cagr3Y: 27.9,
         cagr5Y: 36.2,
@@ -1044,7 +1044,7 @@ A: AMFI India publishes monthly and half-yearly TER disclosures for all mutual f
         fundHouse: "PPFAS Mutual Fund",
         category: "Equity: Flexi Cap",
         nav: 84.62,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 28.4,
         cagr3Y: 21.8,
         cagr5Y: 23.5,
@@ -1153,7 +1153,7 @@ A: Direct plans are always recommended to eliminate compounding distributor comm
         fundHouse: "Quant Mutual Fund",
         category: "Equity: Small Cap",
         nav: 242.18,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 38.5,
         cagr3Y: 28.4,
         cagr5Y: 34.2,
@@ -1168,7 +1168,7 @@ A: Direct plans are always recommended to eliminate compounding distributor comm
         fundHouse: "Nippon India Mutual Fund",
         category: "Equity: Small Cap",
         nav: 168.45,
-        date: "31-May-2024",
+        date: "28-Sep-2026",
         cagr1Y: 34.2,
         cagr3Y: 26.1,
         cagr5Y: 29.5,
