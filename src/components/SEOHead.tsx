@@ -179,58 +179,7 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
     const existingArticleTags = document.querySelectorAll('meta[property="article:tag"]');
     existingArticleTags.forEach((el) => el.remove());
 
-    if (calculatorMeta) {
-      const calculatorSchema = {
-        "@context": "https://schema.org",
-        "@graph": [
-          {
-            "@type": "WebApplication",
-            "@id": `${fullUrl}#app`,
-            name: calculatorMeta.name,
-            url: fullUrl,
-            applicationCategory: "FinanceApplication",
-            operatingSystem: "All",
-            browserRequirements: "Requires JavaScript",
-            description: description,
-            offers: {
-              "@type": "Offer",
-              price: "0",
-              priceCurrency: "INR",
-            },
-            publisher: {
-              "@type": "Organization",
-              name: settings.siteName,
-              url: canonicalOrigin,
-            },
-          },
-          {
-            "@type": "BreadcrumbList",
-            "@id": `${fullUrl}#breadcrumb`,
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: canonicalOrigin,
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "Calculators",
-                item: `${canonicalOrigin}/calculators`,
-              },
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: calculatorMeta.name,
-                item: fullUrl,
-              },
-            ],
-          },
-        ],
-      };
-      scriptTag.textContent = JSON.stringify(calculatorSchema, null, 2);
-    } else if (post) {
+    if (post) {
       const publishDate = post.publishedAt || post.createdAt;
       const modifiedDate = post.updatedAt || post.createdAt;
       setMetaTag("property", "article:published_time", new Date(publishDate).toISOString());
