@@ -38,4 +38,4 @@ Allow: /
 
 # Canonical Sitemap and LLM context endpoints
 Sitemap: https://www.yieldnest.online/sitemap.xml
-Agentmap: https://www.yieldnest.online/.well-known/ai-catalog.json
+# AI Catalog (ARD Specification): https://www.yieldnest.online/.well-known/ai-catalog.json

@@ -1,6 +1,23 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/article/direct-vs-regular-mutual-funds-charges-commissions-compissions",
+      "destination": "/article/direct-vs-regular-mutual-funds-charges-commissions-compounding",
+      "permanent": true
+    },
+    {
+      "source": "/article/mid-cap-vs-small-cap-analyzing-risk-adjusted-returns-amidst-current-market-volatility",
+      "destination": "/article/mid-cap-vs-small-cap-analyzing-risk-adjusted-returns-amidst-current-market",
+      "permanent": true
+    },
+    {
+      "source": "/article/total-expense-ratio-ter-breakdown-impact-sip-returns",
+      "destination": "/article/why-total-expense-ratio-ter-is-important-for-investors",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/sitemap.xml",

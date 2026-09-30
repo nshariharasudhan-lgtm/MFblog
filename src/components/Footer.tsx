@@ -74,9 +74,9 @@ export function Footer({ settings, onSelectCategory, onNavigateCalculators }: Fo
           {/* About Publication & Crawl Endpoints */}
           <div className="md:col-span-3 space-y-3">
             <div className="font-semibold text-stone-900 font-mono-data uppercase tracking-wider text-[11px]">
-              Editorial &amp; Interactive Tools
+              Financial Calculators
             </div>
-            <ul className="space-y-2 text-stone-600 text-xs">
+            <ul className="space-y-1.5 text-stone-600 text-xs">
               <li>
                 <a
                   href="/calculators"
@@ -89,12 +89,41 @@ export function Footer({ settings, onSelectCategory, onNavigateCalculators }: Fo
                   }}
                   className="text-emerald-700 hover:text-emerald-900 font-medium inline-flex items-center gap-1.5 transition-colors"
                 >
-                  <span>🧮 Quantitative Calculators Suite</span>
+                  <span>🧮 Calculator Suite Hub</span>
                 </a>
               </li>
-              <li className="py-0.5">Educational Mutual Fund Research</li>
-              <li className="py-0.5">Factual Rolling Return Calculations</li>
-              <li className="py-0.5">Portfolio Expense &amp; TER Analysis</li>
+              <li>
+                <a
+                  href="/calculator/direct-vs-regular"
+                  className="text-stone-700 hover:text-black transition-colors"
+                >
+                  Direct vs Regular (TER Drag)
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/calculator/step-up-sip"
+                  className="text-stone-700 hover:text-black transition-colors"
+                >
+                  Step-Up SIP Calculator
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/calculator/cost-of-delay"
+                  className="text-stone-700 hover:text-black transition-colors"
+                >
+                  Cost of Delay (Procrastination Tax)
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/calculator/sip-vs-lumpsum"
+                  className="text-stone-700 hover:text-black transition-colors"
+                >
+                  SIP vs Lumpsum Comparator
+                </a>
+              </li>
               <li className="pt-2 border-t border-stone-300/60 flex items-center gap-2 font-mono-data text-[11px]">
                 <a href="/sitemap.xml" className="text-stone-700 hover:text-black underline py-2 min-h-[44px] inline-flex items-center" target="_blank" rel="noopener noreferrer">Sitemap.xml</a>
                 <span>•</span>
