@@ -37,6 +37,14 @@ app.get("/google:code.html", (req, res) => {
   return res.send(`google-site-verification: google${req.params.code}.html`);
 });
 
+// Bing / IndexNow protocol verification endpoint
+const INDEXNOW_KEY = "caef2d2b54404d86b8fecc69ca144cfc";
+app.get(["/caef2d2b54404d86b8fecc69ca144cfc.txt", "/indexnow.txt"], (_req, res) => {
+  res.setHeader("Content-Type", "text/plain; charset=utf-8");
+  res.setHeader("Cache-Control", "public, max-age=86400");
+  return res.send(INDEXNOW_KEY);
+});
+
 // Server-side Gemini client with required User-Agent
 const apiKey = process.env.GEMINI_API_KEY || "";
 const ai = apiKey

@@ -1047,11 +1047,20 @@ async function runPrerender() {
   fs.writeFileSync(path.join(rootDir, "public", "sitemap.xml"), sitemapXml, "utf-8");
   console.log("  ✓ Synced sitemap.xml to dist/ and public/ with all www.yieldnest.online URLs");
 
-  // 5. Sync robots.txt
+  // 5. Sync robots.txt and IndexNow keys
   const robotsSrc = path.join(rootDir, "public", "robots.txt");
   if (fs.existsSync(robotsSrc)) {
     fs.copyFileSync(robotsSrc, path.join(distDir, "robots.txt"));
     console.log("  ✓ Copied robots.txt to dist/");
+  }
+
+  // 5b. Sync IndexNow verification files
+  for (const indexNowFile of ["caef2d2b54404d86b8fecc69ca144cfc.txt", "indexnow.txt"]) {
+    const src = path.join(rootDir, "public", indexNowFile);
+    if (fs.existsSync(src)) {
+      fs.copyFileSync(src, path.join(distDir, indexNowFile));
+      console.log(`  ✓ Copied IndexNow key file ${indexNowFile} to dist/`);
+    }
   }
 
   // 6. Sync llms.txt and llms-full.txt

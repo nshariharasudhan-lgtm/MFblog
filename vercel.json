@@ -48,6 +48,14 @@
       "destination": "/ai-catalog.json"
     },
     {
+      "source": "/caef2d2b54404d86b8fecc69ca144cfc.txt",
+      "destination": "/caef2d2b54404d86b8fecc69ca144cfc.txt"
+    },
+    {
+      "source": "/indexnow.txt",
+      "destination": "/indexnow.txt"
+    },
+    {
       "source": "/api/posts",
       "destination": "/api/posts.json"
     },
@@ -137,6 +145,32 @@
         {
           "key": "Content-Type",
           "value": "text/plain; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/caef2d2b54404d86b8fecc69ca144cfc.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    },
+    {
+      "source": "/indexnow.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
         }
       ]
     }

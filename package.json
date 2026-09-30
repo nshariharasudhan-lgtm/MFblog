@@ -10,6 +10,7 @@
     "start": "tsx server.ts",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
+    "submit:indexnow": "tsx scripts/submit-indexnow.ts",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
