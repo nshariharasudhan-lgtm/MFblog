@@ -10,6 +10,8 @@ import {
   ArrowRight,
   BookOpen,
   ShieldAlert,
+  Sparkles,
+  Tag,
 } from "lucide-react";
 import { ArticlePost, SiteSettings } from "../types";
 import { CommentSection } from "./CommentSection";
@@ -90,16 +92,70 @@ export function ArticleReader({
     }
   };
 
-  // Related articles for internal link discovery (excluding current post)
-  const relatedArticles = allPosts
-    .filter((p) => p.id !== post.id && p.status === "published")
-    .sort((a, b) => {
-      // Prioritize same category, then recent
-      if (a.category === post.category && b.category !== post.category) return -1;
-      if (b.category === post.category && a.category !== post.category) return 1;
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-    })
-    .slice(0, 3);
+  // Related articles suggestion algorithm based on category and shared tags
+  const relatedArticles = React.useMemo(() => {
+    const currentTags = (post.tags || []).map((t) => t.toLowerCase().trim()).filter(Boolean);
+    const currentCategory = post.category;
+
+    const candidates = allPosts
+      .filter((p) => p.id !== post.id && p.status === "published")
+      .map((p) => {
+        let score = 0;
+        const candidateTags = (p.tags || []).map((t) => t.toLowerCase().trim()).filter(Boolean);
+        const sharedTags: string[] = [];
+
+        // 1. Shared tags match (3 points per exact match, 1.5 for partial word match)
+        for (const ct of currentTags) {
+          for (const candTag of candidateTags) {
+            if (ct === candTag) {
+              score += 3;
+              if (!sharedTags.includes(candTag)) sharedTags.push(candTag);
+            } else if (ct.includes(candTag) || candTag.includes(ct)) {
+              score += 1.5;
+              if (!sharedTags.includes(candTag)) sharedTags.push(candTag);
+            }
+          }
+        }
+
+        // 2. Same category match (2.5 points)
+        if (p.category === currentCategory) {
+          score += 2.5;
+        }
+
+        // 3. Keyword / title overlap (0.5 points)
+        const currentTitleWords = post.title.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
+        const pTitleLower = p.title.toLowerCase();
+        for (const word of currentTitleWords) {
+          if (pTitleLower.includes(word)) {
+            score += 0.5;
+          }
+        }
+
+        return {
+          post: p,
+          score,
+          sharedTags,
+          date: new Date(p.publishedAt || p.createdAt).getTime(),
+        };
+      });
+
+    // Sort by relevance score descending, then recency
+    candidates.sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      return b.date - a.date;
+    });
+
+    return candidates.slice(0, 3).map((c) => ({
+      ...c.post,
+      matchReason: c.sharedTags.length > 0
+        ? `Topic: ${c.sharedTags[0]}`
+        : c.post.category === currentCategory
+        ? `Category: ${currentCategory}`
+        : "Quantitative Analysis",
+    }));
+  }, [post, allPosts]);
 
   // Convert basic markdown to clean HTML with clickable internal links
   const renderMarkdown = (content: string) => {
@@ -460,38 +516,75 @@ export function ArticleReader({
           </p>
         </div>
 
-        {/* Internal Links / Related Research Notes Section */}
+        {/* Related Posts Section */}
         {relatedArticles.length > 0 && (
           <div className="mt-14 pt-8 border-t border-[#EAE8E0]">
-            <div className="flex items-center gap-2 mb-4">
-              <BookOpen className="w-4 h-4 text-stone-700" />
-              <h3 className="font-mono-data uppercase tracking-wider text-xs font-semibold text-stone-800">
-                Related Research & Category Analyses
-              </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+              <div>
+                <div className="flex items-center gap-1.5 text-xs font-mono-data uppercase tracking-wider text-emerald-700 font-semibold mb-1">
+                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Curated For You</span>
+                </div>
+                <h3 className="font-serif-editorial text-xl sm:text-2xl font-bold text-stone-900 tracking-tight">
+                  Related Posts &amp; Research Notes
+                </h3>
+                <p className="text-xs text-stone-500 font-sans mt-0.5">
+                  Suggested quantitative analyses matched by category (<em>{post.category}</em>) and relevant investment themes.
+                </p>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {relatedArticles.map((rel) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {relatedArticles.map((rel: any) => (
                 <div
                   key={rel.id}
                   onClick={() => handleInternalSlugNavigation(rel.slug)}
-                  className="group cursor-pointer p-4 rounded-xl bg-white border border-[#EAE8E0] hover:border-[#CFCBBF] hover:shadow-xs transition-all flex flex-col justify-between"
+                  className="group cursor-pointer p-5 rounded-2xl bg-white border border-[#EAE8E0] hover:border-emerald-600/40 hover:shadow-md transition-all duration-200 flex flex-col justify-between relative overflow-hidden"
                 >
-                  <div className="space-y-2">
-                    <span className="text-[10px] uppercase font-mono-data tracking-wider text-stone-500 font-semibold">
-                      {rel.category}
-                    </span>
-                    <h4 className="font-serif-editorial text-sm font-semibold text-stone-900 group-hover:text-indigo-600 transition-colors line-clamp-2 leading-snug">
+                  <div className="space-y-3">
+                    {/* Category & Topic Match Badges */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <span className="text-[10px] uppercase font-mono-data tracking-wider px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 font-medium">
+                        {rel.category}
+                      </span>
+                      {rel.matchReason && (
+                        <span className="text-[10px] font-mono-data px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-medium flex items-center gap-1">
+                          <Tag className="w-2.5 h-2.5" />
+                          <span className="truncate max-w-[120px]">{rel.matchReason}</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <h4 className="font-serif-editorial text-base font-semibold text-stone-900 group-hover:text-emerald-700 transition-colors line-clamp-2 leading-snug">
                       {rel.title}
                     </h4>
-                    <p className="text-stone-500 text-xs line-clamp-2 leading-relaxed">
+
+                    <p className="text-stone-600 text-xs line-clamp-2 leading-relaxed font-sans">
                       {rel.excerpt}
                     </p>
+
+                    {/* Display top tags if available */}
+                    {rel.tags && rel.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 pt-1">
+                        {rel.tags.slice(0, 2).map((t: string, idx: number) => (
+                          <span
+                            key={idx}
+                            className="text-[10px] px-1.5 py-0.5 rounded bg-[#FAF9F5] text-stone-500 font-mono-data border border-stone-200/60"
+                          >
+                            #{t}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div className="pt-3 mt-3 border-t border-stone-100 flex items-center justify-between text-[11px] font-mono-data text-stone-500">
-                    <span>{rel.readTimeMinutes} min read</span>
-                    <span className="flex items-center gap-1 text-indigo-600 font-medium group-hover:translate-x-0.5 transition-transform">
-                      Read <ArrowRight className="w-3 h-3" />
+
+                  <div className="pt-3.5 mt-4 border-t border-stone-100 flex items-center justify-between text-xs font-mono-data text-stone-500">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-stone-400" />
+                      {rel.readTimeMinutes} min read
+                    </span>
+                    <span className="flex items-center gap-1 text-emerald-700 font-semibold group-hover:translate-x-1 transition-transform">
+                      Read Analysis <ArrowRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
                 </div>

@@ -6,9 +6,10 @@ import { YieldNestLogo } from "./YieldNestLogo";
 interface FooterProps {
   settings: SiteSettings;
   onSelectCategory: (cat: ArticleCategory | "all") => void;
+  onNavigateCalculators?: () => void;
 }
 
-export function Footer({ settings, onSelectCategory }: FooterProps) {
+export function Footer({ settings, onSelectCategory, onNavigateCalculators }: FooterProps) {
   const categories: ArticleCategory[] = [
     "Fund Comparison",
     "Performance Analysis",
@@ -73,12 +74,27 @@ export function Footer({ settings, onSelectCategory }: FooterProps) {
           {/* About Publication & Crawl Endpoints */}
           <div className="md:col-span-3 space-y-3">
             <div className="font-semibold text-stone-900 font-mono-data uppercase tracking-wider text-[11px]">
-              Editorial & Indexing
+              Editorial &amp; Interactive Tools
             </div>
             <ul className="space-y-2 text-stone-600 text-xs">
-              <li className="py-1">Educational Mutual Fund Research</li>
-              <li className="py-1">Factual Rolling Return Calculations</li>
-              <li className="py-1">Portfolio Expense &amp; TER Analysis</li>
+              <li>
+                <a
+                  href="/calculators"
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                      e.preventDefault();
+                      if (onNavigateCalculators) onNavigateCalculators();
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                  }}
+                  className="text-emerald-700 hover:text-emerald-900 font-medium inline-flex items-center gap-1.5 transition-colors"
+                >
+                  <span>🧮 Quantitative Calculators Suite</span>
+                </a>
+              </li>
+              <li className="py-0.5">Educational Mutual Fund Research</li>
+              <li className="py-0.5">Factual Rolling Return Calculations</li>
+              <li className="py-0.5">Portfolio Expense &amp; TER Analysis</li>
               <li className="pt-2 border-t border-stone-300/60 flex items-center gap-2 font-mono-data text-[11px]">
                 <a href="/sitemap.xml" className="text-stone-700 hover:text-black underline py-2 min-h-[44px] inline-flex items-center" target="_blank" rel="noopener noreferrer">Sitemap.xml</a>
                 <span>•</span>

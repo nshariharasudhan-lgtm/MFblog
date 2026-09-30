@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Direct vs Regular Mutual Fund Compounding Calculator | YieldNest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .calculator-widget {
+      width: 100%;
+      max-w: 860px;
+      max-width: 860px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+    }
+
+    /* Header */
+    .widget-header {
+      padding: 24px 28px 20px;
+      border-bottom: 1px solid #334155;
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.6) 100%);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 9999px;
+      color: #10b981;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .brand-tag svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .widget-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-top: 6px;
+    }
+
+    .widget-subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 3px;
+    }
+
+    /* Layout Grid */
+    .widget-body {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 0;
+    }
+
+    @media (max-width: 768px) {
+      .widget-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Inputs Column */
+    .inputs-col {
+      padding: 28px;
+      border-right: 1px solid #334155;
+    }
+
+    @media (max-width: 768px) {
+      .inputs-col {
+        border-right: none;
+        border-bottom: 1px solid #334155;
+        padding: 20px;
+      }
+    }
+
+    .input-group {
+      margin-bottom: 22px;
+    }
+
+    .input-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .input-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-box-wrapper {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .input-currency-prefix {
+      position: absolute;
+      left: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+      pointer-events: none;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .num-input {
+      background: #0f172a;
+      border: 1px solid #475569;
+      color: #f8fafc;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 6px 10px;
+      border-radius: 8px;
+      width: 110px;
+      text-align: right;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+
+    .num-input:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+    }
+
+    .num-input.has-prefix {
+      padding-left: 24px;
+    }
+
+    /* Slider Styling */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #334155;
+      border-radius: 4px;
+      outline: none;
+      margin: 8px 0;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 2px solid #0f172a;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type=range]::-moz-range-thumb {
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 2px solid #0f172a;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+      cursor: pointer;
+    }
+
+    .range-limits {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Presets */
+    .presets-row {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed #334155;
+    }
+
+    .preset-btn {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 6px 4px;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .preset-btn:hover {
+      background: #1e293b;
+      border-color: #64748b;
+      color: #f8fafc;
+    }
+
+    /* Outputs Column */
+    .outputs-col {
+      padding: 28px;
+      background: rgba(15, 23, 42, 0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    @media (max-width: 768px) {
+      .outputs-col {
+        padding: 20px;
+      }
+    }
+
+    /* Highlighted Loss Callout Box */
+    .loss-callout {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.05) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-radius: 14px;
+      padding: 16px;
+      position: relative;
+    }
+
+    .loss-tag {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #ef4444;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 6px;
+    }
+
+    .loss-amount {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.02em;
+    }
+
+    .loss-subtext {
+      font-size: 12px;
+      color: #fca5a5;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* Metric Cards Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .metric-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .metric-card.direct {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.9) 100%);
+    }
+
+    .metric-card.full-span {
+      grid-column: span 2;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 4px;
+    }
+
+    .metric-label .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .metric-label .dot.emerald { background: #10b981; }
+    .metric-label .dot.slate { background: #94a3b8; }
+    .metric-label .dot.amber { background: #f59e0b; }
+
+    .metric-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .metric-value.direct-val {
+      color: #10b981;
+    }
+
+    .metric-words {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Comparison Bar Chart */
+    .comparison-section {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .bar-row {
+      margin-bottom: 12px;
+    }
+
+    .bar-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .bar-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .bar-container {
+      height: 10px;
+      background: #1e293b;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .bar-fill.direct {
+      background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+      width: 100%;
+    }
+
+    .bar-fill.regular {
+      background: linear-gradient(90deg, #475569 0%, #94a3b8 100%);
+    }
+
+    /* Footer Disclaimer */
+    .widget-footer {
+      padding: 14px 28px;
+      background: #0b1120;
+      border-top: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    .widget-footer svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator-widget">
+    <!-- Header -->
+    <div class="widget-header">
+      <div>
+        <span class="brand-tag">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+            <polyline points="16 7 22 7 22 13"></polyline>
+          </svg>
+          YieldNest.online • Fee Drag Calculator
+        </span>
+        <h2 class="widget-title">Direct vs. Regular Plan Compounding Cost</h2>
+        <p class="widget-subtitle">See how much wealth you lose to distributor commissions &amp; TER friction over your SIP tenure.</p>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="widget-body">
+      <!-- Input Column -->
+      <div class="inputs-col">
+        <!-- 1. Monthly SIP -->
+        <div class="input-group">
+          <div class="input-header">
+            <label class="input-label" for="sipAmount">
+              Monthly SIP Amount
+            </label>
+            <div class="input-box-wrapper">
+              <span class="input-currency-prefix">₹</span>
+              <input type="number" id="sipAmount" class="num-input has-prefix" min="1000" max="100000" step="1000" value="10000">
+            </div>
+          </div>
+          <input type="range" id="sipSlider" min="1000" max="100000" step="1000" value="10000">
+          <div class="range-limits">
+            <span>₹1,000</span>
+            <span>₹50,000</span>
+            <span>₹1,00,000</span>
+          </div>
+        </div>
+
+        <!-- 2. Investment Period -->
+        <div class="input-group">
+          <div class="input-header">
+            <label class="input-label" for="years">
+              Investment Horizon
+            </label>
+            <div class="input-box-wrapper">
+              <input type="number" id="years" class="num-input" min="1" max="35" step="1" value="15">
+            </div>
+          </div>
+          <input type="range" id="yearsSlider" min="1" max="35" step="1" value="15">
+          <div class="range-limits">
+            <span>1 Year</span>
+            <span>15 Years</span>
+            <span>35 Years</span>
+          </div>
+        </div>
+
+        <!-- 3. Expected Gross Return -->
+        <div class="input-group">
+          <div class="input-header">
+            <label class="input-label" for="grossReturn">
+              Expected Gross Return (CAGR)
+            </label>
+            <div class="input-box-wrapper">
+              <input type="number" id="grossReturn" class="num-input" min="6" max="25" step="0.5" value="13">
+            </div>
+          </div>
+          <input type="range" id="grossSlider" min="6" max="25" step="0.5" value="13">
+          <div class="range-limits">
+            <span>6.0%</span>
+            <span>13.0%</span>
+            <span>25.0%</span>
+          </div>
+        </div>
+
+        <!-- 4. Regular Plan Commission Drag -->
+        <div class="input-group">
+          <div class="input-header">
+            <label class="input-label" for="commissionDrag">
+              Regular Plan Fee / Commission Drag
+            </label>
+            <div class="input-box-wrapper">
+              <input type="number" id="commissionDrag" class="num-input" min="0.2" max="2.5" step="0.1" value="1.0">
+            </div>
+          </div>
+          <input type="range" id="dragSlider" min="0.2" max="2.5" step="0.1" value="1.0">
+          <div class="range-limits">
+            <span>0.2%</span>
+            <span>1.0% (AMFI Avg)</span>
+            <span>2.5%</span>
+          </div>
+        </div>
+
+        <!-- Quick Horizon Presets -->
+        <div class="presets-row">
+          <button class="preset-btn" onclick="applyPreset(5000, 10, 13, 1.0)">₹5k / 10Y</button>
+          <button class="preset-btn" onclick="applyPreset(10000, 15, 13, 1.0)">₹10k / 15Y</button>
+          <button class="preset-btn" onclick="applyPreset(25000, 20, 13, 1.0)">₹25k / 20Y</button>
+          <button class="preset-btn" onclick="applyPreset(50000, 25, 13, 1.0)">₹50k / 25Y</button>
+        </div>
+      </div>
+
+      <!-- Output Column -->
+      <div class="outputs-col">
+        <!-- Highlight Callout: Lost Wealth -->
+        <div class="loss-callout">
+          <div class="loss-tag">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <line x1="12" y1="9" x2="12" y2="13"></line>
+              <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+            Lost to Commissions / TER Drag
+          </div>
+          <div class="loss-amount" id="lostWealthDisplay">₹0</div>
+          <div class="loss-subtext" id="lostPercentDisplay">0% of your total potential corpus sacrificed</div>
+        </div>
+
+        <!-- Metric Outputs -->
+        <div class="metrics-grid">
+          <!-- Direct Plan Value -->
+          <div class="metric-card direct">
+            <div class="metric-label">
+              <span class="dot emerald"></span> Direct Plan (0% Commission)
+            </div>
+            <div class="metric-value direct-val" id="directFvDisplay">₹0</div>
+            <div class="metric-words" id="directWordsDisplay">-</div>
+          </div>
+
+          <!-- Regular Plan Value -->
+          <div class="metric-card">
+            <div class="metric-label">
+              <span class="dot slate"></span> Regular Plan (Distributor)
+            </div>
+            <div class="metric-value" id="regularFvDisplay">₹0</div>
+            <div class="metric-words" id="regularWordsDisplay">-</div>
+          </div>
+
+          <!-- Total Invested Amount -->
+          <div class="metric-card full-span">
+            <div class="metric-label">
+              <span class="dot amber"></span> Total Principal Invested
+            </div>
+            <div class="metric-value" id="investedDisplay" style="color: #cbd5e1;">₹0</div>
+            <div class="metric-words" id="investedWordsDisplay">-</div>
+          </div>
+        </div>
+
+        <!-- Visual Comparison Bars -->
+        <div class="comparison-section">
+          <div class="bar-row">
+            <div class="bar-meta">
+              <span style="color: #10b981;">Direct Plan Value (100%)</span>
+              <span id="directBarPercent" style="color: #10b981; font-family: 'JetBrains Mono', monospace;">100%</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill direct"></div>
+            </div>
+          </div>
+
+          <div class="bar-row">
+            <div class="bar-meta">
+              <span style="color: #94a3b8;">Regular Plan Value</span>
+              <span id="regularBarPercent" style="color: #94a3b8; font-family: 'JetBrains Mono', monospace;">-</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill regular" id="regularBarFill" style="width: 80%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Educational Disclaimer Footer -->
+    <div class="widget-footer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <span>
+        <strong>Statutory Notice:</strong> Strictly for investor education. Assumes constant CAGR and monthly compounding. Direct plan savings compound over time because distributor trail commissions are never deducted from your daily NAV.
+      </span>
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const sipAmountInput = document.getElementById("sipAmount");
+    const sipSlider = document.getElementById("sipSlider");
+    const yearsInput = document.getElementById("years");
+    const yearsSlider = document.getElementById("yearsSlider");
+    const grossReturnInput = document.getElementById("grossReturn");
+    const grossSlider = document.getElementById("grossSlider");
+    const commissionDragInput = document.getElementById("commissionDrag");
+    const dragSlider = document.getElementById("dragSlider");
+
+    // Display elements
+    const lostWealthDisplay = document.getElementById("lostWealthDisplay");
+    const lostPercentDisplay = document.getElementById("lostPercentDisplay");
+    const directFvDisplay = document.getElementById("directFvDisplay");
+    const directWordsDisplay = document.getElementById("directWordsDisplay");
+    const regularFvDisplay = document.getElementById("regularFvDisplay");
+    const regularWordsDisplay = document.getElementById("regularWordsDisplay");
+    const investedDisplay = document.getElementById("investedDisplay");
+    const investedWordsDisplay = document.getElementById("investedWordsDisplay");
+    const regularBarPercent = document.getElementById("regularBarPercent");
+    const regularBarFill = document.getElementById("regularBarFill");
+
+    // Indian Number Formatting
+    function formatINR(val) {
+      const rounded = Math.round(val);
+      return "₹" + rounded.toLocaleString("en-IN");
+    }
+
+    // Convert number to Lakhs or Crores representation
+    function formatIndianWords(amount) {
+      if (amount >= 10000000) {
+        return (amount / 10000000).toFixed(2) + " Crores";
+      } else if (amount >= 100000) {
+        return (amount / 100000).toFixed(2) + " Lakhs";
+      } else if (amount >= 1000) {
+        return (amount / 1000).toFixed(1) + " Thousand";
+      }
+      return "₹" + Math.round(amount);
+    }
+
+    // Calculation Logic
+    // FV = P * [((1 + r)^n - 1) / r] * (1 + r)
+    function calculate() {
+      const P = parseFloat(sipAmountInput.value) || 0;
+      const years = parseFloat(yearsInput.value) || 0;
+      const grossAnnual = parseFloat(grossReturnInput.value) || 0;
+      const commissionDrag = parseFloat(commissionDragInput.value) || 0;
+
+      const n = years * 12;
+      const totalInvested = P * n;
+
+      // Direct Plan Monthly Rate
+      const r_direct = (grossAnnual / 100) / 12;
+
+      // Regular Plan Monthly Rate (Gross Return minus Commission Drag)
+      const netRegularAnnual = Math.max(0, grossAnnual - commissionDrag);
+      const r_regular = (netRegularAnnual / 100) / 12;
+
+      let fvDirect = 0;
+      if (r_direct > 0 && n > 0 && P > 0) {
+        fvDirect = P * ((Math.pow(1 + r_direct, n) - 1) / r_direct) * (1 + r_direct);
+      } else {
+        fvDirect = totalInvested;
+      }
+
+      let fvRegular = 0;
+      if (r_regular > 0 && n > 0 && P > 0) {
+        fvRegular = P * ((Math.pow(1 + r_regular, n) - 1) / r_regular) * (1 + r_regular);
+      } else {
+        fvRegular = totalInvested;
+      }
+
+      const diff = Math.max(0, fvDirect - fvRegular);
+      const lossPercent = fvDirect > 0 ? ((diff / fvDirect) * 100) : 0;
+      const regularRatio = fvDirect > 0 ? (fvRegular / fvDirect) * 100 : 100;
+
+      // Update UI
+      lostWealthDisplay.textContent = formatINR(diff);
+      lostPercentDisplay.textContent = `${lossPercent.toFixed(1)}% of your final wealth lost to distributor commissions (${formatIndianWords(diff)})`;
+
+      directFvDisplay.textContent = formatINR(fvDirect);
+      directWordsDisplay.textContent = `≈ ${formatIndianWords(fvDirect)}`;
+
+      regularFvDisplay.textContent = formatINR(fvRegular);
+      regularWordsDisplay.textContent = `≈ ${formatIndianWords(fvRegular)}`;
+
+      investedDisplay.textContent = formatINR(totalInvested);
+      investedWordsDisplay.textContent = `≈ ${formatIndianWords(totalInvested)} across ${n} monthly installments`;
+
+      // Update Visual Progress Bar
+      regularBarPercent.textContent = `${regularRatio.toFixed(1)}%`;
+      regularBarFill.style.width = `${Math.min(100, Math.max(5, regularRatio))}%`;
+    }
+
+    // Sync input pairs
+    function linkInputs(numberInput, sliderInput) {
+      numberInput.addEventListener("input", () => {
+        let val = parseFloat(numberInput.value);
+        if (isNaN(val)) return;
+        sliderInput.value = val;
+        calculate();
+      });
+
+      sliderInput.addEventListener("input", () => {
+        numberInput.value = sliderInput.value;
+        calculate();
+      });
+    }
+
+    linkInputs(sipAmountInput, sipSlider);
+    linkInputs(yearsInput, yearsSlider);
+    linkInputs(grossReturnInput, grossSlider);
+    linkInputs(commissionDragInput, dragSlider);
+
+    // Preset helper
+    window.applyPreset = function(sip, yrs, gross, drag) {
+      sipAmountInput.value = sip;
+      sipSlider.value = sip;
+      yearsInput.value = yrs;
+      yearsSlider.value = yrs;
+      grossReturnInput.value = gross;
+      grossSlider.value = gross;
+      commissionDragInput.value = drag;
+      dragSlider.value = drag;
+      calculate();
+    };
+
+    // Initial calculation on load
+    calculate();
+  </script>
+</body>
+</html>

@@ -1,0 +1,1393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indian Mutual Fund Quantitative Calculator Suite | YieldNest.online</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .suite-container {
+      width: 100%;
+      max-width: 960px;
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 20px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Masthead Header */
+    .suite-header {
+      padding: 24px 28px 18px;
+      background: linear-gradient(180deg, #1e293b 0%, #151f30 100%);
+      border-bottom: 1px solid #334155;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 9999px;
+      color: #10b981;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .header-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: -0.02em;
+      margin-top: 6px;
+    }
+
+    .header-subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* Tab Bar Navigation */
+    .tabs-nav {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: #0f172a;
+      border-bottom: 1px solid #334155;
+      padding: 6px;
+      gap: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .tabs-nav {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .tab-button {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #94a3b8;
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      user-select: none;
+    }
+
+    .tab-button:hover {
+      color: #f8fafc;
+      background: rgba(51, 65, 85, 0.5);
+    }
+
+    .tab-button.active {
+      background: #1e293b;
+      color: #10b981;
+      border-color: #334155;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .tab-button svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+    }
+
+    /* Calculator View Panes */
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Interior 2-Column Grid */
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+    }
+
+    @media (max-width: 820px) {
+      .calc-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Inputs Panel */
+    .inputs-panel {
+      padding: 26px 28px;
+      border-right: 1px solid #334155;
+    }
+
+    @media (max-width: 820px) {
+      .inputs-panel {
+        border-right: none;
+        border-bottom: 1px solid #334155;
+        padding: 20px;
+      }
+    }
+
+    .input-field-group {
+      margin-bottom: 20px;
+    }
+
+    .field-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 8px;
+    }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #cbd5e1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .field-input-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .field-prefix, .field-suffix {
+      position: absolute;
+      font-size: 13px;
+      font-weight: 600;
+      color: #94a3b8;
+      pointer-events: none;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .field-prefix { left: 10px; }
+    .field-suffix { right: 10px; }
+
+    .number-box {
+      background: #0f172a;
+      border: 1px solid #475569;
+      color: #f8fafc;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 6px 10px;
+      border-radius: 8px;
+      width: 120px;
+      text-align: right;
+      transition: all 0.15s ease;
+      outline: none;
+    }
+
+    .number-box:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+    }
+
+    .number-box.with-prefix { padding-left: 24px; }
+    .number-box.with-suffix { padding-right: 26px; }
+
+    /* Custom Slider */
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #334155;
+      border-radius: 4px;
+      outline: none;
+      margin: 8px 0;
+      cursor: pointer;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 2px solid #0f172a;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type=range]::-moz-range-thumb {
+      height: 18px;
+      width: 18px;
+      border-radius: 50%;
+      background: #10b981;
+      border: 2px solid #0f172a;
+      box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+      cursor: pointer;
+    }
+
+    .range-bounds {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #64748b;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Outputs Panel */
+    .outputs-panel {
+      padding: 26px 28px;
+      background: rgba(15, 23, 42, 0.45);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    @media (max-width: 820px) {
+      .outputs-panel {
+        padding: 20px;
+      }
+    }
+
+    /* Callout Card (Highlight / Drag / Alert / Benefit) */
+    .callout-box {
+      border-radius: 14px;
+      padding: 16px 18px;
+      position: relative;
+    }
+
+    .callout-box.alert {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.14) 0%, rgba(185, 28, 28, 0.05) 100%);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+    }
+
+    .callout-box.success {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.14) 0%, rgba(5, 150, 105, 0.05) 100%);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .callout-box.cyan {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.14) 0%, rgba(14, 165, 233, 0.05) 100%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .callout-header {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      margin-bottom: 6px;
+    }
+
+    .callout-box.alert .callout-header { color: #ef4444; }
+    .callout-box.success .callout-header { color: #10b981; }
+    .callout-box.cyan .callout-header { color: #38bdf8; }
+
+    .callout-amount {
+      font-size: 26px;
+      font-weight: 800;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: -0.02em;
+    }
+
+    .callout-subtext {
+      font-size: 12px;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    .callout-box.alert .callout-subtext { color: #fca5a5; }
+    .callout-box.success .callout-subtext { color: #a7f3d0; }
+    .callout-box.cyan .callout-subtext { color: #bae6fd; }
+
+    /* Metric Cards Grid */
+    .metrics-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .metric-card {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 13px 14px;
+    }
+
+    .metric-card.full-width {
+      grid-column: span 2;
+    }
+
+    .metric-card.emerald-border {
+      border-color: rgba(16, 185, 129, 0.4);
+      background: linear-gradient(180deg, rgba(16, 185, 129, 0.08) 0%, rgba(15, 23, 42, 0.9) 100%);
+    }
+
+    .metric-card.cyan-border {
+      border-color: rgba(56, 189, 248, 0.4);
+      background: linear-gradient(180deg, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0.9) 100%);
+    }
+
+    .metric-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 4px;
+    }
+
+    .metric-tag .circle {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+    }
+
+    .metric-tag .circle.emerald { background: #10b981; }
+    .metric-tag .circle.slate { background: #94a3b8; }
+    .metric-tag .circle.amber { background: #f59e0b; }
+    .metric-tag .circle.cyan { background: #38bdf8; }
+
+    .metric-num {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .metric-num.emerald-text { color: #10b981; }
+    .metric-num.cyan-text { color: #38bdf8; }
+
+    .metric-words-note {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 2px;
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* Comparison Bar Chart Container */
+    .bars-container {
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 13px 14px;
+    }
+
+    .bar-item {
+      margin-bottom: 10px;
+    }
+
+    .bar-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .bar-label-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .bar-track {
+      height: 9px;
+      background: #1e293b;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .bar-progress {
+      height: 100%;
+      border-radius: 6px;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .bar-progress.emerald-gradient {
+      background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+    }
+
+    .bar-progress.cyan-gradient {
+      background: linear-gradient(90deg, #0284c7 0%, #38bdf8 100%);
+    }
+
+    .bar-progress.slate-gradient {
+      background: linear-gradient(90deg, #475569 0%, #94a3b8 100%);
+    }
+
+    .bar-progress.amber-gradient {
+      background: linear-gradient(90deg, #d97706 0%, #f59e0b 100%);
+    }
+
+    /* Presets Strip */
+    .presets-strip {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px dashed #334155;
+    }
+
+    .preset-chip {
+      flex: 1;
+      background: #0f172a;
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 6px 4px;
+      font-size: 11px;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: 'JetBrains Mono', monospace;
+      text-align: center;
+    }
+
+    .preset-chip:hover {
+      background: #1e293b;
+      border-color: #64748b;
+      color: #f8fafc;
+    }
+
+    /* Bottom Statutory Banner */
+    .suite-disclaimer {
+      padding: 14px 28px;
+      background: #0b1120;
+      border-top: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.4;
+    }
+
+    .suite-disclaimer svg {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="suite-container">
+    <!-- Header -->
+    <header class="suite-header">
+      <div>
+        <span class="brand-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="12" height="12">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+            <polyline points="16 7 22 7 22 13"></polyline>
+          </svg>
+          YieldNest.online • Mutual Fund Quantitative Suite
+        </span>
+        <h1 class="header-title">Indian Mutual Fund Multi-Calculator</h1>
+        <p class="header-subtitle">Evaluate compounding friction, step-up leverage, procrastination penalty, and SIP vs lumpsum dynamics.</p>
+      </div>
+    </header>
+
+    <!-- Tab Bar -->
+    <nav class="tabs-nav" role="tablist">
+      <button class="tab-button active" onclick="switchTab('tab-direct-vs-regular')" id="btn-tab-direct-vs-regular" role="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+        </svg>
+        1. Direct vs Regular (TER Drag)
+      </button>
+      <button class="tab-button" onclick="switchTab('tab-step-up')" id="btn-tab-step-up" role="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+          <polyline points="17 6 23 6 23 12"></polyline>
+        </svg>
+        2. Step-Up SIP
+      </button>
+      <button class="tab-button" onclick="switchTab('tab-cost-of-delay')" id="btn-tab-cost-of-delay" role="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        3. Cost of Delay (Tax)
+      </button>
+      <button class="tab-button" onclick="switchTab('tab-sip-vs-lumpsum')" id="btn-tab-sip-vs-lumpsum" role="tab">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        4. SIP vs Lumpsum
+      </button>
+    </nav>
+
+    <!-- TAB 1: Direct vs Regular Plan -->
+    <div id="tab-direct-vs-regular" class="tab-pane active" role="tabpanel">
+      <div class="calc-grid">
+        <div class="inputs-panel">
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t1-sip">Monthly SIP Amount</label>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₹</span>
+                <input type="number" id="t1-sip" class="number-box with-prefix" min="1000" max="100000" step="1000" value="10000">
+              </div>
+            </div>
+            <input type="range" id="t1-sip-slider" min="1000" max="100000" step="1000" value="10000">
+            <div class="range-bounds"><span>₹1,000</span><span>₹50,000</span><span>₹1,00,000</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t1-years">Time Horizon</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t1-years" class="number-box with-suffix" min="1" max="35" step="1" value="15">
+                <span class="field-suffix">Y</span>
+              </div>
+            </div>
+            <input type="range" id="t1-years-slider" min="1" max="35" step="1" value="15">
+            <div class="range-bounds"><span>1 Year</span><span>15 Years</span><span>35 Years</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t1-gross">Expected Gross Return (CAGR)</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t1-gross" class="number-box with-suffix" min="6" max="25" step="0.5" value="13">
+                <span class="field-suffix">%</span>
+              </div>
+            </div>
+            <input type="range" id="t1-gross-slider" min="6" max="25" step="0.5" value="13">
+            <div class="range-bounds"><span>6.0%</span><span>13.0%</span><span>25.0%</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t1-drag">Distributor Commission / Drag</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t1-drag" class="number-box with-suffix" min="0.2" max="2.5" step="0.1" value="1.0">
+                <span class="field-suffix">%</span>
+              </div>
+            </div>
+            <input type="range" id="t1-drag-slider" min="0.2" max="2.5" step="0.1" value="1.0">
+            <div class="range-bounds"><span>0.2%</span><span>1.0% (AMFI Avg)</span><span>2.5%</span></div>
+          </div>
+
+          <div class="presets-strip">
+            <button class="preset-chip" onclick="setT1Preset(5000, 10, 13, 1.0)">₹5k / 10Y</button>
+            <button class="preset-chip" onclick="setT1Preset(10000, 15, 13, 1.0)">₹10k / 15Y</button>
+            <button class="preset-chip" onclick="setT1Preset(25000, 20, 13, 1.0)">₹25k / 20Y</button>
+            <button class="preset-chip" onclick="setT1Preset(50000, 25, 13, 1.0)">₹50k / 25Y</button>
+          </div>
+        </div>
+
+        <div class="outputs-panel">
+          <div class="callout-box alert">
+            <div class="callout-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+              Lost Wealth to Commissions / Drag
+            </div>
+            <div class="callout-amount" id="t1-diff-val">₹0</div>
+            <div class="callout-subtext" id="t1-diff-sub">0% of total wealth sacrificed to distributor trails</div>
+          </div>
+
+          <div class="metrics-2col">
+            <div class="metric-card emerald-border">
+              <div class="metric-tag"><span class="circle emerald"></span> Direct Plan Value</div>
+              <div class="metric-num emerald-text" id="t1-direct-val">₹0</div>
+              <div class="metric-words-note" id="t1-direct-words">-</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-tag"><span class="circle slate"></span> Regular Plan Value</div>
+              <div class="metric-num" id="t1-regular-val">₹0</div>
+              <div class="metric-words-note" id="t1-regular-words">-</div>
+            </div>
+            <div class="metric-card full-width">
+              <div class="metric-tag"><span class="circle amber"></span> Total Principal Invested</div>
+              <div class="metric-num" style="color: #cbd5e1;" id="t1-invested-val">₹0</div>
+              <div class="metric-words-note" id="t1-invested-words">-</div>
+            </div>
+          </div>
+
+          <div class="bars-container">
+            <div class="bar-item">
+              <div class="bar-label-row">
+                <span style="color: #10b981;">Direct Plan (Zero Commission)</span>
+                <span style="color: #10b981; font-family: 'JetBrains Mono', monospace;">100%</span>
+              </div>
+              <div class="bar-track"><div class="bar-progress emerald-gradient" style="width: 100%;"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-label-row">
+                <span style="color: #94a3b8;">Regular Plan (Post-Commission)</span>
+                <span id="t1-regular-bar-pct" style="color: #94a3b8; font-family: 'JetBrains Mono', monospace;">-</span>
+              </div>
+              <div class="bar-track"><div class="bar-progress slate-gradient" id="t1-regular-bar-fill" style="width: 80%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Step-Up SIP Calculator -->
+    <div id="tab-step-up" class="tab-pane" role="tabpanel">
+      <div class="calc-grid">
+        <div class="inputs-panel">
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t2-sip">Starting Monthly SIP</label>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₹</span>
+                <input type="number" id="t2-sip" class="number-box with-prefix" min="1000" max="100000" step="1000" value="10000">
+              </div>
+            </div>
+            <input type="range" id="t2-sip-slider" min="1000" max="100000" step="1000" value="10000">
+            <div class="range-bounds"><span>₹1,000</span><span>₹50,000</span><span>₹1,00,000</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t2-step">Annual Step-Up Percentage</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t2-step" class="number-box with-suffix" min="1" max="30" step="1" value="10">
+                <span class="field-suffix">%</span>
+              </div>
+            </div>
+            <input type="range" id="t2-step-slider" min="1" max="30" step="1" value="10">
+            <div class="range-bounds"><span>1%</span><span>10% (Annual Hike)</span><span>30%</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t2-years">Investment Horizon</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t2-years" class="number-box with-suffix" min="1" max="35" step="1" value="15">
+                <span class="field-suffix">Y</span>
+              </div>
+            </div>
+            <input type="range" id="t2-years-slider" min="1" max="35" step="1" value="15">
+            <div class="range-bounds"><span>1 Year</span><span>15 Years</span><span>35 Years</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t2-return">Expected Return (CAGR)</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t2-return" class="number-box with-suffix" min="5" max="25" step="0.5" value="12">
+                <span class="field-suffix">%</span>
+              </div>
+            </div>
+            <input type="range" id="t2-return-slider" min="5" max="25" step="0.5" value="12">
+            <div class="range-bounds"><span>5.0%</span><span>12.0%</span><span>25.0%</span></div>
+          </div>
+
+          <div class="presets-strip">
+            <button class="preset-chip" onclick="setT2Preset(5000, 5, 10, 12)">5% Step / 10Y</button>
+            <button class="preset-chip" onclick="setT2Preset(10000, 10, 15, 12)">10% Step / 15Y</button>
+            <button class="preset-chip" onclick="setT2Preset(15000, 15, 20, 13)">15% Step / 20Y</button>
+            <button class="preset-chip" onclick="setT2Preset(25000, 10, 25, 12)">10% Step / 25Y</button>
+          </div>
+        </div>
+
+        <div class="outputs-panel">
+          <div class="callout-box success">
+            <div class="callout-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+              </svg>
+              Extra Wealth Created by Step-Up
+            </div>
+            <div class="callout-amount" id="t2-extra-wealth">₹0</div>
+            <div class="callout-subtext" id="t2-extra-sub">Compared to keeping your monthly SIP stagnant</div>
+          </div>
+
+          <div class="metrics-2col">
+            <div class="metric-card emerald-border">
+              <div class="metric-tag"><span class="circle emerald"></span> Step-Up Final Value</div>
+              <div class="metric-num emerald-text" id="t2-step-fv">₹0</div>
+              <div class="metric-words-note" id="t2-step-words">-</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-tag"><span class="circle slate"></span> Constant SIP Final Value</div>
+              <div class="metric-num" id="t2-normal-fv">₹0</div>
+              <div class="metric-words-note" id="t2-normal-words">-</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-tag"><span class="circle amber"></span> Step-Up Invested</div>
+              <div class="metric-num" style="color: #cbd5e1; font-size: 16px;" id="t2-step-invested">₹0</div>
+              <div class="metric-words-note" id="t2-step-inv-words">-</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-tag"><span class="circle slate"></span> Constant Invested</div>
+              <div class="metric-num" style="color: #94a3b8; font-size: 16px;" id="t2-normal-invested">₹0</div>
+              <div class="metric-words-note" id="t2-normal-inv-words">-</div>
+            </div>
+          </div>
+
+          <div class="bars-container">
+            <div class="bar-item">
+              <div class="bar-label-row">
+                <span style="color: #10b981;">Step-Up SIP Corpus (Indexed)</span>
+                <span id="t2-step-bar-pct" style="color: #10b981; font-family: 'JetBrains Mono', monospace;">100%</span>
+              </div>
+              <div class="bar-track"><div class="bar-progress emerald-gradient" style="width: 100%;"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-label-row">
+                <span style="color: #94a3b8;">Normal Constant SIP Corpus</span>
+                <span id="t2-normal-bar-pct" style="color: #94a3b8; font-family: 'JetBrains Mono', monospace;">-</span>
+              </div>
+              <div class="bar-track"><div class="bar-progress slate-gradient" id="t2-normal-bar-fill" style="width: 60%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Cost of Delay (Procrastination Tax) -->
+    <div id="tab-cost-of-delay" class="tab-pane" role="tabpanel">
+      <div class="calc-grid">
+        <div class="inputs-panel">
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t3-sip">Target Monthly SIP</label>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₹</span>
+                <input type="number" id="t3-sip" class="number-box with-prefix" min="1000" max="100000" step="1000" value="10000">
+              </div>
+            </div>
+            <input type="range" id="t3-sip-slider" min="1000" max="100000" step="1000" value="10000">
+            <div class="range-bounds"><span>₹1,000</span><span>₹50,000</span><span>₹1,00,000</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t3-delay">Delay Period</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t3-delay" class="number-box with-suffix" min="0.5" max="5" step="0.5" value="2">
+                <span class="field-suffix">Y</span>
+              </div>
+            </div>
+            <input type="range" id="t3-delay-slider" min="0.5" max="5" step="0.5" value="2">
+            <div class="range-bounds"><span>6 Months (0.5Y)</span><span>2 Years</span><span>5 Years</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t3-horizon">Total Planned Horizon</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t3-horizon" class="number-box with-suffix" min="3" max="35" step="1" value="15">
+                <span class="field-suffix">Y</span>
+              </div>
+            </div>
+            <input type="range" id="t3-horizon-slider" min="3" max="35" step="1" value="15">
+            <div class="range-bounds"><span>3 Years</span><span>15 Years</span><span>35 Years</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t3-return">Expected Return (CAGR)</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t3-return" class="number-box with-suffix" min="6" max="25" step="0.5" value="12">
+                <span class="field-suffix">%</span>
+              </div>
+            </div>
+            <input type="range" id="t3-return-slider" min="6" max="25" step="0.5" value="12">
+            <div class="range-bounds"><span>6.0%</span><span>12.0%</span><span>25.0%</span></div>
+          </div>
+
+          <div class="presets-strip">
+            <button class="preset-chip" onclick="setT3Preset(10000, 1, 15, 12)">Delay 1 Year</button>
+            <button class="preset-chip" onclick="setT3Preset(10000, 2, 15, 12)">Delay 2 Years</button>
+            <button class="preset-chip" onclick="setT3Preset(15000, 3, 20, 12)">Delay 3 Years</button>
+            <button class="preset-chip" onclick="setT3Preset(25000, 5, 25, 12)">Delay 5 Years</button>
+          </div>
+        </div>
+
+        <div class="outputs-panel">
+          <div class="callout-box alert">
+            <div class="callout-header">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              Total Wealth Lost Due to Waiting (Procrastination Tax)
+            </div>
+            <div class="callout-amount" id="t3-lost-val">₹0</div>
+            <div class="callout-subtext" id="t3-lost-sub">Cost of postponing execution</div>
+          </div>
+
+          <div class="metrics-2col">
+            <div class="metric-card emerald-border">
+              <div class="metric-tag"><span class="circle emerald"></span> If Started Today</div>
+              <div class="metric-num emerald-text" id="t3-today-val">₹0</div>
+              <div class="metric-words-note" id="t3-today-words">-</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-tag"><span class="circle slate"></span> If Delayed</div>
+              <div class="metric-num" id="t3-delayed-val">₹0</div>
+              <div class="metric-words-note" id="t3-delayed-words">-</div>
+            </div>
+            <div class="metric-card full-width">
+              <div class="metric-tag"><span class="circle amber"></span> Installments Missed vs Compounding Penalty</div>
+              <div class="metric-num" style="color: #cbd5e1; font-size: 16px;" id="t3-missed-inv">₹0</div>
+              <div class="metric-words-note" id="t3-missed-sub">-</div>
+            </div>
+          </div>
+
+          <div class="bars-container">
+            <div class="bar-item">
+              <div class="bar-label-row">
+                <span style="color: #10b981;">Starting Today (Full Compounding)</span>
+                <span style="color: #10b981; font-family: 'JetBrains Mono', monospace;">100%</span>
+              </div>
+              <div class="bar-track"><div class="bar-progress emerald-gradient" style="width: 100%;"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-label-row">
+                <span style="color: #ef4444;">Delayed Portfolio Retained</span>
+                <span id="t3-delayed-bar-pct" style="color: #ef4444; font-family: 'JetBrains Mono', monospace;">-</span>
+              </div>
+              <div class="bar-track"><div class="bar-progress slate-gradient" id="t3-delayed-bar-fill" style="width: 75%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: SIP vs Lumpsum Comparator -->
+    <div id="tab-sip-vs-lumpsum" class="tab-pane" role="tabpanel">
+      <div class="calc-grid">
+        <div class="inputs-panel">
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t4-lump">One-time Lumpsum Amount</label>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₹</span>
+                <input type="number" id="t4-lump" class="number-box with-prefix" min="10000" max="2500000" step="10000" value="240000">
+              </div>
+            </div>
+            <input type="range" id="t4-lump-slider" min="10000" max="2500000" step="10000" value="240000">
+            <div class="range-bounds"><span>₹10,000</span><span>₹10,00,000</span><span>₹25,00,000</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t4-sip">Equivalent Monthly SIP</label>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₹</span>
+                <input type="number" id="t4-sip" class="number-box with-prefix" min="1000" max="100000" step="500" value="10000">
+              </div>
+            </div>
+            <input type="range" id="t4-sip-slider" min="1000" max="100000" step="500" value="10000">
+            <div class="range-bounds"><span>₹1,000</span><span>₹50,000</span><span>₹1,00,000</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t4-years">Time Horizon</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t4-years" class="number-box with-suffix" min="1" max="30" step="1" value="10">
+                <span class="field-suffix">Y</span>
+              </div>
+            </div>
+            <input type="range" id="t4-years-slider" min="1" max="30" step="1" value="10">
+            <div class="range-bounds"><span>1 Year</span><span>10 Years</span><span>30 Years</span></div>
+          </div>
+
+          <div class="input-field-group">
+            <div class="field-header">
+              <label class="field-label" for="t4-return">Expected Return (CAGR)</label>
+              <div class="field-input-wrap">
+                <input type="number" id="t4-return" class="number-box with-suffix" min="5" max="25" step="0.5" value="12">
+                <span class="field-suffix">%</span>
+              </div>
+            </div>
+            <input type="range" id="t4-return-slider" min="5" max="25" step="0.5" value="12">
+            <div class="range-bounds"><span>5.0%</span><span>12.0%</span><span>25.0%</span></div>
+          </div>
+
+          <div class="presets-strip">
+            <button class="preset-chip" onclick="setT4Preset(120000, 5000, 5, 12)">₹1.2L vs ₹5k/5Y</button>
+            <button class="preset-chip" onclick="setT4Preset(240000, 10000, 10, 12)">₹2.4L vs ₹10k/10Y</button>
+            <button class="preset-chip" onclick="setT4Preset(500000, 20000, 15, 13)">₹5L vs ₹20k/15Y</button>
+            <button class="preset-chip" onclick="setT4Preset(1000000, 40000, 20, 12)">₹10L vs ₹40k/20Y</button>
+          </div>
+        </div>
+
+        <div class="outputs-panel">
+          <div class="callout-box cyan" id="t4-winner-callout">
+            <div class="callout-header" id="t4-winner-tag">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Comparator Verdict &amp; Delta
+            </div>
+            <div class="callout-amount" id="t4-diff-val">₹0</div>
+            <div class="callout-subtext" id="t4-diff-sub">-</div>
+          </div>
+
+          <div class="metrics-2col">
+            <div class="metric-card cyan-border">
+              <div class="metric-tag"><span class="circle cyan"></span> Lumpsum Final Value</div>
+              <div class="metric-num cyan-text" id="t4-lump-fv">₹0</div>
+              <div class="metric-words-note" id="t4-lump-words">-</div>
+            </div>
+            <div class="metric-card emerald-border">
+              <div class="metric-tag"><span class="circle emerald"></span> Monthly SIP Final Value</div>
+              <div class="metric-num emerald-text" id="t4-sip-fv">₹0</div>
+              <div class="metric-words-note" id="t4-sip-words">-</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-tag"><span class="circle slate"></span> Lumpsum Principal</div>
+              <div class="metric-num" style="color: #94a3b8; font-size: 15px;" id="t4-lump-inv">₹0</div>
+              <div class="metric-words-note">Invested upfront on Day 1</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-tag"><span class="circle amber"></span> Total SIP Invested</div>
+              <div class="metric-num" style="color: #cbd5e1; font-size: 15px;" id="t4-sip-inv">₹0</div>
+              <div class="metric-words-note" id="t4-sip-inv-words">-</div>
+            </div>
+          </div>
+
+          <div class="bars-container">
+            <div class="bar-item">
+              <div class="bar-label-row">
+                <span style="color: #38bdf8;">Lumpsum Strategy Corpus</span>
+                <span id="t4-lump-bar-pct" style="color: #38bdf8; font-family: 'JetBrains Mono', monospace;">-</span>
+              </div>
+              <div class="bar-track"><div class="bar-progress cyan-gradient" id="t4-lump-bar-fill" style="width: 80%;"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-label-row">
+                <span style="color: #10b981;">Monthly SIP Strategy Corpus</span>
+                <span id="t4-sip-bar-pct" style="color: #10b981; font-family: 'JetBrains Mono', monospace;">-</span>
+              </div>
+              <div class="bar-track"><div class="bar-progress emerald-gradient" id="t4-sip-bar-fill" style="width: 80%;"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Educational Disclaimer Banner -->
+    <footer class="suite-disclaimer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
+      <span>
+        <strong>Statutory Notice:</strong> Educational use only. Not SEBI/AMFI registered advice. Projections assume constant returns and monthly compounding. Direct plan savings compound over time because distributor trail commissions are never deducted from your daily NAV.
+      </span>
+    </footer>
+  </div>
+
+  <script>
+    // Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+
+      const activePane = document.getElementById(tabId);
+      const activeBtn = document.getElementById('btn-' + tabId);
+
+      if (activePane) activePane.classList.add('active');
+      if (activeBtn) activeBtn.classList.add('active');
+    }
+
+    // Number Formatting Helpers (Indian System)
+    function formatINR(val) {
+      const rounded = Math.round(val);
+      return "₹" + rounded.toLocaleString("en-IN");
+    }
+
+    function formatIndianWords(amount) {
+      const abs = Math.abs(amount);
+      if (abs >= 10000000) {
+        return (amount / 10000000).toFixed(2) + " Crore";
+      } else if (abs >= 100000) {
+        return (amount / 100000).toFixed(2) + " Lakh";
+      } else if (abs >= 1000) {
+        return (amount / 1000).toFixed(1) + " Thousand";
+      }
+      return "₹" + Math.round(amount);
+    }
+
+    function linkSliderAndInput(inputId, sliderId, callback) {
+      const input = document.getElementById(inputId);
+      const slider = document.getElementById(sliderId);
+
+      input.addEventListener('input', () => {
+        let val = parseFloat(input.value);
+        if (isNaN(val)) return;
+        slider.value = val;
+        callback();
+      });
+
+      slider.addEventListener('input', () => {
+        input.value = slider.value;
+        callback();
+      });
+    }
+
+    // ==========================================
+    // TAB 1: Direct vs Regular
+    // ==========================================
+    function calcT1() {
+      const P = parseFloat(document.getElementById('t1-sip').value) || 0;
+      const years = parseFloat(document.getElementById('t1-years').value) || 0;
+      const grossAnnual = parseFloat(document.getElementById('t1-gross').value) || 0;
+      const drag = parseFloat(document.getElementById('t1-drag').value) || 0;
+
+      const n = years * 12;
+      const totalInvested = P * n;
+
+      const r_direct = (grossAnnual / 100) / 12;
+      const netRegularAnnual = Math.max(0, grossAnnual - drag);
+      const r_regular = (netRegularAnnual / 100) / 12;
+
+      let fvDirect = 0;
+      if (r_direct > 0 && n > 0 && P > 0) {
+        fvDirect = P * ((Math.pow(1 + r_direct, n) - 1) / r_direct) * (1 + r_direct);
+      } else {
+        fvDirect = totalInvested;
+      }
+
+      let fvRegular = 0;
+      if (r_regular > 0 && n > 0 && P > 0) {
+        fvRegular = P * ((Math.pow(1 + r_regular, n) - 1) / r_regular) * (1 + r_regular);
+      } else {
+        fvRegular = totalInvested;
+      }
+
+      const diff = Math.max(0, fvDirect - fvRegular);
+      const lossPercent = fvDirect > 0 ? (diff / fvDirect) * 100 : 0;
+      const regularRatio = fvDirect > 0 ? (fvRegular / fvDirect) * 100 : 100;
+
+      document.getElementById('t1-diff-val').textContent = formatINR(diff);
+      document.getElementById('t1-diff-sub').textContent = `${lossPercent.toFixed(1)}% of total potential wealth lost (${formatIndianWords(diff)})`;
+
+      document.getElementById('t1-direct-val').textContent = formatINR(fvDirect);
+      document.getElementById('t1-direct-words').textContent = `≈ ${formatIndianWords(fvDirect)}`;
+
+      document.getElementById('t1-regular-val').textContent = formatINR(fvRegular);
+      document.getElementById('t1-regular-words').textContent = `≈ ${formatIndianWords(fvRegular)}`;
+
+      document.getElementById('t1-invested-val').textContent = formatINR(totalInvested);
+      document.getElementById('t1-invested-words').textContent = `≈ ${formatIndianWords(totalInvested)} across ${n} installments`;
+
+      document.getElementById('t1-regular-bar-pct').textContent = `${regularRatio.toFixed(1)}%`;
+      document.getElementById('t1-regular-bar-fill').style.width = `${Math.min(100, Math.max(5, regularRatio))}%`;
+    }
+
+    function setT1Preset(sip, yrs, gross, drag) {
+      document.getElementById('t1-sip').value = sip;
+      document.getElementById('t1-sip-slider').value = sip;
+      document.getElementById('t1-years').value = yrs;
+      document.getElementById('t1-years-slider').value = yrs;
+      document.getElementById('t1-gross').value = gross;
+      document.getElementById('t1-gross-slider').value = gross;
+      document.getElementById('t1-drag').value = drag;
+      document.getElementById('t1-drag-slider').value = drag;
+      calcT1();
+    }
+
+    linkSliderAndInput('t1-sip', 't1-sip-slider', calcT1);
+    linkSliderAndInput('t1-years', 't1-years-slider', calcT1);
+    linkSliderAndInput('t1-gross', 't1-gross-slider', calcT1);
+    linkSliderAndInput('t1-drag', 't1-drag-slider', calcT1);
+
+    // ==========================================
+    // TAB 2: Step-Up SIP Calculator
+    // ==========================================
+    function calcT2() {
+      const startingP = parseFloat(document.getElementById('t2-sip').value) || 0;
+      const stepPct = parseFloat(document.getElementById('t2-step').value) || 0;
+      const years = parseInt(document.getElementById('t2-years').value) || 0;
+      const returnPct = parseFloat(document.getElementById('t2-return').value) || 0;
+
+      const totalMonths = years * 12;
+      const r = (returnPct / 100) / 12;
+
+      let stepUpFV = 0;
+      let stepUpInvested = 0;
+
+      for (let m = 1; m <= totalMonths; m++) {
+        const yearIndex = Math.floor((m - 1) / 12);
+        const monthlyAmount = startingP * Math.pow(1 + (stepPct / 100), yearIndex);
+        stepUpInvested += monthlyAmount;
+        const monthsRemaining = totalMonths - m + 1;
+        stepUpFV += monthlyAmount * Math.pow(1 + r, monthsRemaining);
+      }
+
+      const normalInvested = startingP * totalMonths;
+      let normalFV = 0;
+      if (r > 0 && totalMonths > 0) {
+        normalFV = startingP * ((Math.pow(1 + r, totalMonths) - 1) / r) * (1 + r);
+      } else {
+        normalFV = normalInvested;
+      }
+
+      const extraWealth = Math.max(0, stepUpFV - normalFV);
+
+      document.getElementById('t2-extra-wealth').textContent = formatINR(extraWealth);
+      document.getElementById('t2-extra-sub').textContent = `+${formatIndianWords(extraWealth)} extra corpus with disciplined ${stepPct}% annual hikes`;
+
+      document.getElementById('t2-step-fv').textContent = formatINR(stepUpFV);
+      document.getElementById('t2-step-words').textContent = `≈ ${formatIndianWords(stepUpFV)}`;
+
+      document.getElementById('t2-normal-fv').textContent = formatINR(normalFV);
+      document.getElementById('t2-normal-words').textContent = `≈ ${formatIndianWords(normalFV)}`;
+
+      document.getElementById('t2-step-invested').textContent = formatINR(stepUpInvested);
+      document.getElementById('t2-step-inv-words').textContent = `≈ ${formatIndianWords(stepUpInvested)}`;
+
+      document.getElementById('t2-normal-invested').textContent = formatINR(normalInvested);
+      document.getElementById('t2-normal-inv-words').textContent = `≈ ${formatIndianWords(normalInvested)}`;
+
+      const normalRatio = stepUpFV > 0 ? (normalFV / stepUpFV) * 100 : 100;
+      document.getElementById('t2-normal-bar-pct').textContent = `${normalRatio.toFixed(1)}%`;
+      document.getElementById('t2-normal-bar-fill').style.width = `${Math.min(100, Math.max(5, normalRatio))}%`;
+    }
+
+    function setT2Preset(sip, step, yrs, ret) {
+      document.getElementById('t2-sip').value = sip;
+      document.getElementById('t2-sip-slider').value = sip;
+      document.getElementById('t2-step').value = step;
+      document.getElementById('t2-step-slider').value = step;
+      document.getElementById('t2-years').value = yrs;
+      document.getElementById('t2-years-slider').value = yrs;
+      document.getElementById('t2-return').value = ret;
+      document.getElementById('t2-return-slider').value = ret;
+      calcT2();
+    }
+
+    linkSliderAndInput('t2-sip', 't2-sip-slider', calcT2);
+    linkSliderAndInput('t2-step', 't2-step-slider', calcT2);
+    linkSliderAndInput('t2-years', 't2-years-slider', calcT2);
+    linkSliderAndInput('t2-return', 't2-return-slider', calcT2);
+
+    // ==========================================
+    // TAB 3: Cost of Delay Calculator
+    // ==========================================
+    function calcT3() {
+      const P = parseFloat(document.getElementById('t3-sip').value) || 0;
+      const delayYears = parseFloat(document.getElementById('t3-delay').value) || 0;
+      const horizonYears = parseFloat(document.getElementById('t3-horizon').value) || 0;
+      const returnPct = parseFloat(document.getElementById('t3-return').value) || 0;
+
+      const r = (returnPct / 100) / 12;
+      const totalMonths = horizonYears * 12;
+      const delayedMonths = Math.max(0, (horizonYears - delayYears) * 12);
+
+      let fvToday = 0;
+      if (r > 0 && totalMonths > 0) {
+        fvToday = P * ((Math.pow(1 + r, totalMonths) - 1) / r) * (1 + r);
+      } else {
+        fvToday = P * totalMonths;
+      }
+
+      let fvDelayed = 0;
+      if (r > 0 && delayedMonths > 0) {
+        fvDelayed = P * ((Math.pow(1 + r, delayedMonths) - 1) / r) * (1 + r);
+      } else {
+        fvDelayed = P * delayedMonths;
+      }
+
+      const lostWealth = Math.max(0, fvToday - fvDelayed);
+      const missedInstallments = P * (delayYears * 12);
+      const lossPct = fvToday > 0 ? (lostWealth / fvToday) * 100 : 0;
+      const retainedRatio = fvToday > 0 ? (fvDelayed / fvToday) * 100 : 100;
+
+      document.getElementById('t3-lost-val').textContent = formatINR(lostWealth);
+      document.getElementById('t3-lost-sub').textContent = `${lossPct.toFixed(1)}% of your final wealth wiped out by waiting ${delayYears} years`;
+
+      document.getElementById('t3-today-val').textContent = formatINR(fvToday);
+      document.getElementById('t3-today-words').textContent = `≈ ${formatIndianWords(fvToday)}`;
+
+      document.getElementById('t3-delayed-val').textContent = formatINR(fvDelayed);
+      document.getElementById('t3-delayed-words').textContent = `≈ ${formatIndianWords(fvDelayed)}`;
+
+      document.getElementById('t3-missed-inv').textContent = `${formatINR(missedInstallments)} missed (${formatINR(lostWealth)} total damage)`;
+      document.getElementById('t3-missed-sub').textContent = `You saved ${formatINR(missedInstallments)} out-of-pocket, but lost ${formatINR(lostWealth - missedInstallments)} in compounding gains`;
+
+      document.getElementById('t3-delayed-bar-pct').textContent = `${retainedRatio.toFixed(1)}%`;
+      document.getElementById('t3-delayed-bar-fill').style.width = `${Math.min(100, Math.max(5, retainedRatio))}%`;
+    }
+
+    function setT3Preset(sip, delay, horizon, ret) {
+      document.getElementById('t3-sip').value = sip;
+      document.getElementById('t3-sip-slider').value = sip;
+      document.getElementById('t3-delay').value = delay;
+      document.getElementById('t3-delay-slider').value = delay;
+      document.getElementById('t3-horizon').value = horizon;
+      document.getElementById('t3-horizon-slider').value = horizon;
+      document.getElementById('t3-return').value = ret;
+      document.getElementById('t3-return-slider').value = ret;
+      calcT3();
+    }
+
+    linkSliderAndInput('t3-sip', 't3-sip-slider', calcT3);
+    linkSliderAndInput('t3-delay', 't3-delay-slider', calcT3);
+    linkSliderAndInput('t3-horizon', 't3-horizon-slider', calcT3);
+    linkSliderAndInput('t3-return', 't3-return-slider', calcT3);
+
+    // ==========================================
+    // TAB 4: SIP vs Lumpsum Comparator
+    // ==========================================
+    function calcT4() {
+      const lump = parseFloat(document.getElementById('t4-lump').value) || 0;
+      const sip = parseFloat(document.getElementById('t4-sip').value) || 0;
+      const years = parseFloat(document.getElementById('t4-years').value) || 0;
+      const returnPct = parseFloat(document.getElementById('t4-return').value) || 0;
+
+      const r = (returnPct / 100) / 12;
+      const totalMonths = years * 12;
+      const totalSipInvested = sip * totalMonths;
+
+      // Lumpsum Future Value (compounded over total tenure)
+      const fvLump = lump * Math.pow(1 + (returnPct / 100), years);
+
+      // SIP Future Value
+      let fvSip = 0;
+      if (r > 0 && totalMonths > 0) {
+        fvSip = sip * ((Math.pow(1 + r, totalMonths) - 1) / r) * (1 + r);
+      } else {
+        fvSip = totalSipInvested;
+      }
+
+      const diff = Math.abs(fvLump - fvSip);
+      const isLumpAhead = fvLump >= fvSip;
+
+      const winnerTag = document.getElementById('t4-winner-tag');
+      const diffVal = document.getElementById('t4-diff-val');
+      const diffSub = document.getElementById('t4-diff-sub');
+      const winnerCallout = document.getElementById('t4-winner-callout');
+
+      if (isLumpAhead) {
+        winnerCallout.className = "callout-box cyan";
+        winnerTag.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Lumpsum Generates Higher Wealth (+${formatINR(diff)})`;
+        diffVal.textContent = `+${formatINR(diff)}`;
+        diffSub.textContent = `Lumpsum earns full market compounding from Day 1, beating staged SIP inflows by ${formatIndianWords(diff)}`;
+      } else {
+        winnerCallout.className = "callout-box success";
+        winnerTag.innerHTML = `
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Monthly SIP Generates Higher Wealth (+${formatINR(diff)})`;
+        diffVal.textContent = `+${formatINR(diff)}`;
+        diffSub.textContent = `Cumulative SIP capital outpaces the lumpsum, yielding +${formatIndianWords(diff)} more wealth`;
+      }
+
+      document.getElementById('t4-lump-fv').textContent = formatINR(fvLump);
+      document.getElementById('t4-lump-words').textContent = `≈ ${formatIndianWords(fvLump)}`;
+
+      document.getElementById('t4-sip-fv').textContent = formatINR(fvSip);
+      document.getElementById('t4-sip-words').textContent = `≈ ${formatIndianWords(fvSip)}`;
+
+      document.getElementById('t4-lump-inv').textContent = formatINR(lump);
+      document.getElementById('t4-sip-inv').textContent = formatINR(totalSipInvested);
+      document.getElementById('t4-sip-inv-words').textContent = `≈ ${formatIndianWords(totalSipInvested)} across ${totalMonths} installments`;
+
+      const maxVal = Math.max(fvLump, fvSip, 1);
+      const lumpRatio = (fvLump / maxVal) * 100;
+      const sipRatio = (fvSip / maxVal) * 100;
+
+      document.getElementById('t4-lump-bar-pct').textContent = `${lumpRatio.toFixed(1)}%`;
+      document.getElementById('t4-lump-bar-fill').style.width = `${Math.min(100, Math.max(5, lumpRatio))}%`;
+
+      document.getElementById('t4-sip-bar-pct').textContent = `${sipRatio.toFixed(1)}%`;
+      document.getElementById('t4-sip-bar-fill').style.width = `${Math.min(100, Math.max(5, sipRatio))}%`;
+    }
+
+    function setT4Preset(lump, sip, yrs, ret) {
+      document.getElementById('t4-lump').value = lump;
+      document.getElementById('t4-lump-slider').value = lump;
+      document.getElementById('t4-sip').value = sip;
+      document.getElementById('t4-sip-slider').value = sip;
+      document.getElementById('t4-years').value = yrs;
+      document.getElementById('t4-years-slider').value = yrs;
+      document.getElementById('t4-return').value = ret;
+      document.getElementById('t4-return-slider').value = ret;
+      calcT4();
+    }
+
+    linkSliderAndInput('t4-lump', 't4-lump-slider', calcT4);
+    linkSliderAndInput('t4-sip', 't4-sip-slider', calcT4);
+    linkSliderAndInput('t4-years', 't4-years-slider', calcT4);
+    linkSliderAndInput('t4-return', 't4-return-slider', calcT4);
+
+    // Initial Execution
+    calcT1();
+    calcT2();
+    calcT3();
+    calcT4();
+  </script>
+</body>
+</html>

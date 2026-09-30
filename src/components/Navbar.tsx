@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, Calculator } from "lucide-react";
 import { ArticleCategory, SiteSettings } from "../types";
 import { YieldNestLogo } from "./YieldNestLogo";
 
@@ -10,6 +10,8 @@ interface NavbarProps {
   searchQuery: string;
   settings: SiteSettings;
   onNavigateHome: () => void;
+  isCalculatorView?: boolean;
+  onNavigateCalculators?: () => void;
 }
 
 export function Navbar({
@@ -18,6 +20,8 @@ export function Navbar({
   onSearchChange,
   searchQuery,
   onNavigateHome,
+  isCalculatorView = false,
+  onNavigateCalculators,
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -109,7 +113,7 @@ export function Navbar({
                 }
               }}
               className={`px-3.5 py-1.5 rounded-md transition-all font-medium text-xs tracking-wide no-underline ${
-                currentCategory === cat.id
+                !isCalculatorView && currentCategory === cat.id
                   ? "bg-[#1A1A1A] text-white shadow-xs font-semibold"
                   : "text-[#5A574E] hover:text-[#1A1A1A] hover:bg-[#EFECE3]"
               }`}
@@ -117,6 +121,25 @@ export function Navbar({
               {cat.label}
             </a>
           ))}
+
+          {/* Dedicated Calculators Link in Navbar */}
+          <a
+            href="/calculators"
+            onClick={(e) => {
+              if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                e.preventDefault();
+                if (onNavigateCalculators) onNavigateCalculators();
+              }
+            }}
+            className={`px-3 py-1.5 rounded-md transition-all font-medium text-xs tracking-wide no-underline flex items-center gap-1.5 ${
+              isCalculatorView
+                ? "bg-emerald-700 text-white shadow-xs font-semibold"
+                : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
+            }`}
+          >
+            <Calculator className="w-3.5 h-3.5 text-current" />
+            <span>Calculators</span>
+          </a>
         </div>
       </nav>
 
@@ -124,7 +147,7 @@ export function Navbar({
       {mobileMenuOpen && (
         <div className="sm:hidden bg-[#FAF9F5] border-t border-[#EAE8E0] px-4 py-3 space-y-2 shadow-inner">
           <div className="text-[10px] font-mono-data text-stone-500 uppercase tracking-wider pb-1">
-            Research Categories
+            Research Categories &amp; Tools
           </div>
           <div className="grid grid-cols-2 gap-1.5">
             {categories.map((cat) => (
@@ -139,7 +162,7 @@ export function Navbar({
                   }
                 }}
                 className={`text-center px-3 py-2 rounded-lg text-xs font-medium transition-colors no-underline ${
-                  currentCategory === cat.id
+                  !isCalculatorView && currentCategory === cat.id
                     ? "bg-[#1A1A1A] text-white"
                     : "bg-white border border-stone-200 text-[#4A4740] hover:bg-[#EFECE3]"
                 }`}
@@ -147,6 +170,26 @@ export function Navbar({
                 {cat.label}
               </a>
             ))}
+
+            {/* Calculators link in mobile drawer */}
+            <a
+              href="/calculators"
+              onClick={(e) => {
+                if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                  e.preventDefault();
+                  if (onNavigateCalculators) onNavigateCalculators();
+                  setMobileMenuOpen(false);
+                }
+              }}
+              className={`col-span-2 text-center px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors no-underline flex items-center justify-center gap-1.5 ${
+                isCalculatorView
+                  ? "bg-emerald-700 text-white"
+                  : "bg-emerald-50 border border-emerald-300 text-emerald-900 hover:bg-emerald-100"
+              }`}
+            >
+              <Calculator className="w-3.5 h-3.5" />
+              <span>Quantitative Calculators Suite</span>
+            </a>
           </div>
         </div>
       )}

@@ -550,6 +550,12 @@ function buildSitemapXmlString(articles: any[]): string {
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/calculators</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
 ${categories
   .map(
     (cat) => `  <url>
@@ -638,6 +644,17 @@ async function runPrerender() {
     fs.writeFileSync(path.join(artDir, "index.html"), artHtml, "utf-8");
     console.log(`  ✓ Prerendered /article/${art.slug} (Canonical: https://www.yieldnest.online/article/${art.slug})`);
   }
+
+  // 3b. Prerender Calculators Page
+  const calcHtml = baseHtml
+    .replace(/<title>.*?<\/title>/, "<title>Mutual Fund Quantitative Calculator Suite | YieldNest.online</title>")
+    .replace(/<meta name="description" content=".*?"\s*\/?>/, '<meta name="description" content="Calculate Direct vs Regular TER drag, step-up SIP compounding, procrastination delay costs, and SIP vs lumpsum investment dynamics on YieldNest.online." />')
+    .replace(/<link rel="canonical" href=".*?"\s*\/?>/, '<link rel="canonical" href="https://www.yieldnest.online/calculators" />');
+  const calcDir = path.join(distDir, "calculators");
+  fs.mkdirSync(calcDir, { recursive: true });
+  fs.writeFileSync(path.join(distDir, "calculators.html"), calcHtml, "utf-8");
+  fs.writeFileSync(path.join(calcDir, "index.html"), calcHtml, "utf-8");
+  console.log("  ✓ Prerendered /calculators (Canonical: https://www.yieldnest.online/calculators)");
 
   // 4. Generate and sync sitemap.xml to dist and public
   const sitemapXml = buildSitemapXmlString(articles);

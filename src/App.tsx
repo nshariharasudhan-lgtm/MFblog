@@ -1,4 +1,5 @@
 import React, { useState, useEffect, Suspense, lazy } from "react";
+import { Sparkles, ArrowRight, Calculator } from "lucide-react";
 import { ArticleCategory, ArticlePost, Comment, SiteSettings, AdminUser } from "./types";
 import {
   getAllPosts,
@@ -27,6 +28,9 @@ const AdminDashboard = lazy(() =>
 );
 const AdminAuthModal = lazy(() =>
   import("./components/admin/AdminAuthModal").then((m) => ({ default: m.AdminAuthModal }))
+);
+const CalculatorSuitePage = lazy(() =>
+  import("./components/CalculatorSuitePage").then((m) => ({ default: m.CalculatorSuitePage }))
 );
 
 const CATEGORY_SLUG_MAP: Record<string, ArticleCategory> = {
@@ -57,6 +61,8 @@ export default function App() {
   const [adminUser, setAdminUser] = useState<AdminUser | null>(getCurrentAdminSession());
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isCalculatorView, setIsCalculatorView] = useState(false);
+  const [calculatorTab, setCalculatorTab] = useState<"direct-vs-regular" | "step-up" | "cost-of-delay" | "sip-vs-lumpsum">("direct-vs-regular");
 
   // Initialize and handle URL routing (Instant zero-delay resolution from preloaded state)
   useEffect(() => {
@@ -102,12 +108,28 @@ export default function App() {
     const path = rawPath.replace(/\/+$/, "") || "/";
     const currentList = availablePosts && availablePosts.length > 0 ? availablePosts : posts;
 
+    // Check for calculators route
+    if (path.startsWith("/calculators") || path.startsWith("/calculator")) {
+      const searchParams = new URLSearchParams(window.location.search);
+      const tabParam = searchParams.get("tab") as any;
+      if (tabParam === "step-up" || tabParam === "cost-of-delay" || tabParam === "sip-vs-lumpsum" || tabParam === "direct-vs-regular") {
+        setCalculatorTab(tabParam);
+      } else {
+        setCalculatorTab("direct-vs-regular");
+      }
+      setIsCalculatorView(true);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      return;
+    }
+
     if (path.startsWith("/article/")) {
       const slug = path.replace(/^\/article\//, "").replace(/\/+$/, "");
       const matched = currentList.find((p) => p.slug === slug);
       if (matched) {
         setSelectedArticle(matched);
         setIsAdminView(false);
+        setIsCalculatorView(false);
         incrementPostViews(matched.id);
         return;
       }
@@ -117,6 +139,7 @@ export default function App() {
         setCurrentCategory(CATEGORY_SLUG_MAP[catSlug]);
         setSelectedArticle(null);
         setIsAdminView(false);
+        setIsCalculatorView(false);
         return;
       }
     } else if (path === "/admin") {
@@ -124,6 +147,7 @@ export default function App() {
       if (session) {
         setIsAdminView(true);
         setSelectedArticle(null);
+        setIsCalculatorView(false);
       } else {
         setShowAuthModal(true);
       }
@@ -133,15 +157,27 @@ export default function App() {
     // Default view
     setSelectedArticle(null);
     setIsAdminView(false);
+    setIsCalculatorView(false);
     if (path === "/") {
       setCurrentCategory("all");
     }
+  };
+
+  // Open Calculators Suite Page
+  const handleOpenCalculators = (tab: "direct-vs-regular" | "step-up" | "cost-of-delay" | "sip-vs-lumpsum" = "direct-vs-regular") => {
+    setIsCalculatorView(true);
+    setCalculatorTab(tab);
+    setSelectedArticle(null);
+    setIsAdminView(false);
+    window.history.pushState({}, "", tab !== "direct-vs-regular" ? `/calculators?tab=${tab}` : "/calculators");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Navigate to article (updates URL with pushState for indexable URL)
   const handleOpenArticle = (post: ArticlePost) => {
     setSelectedArticle(post);
     setIsAdminView(false);
+    setIsCalculatorView(false);
     incrementPostViews(post.id);
     window.history.pushState({}, "", `/article/${post.slug}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -152,6 +188,7 @@ export default function App() {
     setCurrentCategory(cat);
     setSelectedArticle(null);
     setIsAdminView(false);
+    setIsCalculatorView(false);
     if (cat === "all") {
       window.history.pushState({}, "", "/");
     } else {
@@ -164,6 +201,7 @@ export default function App() {
   const handleBackToHome = () => {
     setSelectedArticle(null);
     setIsAdminView(false);
+    setIsCalculatorView(false);
     setShowAuthModal(false);
     setCurrentCategory("all");
     window.history.pushState({}, "", "/");
@@ -244,19 +282,25 @@ export default function App() {
         post={selectedArticle}
         settings={settings}
         urlPath={
-          selectedArticle
+          isCalculatorView
+            ? "/calculators"
+            : selectedArticle
             ? `/article/${selectedArticle.slug}`
             : currentCategory !== "all"
             ? `/category/${CATEGORY_TO_SLUG[currentCategory]}`
             : "/"
         }
         customTitle={
-          !selectedArticle && currentCategory !== "all"
+          isCalculatorView
+            ? "Indian Mutual Fund Quantitative Calculator Suite | YieldNest.online"
+            : !selectedArticle && currentCategory !== "all"
             ? `${currentCategory} Mutual Fund Research & Analysis | YieldNest.online`
             : undefined
         }
         customDescription={
-          !selectedArticle && currentCategory !== "all"
+          isCalculatorView
+            ? "Calculate Direct vs Regular TER drag, step-up SIP compounding, procrastination delay costs, and SIP vs lumpsum investment dynamics on YieldNest.online."
+            : !selectedArticle && currentCategory !== "all"
             ? `Explore data-driven ${currentCategory} mutual fund research, rolling returns, and performance analysis on YieldNest.online.`
             : undefined
         }
@@ -292,6 +336,43 @@ export default function App() {
             initialTab={adminInitialTab}
           />
         </Suspense>
+      ) : isCalculatorView ? (
+        /* Dedicated Calculators Suite Page */
+        <>
+          <Navbar
+            currentCategory={currentCategory}
+            onSelectCategory={(cat) => {
+              setIsCalculatorView(false);
+              handleSelectCategory(cat);
+            }}
+            onSearchChange={setSearchQuery}
+            searchQuery={searchQuery}
+            settings={settings}
+            onNavigateHome={handleBackToHome}
+            isCalculatorView={true}
+            onNavigateCalculators={() => handleOpenCalculators()}
+          />
+
+          <main className="flex-1">
+            <Suspense fallback={<div className="min-h-screen py-24 text-center text-xs font-mono-data text-stone-500">Loading quantitative calculator suite...</div>}>
+              <CalculatorSuitePage
+                onBackToHome={handleBackToHome}
+                onNavigateArticle={handleOpenArticle}
+                allPosts={posts}
+                initialTab={calculatorTab}
+              />
+            </Suspense>
+          </main>
+
+          <Footer
+            settings={settings}
+            onSelectCategory={(cat) => {
+              setIsCalculatorView(false);
+              handleSelectCategory(cat);
+            }}
+            onNavigateCalculators={() => handleOpenCalculators()}
+          />
+        </>
       ) : selectedArticle ? (
         /* Single Article View */
         <Suspense fallback={<div className="min-h-screen py-24 text-center text-xs font-mono-data text-stone-500">Loading research report...</div>}>
@@ -316,9 +397,34 @@ export default function App() {
             searchQuery={searchQuery}
             settings={settings}
             onNavigateHome={handleBackToHome}
+            isCalculatorView={false}
+            onNavigateCalculators={() => handleOpenCalculators()}
           />
 
           <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6 sm:py-8 space-y-10">
+            {/* Featured Quantitative Calculators Banner */}
+            <div className="bg-gradient-to-r from-[#1e293b] via-[#151f30] to-[#0f172a] text-white p-5 sm:p-6 rounded-2xl border border-slate-700/80 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              <div className="space-y-1.5">
+                <div className="inline-flex items-center gap-1.5 text-[10px] font-mono-data uppercase tracking-wider text-emerald-400 font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                  <Sparkles className="w-3 h-3 text-emerald-400" />
+                  <span>Interactive Quantitative Suite</span>
+                </div>
+                <h2 className="text-lg sm:text-xl font-bold font-serif-editorial text-white">
+                  Mutual Fund Interactive Calculators
+                </h2>
+                <p className="text-slate-300 text-xs sm:text-sm font-sans max-w-xl">
+                  Simulate Direct vs Regular TER drag, step-up SIP compounding, procrastination delay costs, and SIP vs lumpsum entry dynamics.
+                </p>
+              </div>
+              <button
+                onClick={() => handleOpenCalculators()}
+                className="shrink-0 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs font-mono-data tracking-wide transition-all shadow-md flex items-center gap-2 group cursor-pointer"
+              >
+                <span>Launch All 4 Calculators</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            </div>
+
             {/* Loading State */}
             {loading ? (
               <div className="py-20 text-center text-xs font-mono-data text-stone-500">
@@ -364,6 +470,7 @@ export default function App() {
           <Footer
             settings={settings}
             onSelectCategory={handleSelectCategory}
+            onNavigateCalculators={() => handleOpenCalculators()}
           />
         </>
       )}
