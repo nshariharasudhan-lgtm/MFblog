@@ -1,12 +1,20 @@
 import { useEffect } from "react";
 import { ArticlePost, SiteSettings } from "../types";
 
+export interface CalculatorSEOMeta {
+  name: string;
+  title: string;
+  description: string;
+  urlPath: string;
+}
+
 interface SEOHeadProps {
   post?: ArticlePost | null;
   settings: SiteSettings;
   customTitle?: string;
   customDescription?: string;
   urlPath?: string;
+  calculatorMeta?: CalculatorSEOMeta | null;
 }
 
 /**
@@ -85,21 +93,25 @@ export function resolveSocialImageUrl(imageUrl?: string, fallbackOrigin?: string
   return `${origin}${cleanPath}`;
 }
 
-export function SEOHead({ post, settings, customTitle, customDescription, urlPath = "" }: SEOHeadProps) {
+export function SEOHead({ post, settings, customTitle, customDescription, urlPath = "", calculatorMeta }: SEOHeadProps) {
   // Canonical origin is strictly the primary domain for Google Search Console & Vercel production
   const canonicalOrigin = "https://www.yieldnest.online";
-  const currentPath = urlPath || (typeof window !== "undefined" ? window.location.pathname : "/");
-  const cleanPath = currentPath.length > 1 ? currentPath.replace(/\/+$/, "") : currentPath;
+  const activePath = calculatorMeta?.urlPath || urlPath || (typeof window !== "undefined" ? window.location.pathname : "/");
+  const cleanPath = activePath.length > 1 ? activePath.replace(/\/+$/, "") : activePath;
   const fullUrl = cleanPath === "/" ? `${canonicalOrigin}/` : `${canonicalOrigin}${cleanPath}`;
 
   // 1. Automated Title Generation
-  const rawTitle = post
+  const rawTitle = calculatorMeta
+    ? calculatorMeta.title
+    : post
     ? (post.seoMetadata?.metaTitle || `${post.title} | ${settings.siteName}`)
     : (customTitle || `${settings.siteName} – ${settings.tagline}`);
   const title = rawTitle.trim();
 
   // 2. Automated Clean Social Excerpt Generation
-  const description = post
+  const description = calculatorMeta
+    ? calculatorMeta.description
+    : post
     ? cleanSocialExcerpt(post.seoMetadata?.metaDescription || post.excerpt, post.content, 155)
     : (customDescription || settings.description);
 
@@ -167,7 +179,58 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
     const existingArticleTags = document.querySelectorAll('meta[property="article:tag"]');
     existingArticleTags.forEach((el) => el.remove());
 
-    if (post) {
+    if (calculatorMeta) {
+      const calculatorSchema = {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": `${fullUrl}#app`,
+            name: calculatorMeta.name,
+            url: fullUrl,
+            applicationCategory: "FinanceApplication",
+            operatingSystem: "All",
+            browserRequirements: "Requires JavaScript",
+            description: description,
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "INR",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: settings.siteName,
+              url: canonicalOrigin,
+            },
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": `${fullUrl}#breadcrumb`,
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: canonicalOrigin,
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Calculators",
+                item: `${canonicalOrigin}/calculators`,
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: calculatorMeta.name,
+                item: fullUrl,
+              },
+            ],
+          },
+        ],
+      };
+      scriptTag.textContent = JSON.stringify(calculatorSchema, null, 2);
+    } else if (post) {
       const publishDate = post.publishedAt || post.createdAt;
       const modifiedDate = post.updatedAt || post.createdAt;
       setMetaTag("property", "article:published_time", new Date(publishDate).toISOString());
@@ -237,7 +300,58 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
       document.head.appendChild(scriptTag);
     }
 
-    if (post) {
+    if (calculatorMeta) {
+      const calculatorSchema = {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": `${fullUrl}#app`,
+            name: calculatorMeta.name,
+            url: fullUrl,
+            applicationCategory: "FinanceApplication",
+            operatingSystem: "All",
+            browserRequirements: "Requires JavaScript",
+            description: description,
+            offers: {
+              "@type": "Offer",
+              price: "0",
+              priceCurrency: "INR",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: settings.siteName,
+              url: canonicalOrigin,
+            },
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": `${fullUrl}#breadcrumb`,
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: canonicalOrigin,
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Calculators",
+                item: `${canonicalOrigin}/calculators`,
+              },
+              {
+                "@type": "ListItem",
+                position: 3,
+                name: calculatorMeta.name,
+                item: fullUrl,
+              },
+            ],
+          },
+        ],
+      };
+      scriptTag.textContent = JSON.stringify(calculatorSchema, null, 2);
+    } else if (post) {
       const words = post.content ? post.content.trim().split(/\s+/).length : 500;
       const readTime = post.readTimeMinutes || Math.max(1, Math.ceil(words / 200));
 

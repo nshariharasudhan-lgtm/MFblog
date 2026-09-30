@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   TrendingUp,
   Percent,
@@ -12,17 +12,29 @@ import {
   ChevronRight,
   Info,
   CheckCircle2,
+  Copy,
+  Check,
+  Share2,
 } from "lucide-react";
 import { ArticlePost } from "../types";
+
+export type CalculatorTabType = "direct-vs-regular" | "step-up" | "cost-of-delay" | "sip-vs-lumpsum";
 
 interface CalculatorSuitePageProps {
   onBackToHome: () => void;
   onNavigateArticle?: (post: ArticlePost) => void;
   allPosts?: ArticlePost[];
-  initialTab?: "direct-vs-regular" | "step-up" | "cost-of-delay" | "sip-vs-lumpsum";
+  initialTab?: CalculatorTabType;
+  onTabChange?: (tab: CalculatorTabType) => void;
 }
 
-type TabType = "direct-vs-regular" | "step-up" | "cost-of-delay" | "sip-vs-lumpsum";
+// Canonical URL mapping for each individual calculator
+export const CALCULATOR_URL_MAP: Record<CalculatorTabType, string> = {
+  "direct-vs-regular": "/calculator/direct-vs-regular",
+  "step-up": "/calculator/step-up-sip",
+  "cost-of-delay": "/calculator/cost-of-delay",
+  "sip-vs-lumpsum": "/calculator/sip-vs-lumpsum",
+};
 
 // Helper: Format INR currency
 function formatINR(val: number): string {
@@ -48,8 +60,17 @@ export function CalculatorSuitePage({
   onNavigateArticle,
   allPosts = [],
   initialTab = "direct-vs-regular",
+  onTabChange,
 }: CalculatorSuitePageProps) {
-  const [activeTab, setActiveTab] = useState<TabType>(initialTab);
+  const [activeTab, setActiveTab] = useState<CalculatorTabType>(initialTab);
+  const [copiedUrl, setCopiedUrl] = useState(false);
+
+  // Sync active tab with prop updates (e.g. from popstate or deep links)
+  useEffect(() => {
+    if (initialTab && initialTab !== activeTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   // Tab 1: Direct vs Regular
   const [t1Sip, setT1Sip] = useState(10000);
@@ -75,10 +96,22 @@ export function CalculatorSuitePage({
   const [t4Years, setT4Years] = useState(10);
   const [t4Return, setT4Return] = useState(12);
 
-  // Switch Tab & sync URL hash without reload
-  const handleTabChange = (tab: TabType) => {
+  // Switch Tab & sync unique individual canonical URL without full reload
+  const handleTabChange = (tab: CalculatorTabType) => {
     setActiveTab(tab);
-    window.history.pushState({}, "", `/calculators?tab=${tab}`);
+    const targetUrl = CALCULATOR_URL_MAP[tab] || "/calculators";
+    window.history.pushState({}, "", targetUrl);
+    if (onTabChange) {
+      onTabChange(tab);
+    }
+  };
+
+  const handleCopyCurrentCalculatorUrl = () => {
+    const canonicalPath = CALCULATOR_URL_MAP[activeTab] || "/calculators";
+    const fullUrl = `https://www.yieldnest.online${canonicalPath}`;
+    navigator.clipboard.writeText(fullUrl);
+    setCopiedUrl(true);
+    setTimeout(() => setCopiedUrl(false), 2200);
   };
 
   // ==========================================
@@ -229,16 +262,46 @@ export function CalculatorSuitePage({
         {/* Header */}
         <div className="p-6 sm:p-8 bg-gradient-to-b from-[#1e293b] to-[#151f30] border-b border-[#334155] flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-mono-data text-xs font-semibold uppercase tracking-wider mb-2">
-              YieldNest.online • Mutual Fund Suite
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-mono-data text-xs font-semibold uppercase tracking-wider">
+                YieldNest.online • Mutual Fund Suite
+              </span>
+              <span className="text-[11px] font-mono-data text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded border border-slate-700">
+                Indexable URL: {CALCULATOR_URL_MAP[activeTab]}
+              </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-              Mutual Fund Quantitative Calculator Suite
+              {activeTab === "direct-vs-regular" && "Direct vs Regular Plan Fee Drag Calculator"}
+              {activeTab === "step-up" && "Step-Up SIP Compounding Calculator"}
+              {activeTab === "cost-of-delay" && "Cost of Delay SIP Calculator (Procrastination Tax)"}
+              {activeTab === "sip-vs-lumpsum" && "SIP vs Lumpsum Mutual Fund Strategy Comparator"}
             </h1>
             <p className="text-slate-400 text-xs sm:text-sm mt-1 max-w-2xl font-sans">
-              Evaluate distributor TER friction, compounding acceleration via annual step-ups, the financial cost of procrastinating, and SIP vs lumpsum entry dynamics.
+              {activeTab === "direct-vs-regular" && "Calculate how much corpus you forfeit to distributor trail commissions and Total Expense Ratio (TER) drag."}
+              {activeTab === "step-up" && "Simulate compounding acceleration by hiking your monthly SIP by 5% to 25% each year with your annual income increments."}
+              {activeTab === "cost-of-delay" && "Discover the compound interest penalty of postponing your monthly investments by 6 months to 5 years."}
+              {activeTab === "sip-vs-lumpsum" && "Evaluate whether a one-time lump-sum allocation or a staggered rupee-cost-averaged SIP generates superior wealth."}
             </p>
           </div>
+
+          {/* Copy Direct URL Button */}
+          <button
+            onClick={handleCopyCurrentCalculatorUrl}
+            className="shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-mono-data text-slate-200 transition-colors shadow-sm cursor-pointer"
+            title="Copy this calculator's direct permanent link for sharing or bookmarking"
+          >
+            {copiedUrl ? (
+              <>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-emerald-400 font-semibold">URL Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3.5 h-3.5 text-slate-400" />
+                <span>Share Direct URL</span>
+              </>
+            )}
+          </button>
         </div>
 
         {/* Tab Navigation */}
