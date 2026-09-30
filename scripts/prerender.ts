@@ -277,6 +277,8 @@ function injectHomepage(template: string, articles: any[]): string {
   let modified = template;
   modified = modified.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
   modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  const homeKeywords = "mutual funds India, AMFI, SIP investment, mutual fund performance, rolling returns, Indian equity, fund comparison, mutual fund calculator";
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${homeKeywords}" />`);
   modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${url}" />`);
   modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
   modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
@@ -426,6 +428,8 @@ function injectCategory(template: string, categorySlug: string, articles: any[])
   let modified = template;
   modified = modified.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
   modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  const catKeywords = `${meta.name}, mutual fund research, AMFI, performance analysis, rolling returns, Indian mutual funds`;
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${catKeywords}" />`);
   modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${url}" />`);
   modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
   modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
@@ -550,9 +554,30 @@ function injectArticle(template: string, article: any): string {
     ],
   });
 
+  const rawKeywords = [
+    article.seoMetadata?.primaryKeyword,
+    ...(Array.isArray(article.tags) ? article.tags : []),
+    ...(Array.isArray(article.seoMetadata?.secondaryKeywords) ? article.seoMetadata.secondaryKeywords : []),
+    article.category,
+    "mutual funds India",
+  ].filter((k): k is string => Boolean(k && typeof k === "string" && k.trim().length > 0));
+
+  const seenKw = new Set<string>();
+  const uniqueKw: string[] = [];
+  for (const item of rawKeywords) {
+    const clean = item.trim();
+    const lower = clean.toLowerCase();
+    if (!seenKw.has(lower)) {
+      seenKw.add(lower);
+      uniqueKw.push(clean);
+    }
+  }
+  const articleKeywords = uniqueKw.join(", ");
+
   let modified = template;
   modified = modified.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
   modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${escapeHtml(articleKeywords)}" />`);
   modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${url}" />`);
   modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
   modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
@@ -740,6 +765,8 @@ function injectCalculatorPage(template: string, calc: { slug: string; path: stri
   let modified = template;
   modified = modified.replace(/<title>.*?<\/title>/i, `<title>${calc.title}</title>`);
   modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${calc.description}" />`);
+  const calcKeywords = `${calc.title}, mutual fund calculator, SIP calculator, financial planning India, wealth compounding, AMFI calculator`;
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${escapeHtml(calcKeywords)}" />`);
   modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${calc.canonical}" />`);
   modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${calc.title}" />`);
   modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${calc.description}" />`);

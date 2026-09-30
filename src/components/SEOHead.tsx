@@ -13,8 +13,62 @@ interface SEOHeadProps {
   settings: SiteSettings;
   customTitle?: string;
   customDescription?: string;
+  customKeywords?: string;
   urlPath?: string;
   calculatorMeta?: CalculatorSEOMeta | null;
+}
+
+/**
+ * Extracts and normalizes a dynamic, comma-separated keywords string from an article post,
+ * custom keywords prop, or calculator metadata to maximize search engine discoverability.
+ */
+export function extractArticleKeywords(
+  post?: ArticlePost | null,
+  customKeywords?: string,
+  calculatorMeta?: CalculatorSEOMeta | null
+): string {
+  if (customKeywords && customKeywords.trim()) {
+    return customKeywords.trim();
+  }
+
+  if (calculatorMeta) {
+    return [
+      calculatorMeta.name,
+      "mutual fund calculator",
+      "SIP calculator",
+      "financial planning India",
+      "wealth compounding",
+      "AMFI calculator",
+      "mutual funds India",
+    ].join(", ");
+  }
+
+  if (post) {
+    const candidates = [
+      post.seoMetadata?.primaryKeyword,
+      ...(Array.isArray(post.tags) ? post.tags : []),
+      ...(Array.isArray(post.seoMetadata?.secondaryKeywords) ? post.seoMetadata.secondaryKeywords : []),
+      post.category,
+      "mutual funds India",
+    ].filter((k): k is string => Boolean(k && typeof k === "string" && k.trim().length > 0));
+
+    const seen = new Set<string>();
+    const unique: string[] = [];
+    for (const item of candidates) {
+      const clean = item.trim();
+      const lower = clean.toLowerCase();
+      if (!seen.has(lower)) {
+        seen.add(lower);
+        unique.push(clean);
+      }
+    }
+
+    if (unique.length > 0) {
+      return unique.join(", ");
+    }
+  }
+
+  return "mutual funds India, AMFI, SIP investment, mutual fund performance, rolling returns, Indian equity";
 }
 
 /**
@@ -93,7 +147,7 @@ export function resolveSocialImageUrl(imageUrl?: string, fallbackOrigin?: string
   return `${origin}${cleanPath}`;
 }
 
-export function SEOHead({ post, settings, customTitle, customDescription, urlPath = "", calculatorMeta }: SEOHeadProps) {
+export function SEOHead({ post, settings, customTitle, customDescription, customKeywords, urlPath = "", calculatorMeta }: SEOHeadProps) {
   // Canonical origin is strictly the primary domain for Google Search Console & Vercel production
   const canonicalOrigin = "https://www.yieldnest.online";
   const activePath = calculatorMeta?.urlPath || urlPath || (typeof window !== "undefined" ? window.location.pathname : "/");
@@ -115,10 +169,13 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
     ? cleanSocialExcerpt(post.seoMetadata?.metaDescription || post.excerpt, post.content, 155)
     : (customDescription || settings.description);
 
-  // 3. Image check (do not create or force images for articles)
+  // 3. Dynamic Keywords Extraction (from article tags, category, primary/secondary keywords)
+  const keywords = extractArticleKeywords(post, customKeywords, calculatorMeta);
+
+  // 4. Image check (do not create or force images for articles)
   const socialImage = post?.coverImage ? resolveSocialImageUrl(post.coverImage, canonicalOrigin) : null;
 
-  // 4. Author & Attribution (Strictly institutional desk, no individual names)
+  // 5. Author & Attribution (Strictly institutional desk, no individual names)
   const authorName = "YieldNest Research Desk";
 
   useEffect(() => {
@@ -146,6 +203,7 @@ export function SEOHead({ post, settings, customTitle, customDescription, urlPat
 
     // B. Standard Search Engine Meta
     setMetaTag("name", "description", description);
+    setMetaTag("name", "keywords", keywords);
     setMetaTag("name", "author", authorName);
     setMetaTag("name", "robots", "index, follow, max-snippet:-1");
     if (settings.googleSearchConsoleVerification) {
