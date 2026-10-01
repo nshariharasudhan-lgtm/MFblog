@@ -92,10 +92,12 @@ export function ArticleReader({
     }
   };
 
-  // Related articles suggestion algorithm based on category and shared tags
+  // Related articles suggestion algorithm based on category, shared tags, and SEO keywords
   const relatedArticles = React.useMemo(() => {
     const currentTags = (post.tags || []).map((t) => t.toLowerCase().trim()).filter(Boolean);
     const currentCategory = post.category;
+    const currentPrimaryKw = post.seoMetadata?.primaryKeyword?.toLowerCase().trim() || "";
+    const currentSecondaryKws = (post.seoMetadata?.secondaryKeywords || []).map((k) => k.toLowerCase().trim()).filter(Boolean);
 
     const candidates = allPosts
       .filter((p) => p.id !== post.id && p.status === "published")
@@ -122,7 +124,19 @@ export function ArticleReader({
           score += 2.5;
         }
 
-        // 3. Keyword / title overlap (0.5 points)
+        // 3. SEO keywords overlap (2 points)
+        const candPrimary = p.seoMetadata?.primaryKeyword?.toLowerCase().trim() || "";
+        if (candPrimary && (candPrimary === currentPrimaryKw || currentSecondaryKws.includes(candPrimary))) {
+          score += 2;
+        }
+        for (const candSec of (p.seoMetadata?.secondaryKeywords || [])) {
+          const lowerSec = candSec.toLowerCase().trim();
+          if (lowerSec && (lowerSec === currentPrimaryKw || currentSecondaryKws.includes(lowerSec))) {
+            score += 1.5;
+          }
+        }
+
+        // 4. Keyword / title overlap (0.5 points)
         const currentTitleWords = post.title.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
         const pTitleLower = p.title.toLowerCase();
         for (const word of currentTitleWords) {
@@ -147,10 +161,10 @@ export function ArticleReader({
       return b.date - a.date;
     });
 
-    return candidates.slice(0, 3).map((c) => ({
+    return candidates.slice(0, 5).map((c) => ({
       ...c.post,
       matchReason: c.sharedTags.length > 0
-        ? `Topic: ${c.sharedTags[0]}`
+        ? `#${c.sharedTags[0]}`
         : c.post.category === currentCategory
         ? `Category: ${currentCategory}`
         : "Quantitative Analysis",
@@ -330,7 +344,7 @@ export function ArticleReader({
 
       {/* Top Utility Header */}
       <div className="bg-[#FAF9F5] border-b border-[#EAE8E0] sticky top-0 z-30">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div className="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
           <button
             onClick={onBack}
             className="inline-flex items-center gap-1.5 text-xs font-medium text-[#59554C] hover:text-black transition-colors"
@@ -365,8 +379,11 @@ export function ArticleReader({
         </div>
       </div>
 
-      {/* Main Article Container */}
-      <main className="max-w-3xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
+      {/* Article Page Layout with Right Side Column */}
+      <div className="max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-10 xl:gap-12 items-start">
+          {/* Main Article Container */}
+          <main className="lg:col-span-8 xl:col-span-8 min-w-0 max-w-3xl">
         {/* Category & Status */}
         <div className="flex flex-wrap items-center gap-2 mb-4 text-xs">
           <button
@@ -516,9 +533,9 @@ export function ArticleReader({
           </p>
         </div>
 
-        {/* Related Posts Section */}
+        {/* Related Posts Section (Fallback for mobile and tablet screens) */}
         {relatedArticles.length > 0 && (
-          <div className="mt-14 pt-8 border-t border-[#EAE8E0]">
+          <div className="lg:hidden mt-14 pt-8 border-t border-[#EAE8E0]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
               <div>
                 <div className="flex items-center gap-1.5 text-xs font-mono-data uppercase tracking-wider text-emerald-700 font-semibold mb-1">
@@ -534,8 +551,8 @@ export function ArticleReader({
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {relatedArticles.map((rel: any) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              {relatedArticles.slice(0, 3).map((rel: any) => (
                 <div
                   key={rel.id}
                   onClick={() => handleInternalSlugNavigation(rel.slug)}
@@ -598,6 +615,139 @@ export function ArticleReader({
           <CommentSection postId={post.id} postTitle={post.title} />
         </div>
       </main>
+
+      {/* Right Side Column: Related Articles Section */}
+      <aside className="hidden lg:block lg:col-span-4 xl:col-span-4 sticky top-16 space-y-6 pb-12">
+        {relatedArticles.length > 0 && (
+          <div className="bg-white rounded-2xl border border-[#EAE8E0] p-5 shadow-xs">
+            {/* Section Header */}
+            <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-[#F0EEE6]">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-emerald-700" />
+                <h3 className="font-serif-editorial text-lg font-bold text-stone-900 tracking-tight">
+                  Related Articles
+                </h3>
+              </div>
+              <span className="text-[10px] font-mono-data px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 font-medium">
+                {relatedArticles.length} Suggestions
+              </span>
+            </div>
+
+            {/* Context Notice */}
+            <div className="mb-4">
+              <p className="text-[11px] text-stone-500 font-sans leading-relaxed mb-2">
+                Matched by shared tags and <em>{post.category}</em> category:
+              </p>
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {post.tags.slice(0, 3).map((t, idx) => (
+                    <span
+                      key={idx}
+                      className="text-[9.5px] font-mono-data px-1.5 py-0.5 rounded bg-[#FAF9F5] text-stone-600 border border-stone-200/70"
+                    >
+                      #{t}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* List of Suggested Related Articles */}
+            <div className="divide-y divide-[#F0EEE6]">
+              {relatedArticles.map((rel: any) => (
+                <article
+                  key={rel.id}
+                  onClick={() => handleInternalSlugNavigation(rel.slug)}
+                  className="group cursor-pointer py-3.5 first:pt-0 last:pb-0 transition-colors"
+                >
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <span className="text-[9.5px] uppercase font-mono-data tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-stone-700 font-medium">
+                      {rel.category}
+                    </span>
+                    {rel.matchReason && (
+                      <span className="text-[9.5px] font-mono-data px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-medium flex items-center gap-0.5 truncate max-w-[130px]">
+                        <Tag className="w-2.5 h-2.5 shrink-0" />
+                        <span className="truncate">{rel.matchReason}</span>
+                      </span>
+                    )}
+                  </div>
+
+                  <h4 className="font-serif-editorial text-[14.5px] font-semibold text-stone-900 group-hover:text-emerald-700 transition-colors leading-snug line-clamp-2 mb-1.5">
+                    {rel.title}
+                  </h4>
+
+                  <p className="text-stone-600 text-[11.5px] line-clamp-2 leading-relaxed font-sans mb-2">
+                    {rel.excerpt}
+                  </p>
+
+                  <div className="flex items-center justify-between text-[10.5px] font-mono-data text-stone-500">
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3 text-stone-400" />
+                      {rel.readTimeMinutes} min read
+                    </span>
+                    <span className="flex items-center gap-1 text-emerald-700 font-medium group-hover:translate-x-0.5 transition-transform">
+                      Read Paper <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Category Browser Box */}
+        <div className="bg-[#FAF9F5] rounded-2xl border border-[#EAE8E0] p-4 text-xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-mono-data text-stone-700 font-semibold uppercase tracking-wider text-[10.5px]">
+              Category Archive
+            </span>
+            <span className="text-[10px] font-mono-data text-stone-500">{post.category}</span>
+          </div>
+          <p className="text-[11px] text-stone-600 mb-3 leading-relaxed">
+            Explore all quantitative research papers published in this classification:
+          </p>
+          <button
+            onClick={() => onOpenCategory(post.category)}
+            className="w-full py-2 px-3 rounded-lg bg-stone-900 hover:bg-black text-white text-[11px] font-mono-data font-medium flex items-center justify-center gap-1.5 transition-colors"
+          >
+            <span>Browse {post.category} Papers</span>
+            <ArrowRight className="w-3 h-3" />
+          </button>
+        </div>
+
+        {/* Quantitative Calculators Box */}
+        <div className="bg-white rounded-2xl border border-[#EAE8E0] p-4 text-xs shadow-xs">
+          <div className="flex items-center gap-1.5 font-mono-data text-stone-800 font-semibold mb-2 uppercase tracking-wider text-[10.5px]">
+            <Sparkles className="w-3.5 h-3.5 text-emerald-700" />
+            <span>Financial Calculators</span>
+          </div>
+          <p className="text-[11px] text-stone-500 mb-3 leading-relaxed">
+            Model compounding returns, fee erosion, and optimal investment horizon:
+          </p>
+          <div className="space-y-1.5 font-mono-data text-[11px]">
+            <a
+              href="/calculator/direct-vs-regular"
+              className="block p-2 rounded-lg bg-[#FAF9F5] border border-stone-200/80 hover:border-emerald-600/40 text-stone-800 hover:text-emerald-800 transition-colors"
+            >
+              Direct vs Regular TER Drag
+            </a>
+            <a
+              href="/calculator/step-up-sip"
+              className="block p-2 rounded-lg bg-[#FAF9F5] border border-stone-200/80 hover:border-emerald-600/40 text-stone-800 hover:text-emerald-800 transition-colors"
+            >
+              Step-Up SIP Compounding
+            </a>
+            <a
+              href="/calculator/cost-of-delay"
+              className="block p-2 rounded-lg bg-[#FAF9F5] border border-stone-200/80 hover:border-emerald-600/40 text-stone-800 hover:text-emerald-800 transition-colors"
+            >
+              Cost of Delay Tax
+            </a>
+          </div>
+        </div>
+      </aside>
     </div>
+  </div>
+</div>
   );
 }
