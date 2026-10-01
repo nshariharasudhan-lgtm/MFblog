@@ -7,9 +7,21 @@ interface FooterProps {
   settings: SiteSettings;
   onSelectCategory: (cat: ArticleCategory | "all") => void;
   onNavigateCalculators?: () => void;
+  onNavigateFAQ?: () => void;
+  onNavigateGlossary?: () => void;
+  onNavigateGuides?: () => void;
+  onNavigateHubs?: () => void;
 }
 
-export function Footer({ settings, onSelectCategory, onNavigateCalculators }: FooterProps) {
+export function Footer({
+  settings,
+  onSelectCategory,
+  onNavigateCalculators,
+  onNavigateFAQ,
+  onNavigateGlossary,
+  onNavigateGuides,
+  onNavigateHubs,
+}: FooterProps) {
   const categories: ArticleCategory[] = [
     "Fund Comparison",
     "Performance Analysis",
@@ -71,12 +83,27 @@ export function Footer({ settings, onSelectCategory, onNavigateCalculators }: Fo
             </ul>
           </div>
 
-          {/* About Publication & Crawl Endpoints */}
+          {/* Educational Resources & Tools */}
           <div className="md:col-span-3 space-y-3">
             <div className="font-semibold text-stone-900 font-mono-data uppercase tracking-wider text-[11px]">
-              Financial Calculators
+              Investor Resources
             </div>
             <ul className="space-y-1.5 text-stone-600 text-xs">
+              <li>
+                <a
+                  href="/hubs"
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                      e.preventDefault();
+                      if (onNavigateHubs) onNavigateHubs();
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                  }}
+                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5"
+                >
+                  <span>🎯 Topic Hubs</span>
+                </a>
+              </li>
               <li>
                 <a
                   href="/calculators"
@@ -87,59 +114,83 @@ export function Footer({ settings, onSelectCategory, onNavigateCalculators }: Fo
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }
                   }}
-                  className="text-emerald-700 hover:text-emerald-900 font-medium inline-flex items-center gap-1.5 transition-colors"
+                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5"
                 >
-                  <span>🧮 Calculator Suite Hub</span>
+                  <span>🧮 Calculators Suite</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="/calculator/direct-vs-regular"
-                  className="text-stone-700 hover:text-black transition-colors"
+                  href="/faq"
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                      e.preventDefault();
+                      if (onNavigateFAQ) onNavigateFAQ();
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                  }}
+                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5"
                 >
-                  Direct vs Regular (TER Drag)
+                  <span>❓ Mutual Fund FAQ</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="/calculator/step-up-sip"
-                  className="text-stone-700 hover:text-black transition-colors"
+                  href="/glossary"
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                      e.preventDefault();
+                      if (onNavigateGlossary) onNavigateGlossary();
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                  }}
+                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5"
                 >
-                  Step-Up SIP Calculator
+                  <span>📖 Term Glossary</span>
                 </a>
               </li>
               <li>
                 <a
-                  href="/calculator/cost-of-delay"
-                  className="text-stone-700 hover:text-black transition-colors"
+                  href="/guides"
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                      e.preventDefault();
+                      if (onNavigateGuides) onNavigateGuides();
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }
+                  }}
+                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5"
                 >
-                  Cost of Delay (Procrastination Tax)
+                  <span>📚 Investor Guides Hub</span>
                 </a>
               </li>
-              <li>
-                <a
-                  href="/calculator/sip-vs-lumpsum"
-                  className="text-stone-700 hover:text-black transition-colors"
-                >
-                  SIP vs Lumpsum Comparator
-                </a>
-              </li>
-              <li className="pt-2 border-t border-stone-300/60 flex items-center gap-2 font-mono-data text-[11px]">
-                <a href="/sitemap.xml" className="text-stone-700 hover:text-black underline py-2 min-h-[44px] inline-flex items-center" target="_blank" rel="noopener noreferrer">Sitemap.xml</a>
-                <span>•</span>
-                <a href="/robots.txt" className="text-stone-700 hover:text-black underline py-2 min-h-[44px] inline-flex items-center" target="_blank" rel="noopener noreferrer">Robots.txt</a>
-                <span>•</span>
-                <a href="/llms.txt" className="text-stone-700 hover:text-black underline py-2 min-h-[44px] inline-flex items-center" target="_blank" rel="noopener noreferrer">LLMs.txt</a>
+              <li className="pl-4 text-[11px] text-stone-500 space-y-1">
+                <div>
+                  <a
+                    href="/guides/how-to-choose-a-mutual-fund"
+                    className="hover:text-stone-900 transition-colors"
+                  >
+                    • How to Choose a Fund
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="/guides/redemption-checklist"
+                    className="hover:text-stone-900 transition-colors"
+                  >
+                    • Redemption Checklist
+                  </a>
+                </div>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Concise Statutory Disclosure (1-2 lines) */}
-        <div className="p-3 sm:py-2.5 sm:px-4 rounded-xl bg-white border border-[#EAE8E0] text-[11px] text-stone-600 leading-snug flex items-start sm:items-center gap-2 shadow-xs">
-          <ShieldAlert className="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5 sm:mt-0" />
-          <p className="m-0">
-            <strong className="text-stone-800">Statutory Notice:</strong> Not SEBI or AMFI registered. Content on {siteName} is strictly for quantitative investor education &amp; research, not financial advice. Mutual fund investments are subject to market risks; read all scheme related documents carefully.
+        {/* Global Regulatory Disclaimer */}
+        <div className="p-3.5 sm:py-3 sm:px-4 rounded-xl bg-white border border-[#EAE8E0] text-[11px] sm:text-xs text-stone-600 leading-relaxed flex items-start gap-2.5 shadow-xs">
+          <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <p className="m-0 font-sans">
+            Mutual fund investments are subject to market risks. Read all scheme-related documents carefully. This site is for education only and is not investment advice. Past performance does not guarantee future returns.
           </p>
         </div>
 

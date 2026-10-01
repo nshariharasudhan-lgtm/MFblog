@@ -18,6 +18,19 @@ import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { ArticleCard } from "./components/ArticleCard";
 import { NewsletterSignup } from "./components/NewsletterSignup";
+import { PlaceholderPage, PlaceholderType } from "./components/PlaceholderPage";
+import { FAQPage } from "./components/FAQPage";
+import { GlossaryPage } from "./components/GlossaryPage";
+import { CalculatorsHubPage } from "./components/calculators/CalculatorsHubPage";
+import { SipCalculatorPage } from "./components/calculators/SipCalculatorPage";
+import { StepUpSipCalculatorPage } from "./components/calculators/StepUpSipCalculatorPage";
+import { LumpsumCalculatorPage } from "./components/calculators/LumpsumCalculatorPage";
+import { TopicHubPage } from "./components/TopicHubPage";
+import { TopicHubsIndexPage } from "./components/TopicHubsIndexPage";
+import { TopicHubData, getTopicHubBySlug, TOPIC_HUBS } from "./data/topicHubsData";
+import { HowToChooseFundGuide } from "./components/guides/HowToChooseFundGuide";
+import { RedemptionChecklistPage } from "./components/guides/RedemptionChecklistPage";
+import { GuidesIndexPage } from "./components/guides/GuidesIndexPage";
 
 // Code-split heavy components away from initial public visitor bundle
 const ArticleReader = lazy(() =>
@@ -79,6 +92,88 @@ export const CALCULATOR_CONFIG: Record<
   },
 };
 
+export const PLACEHOLDER_SEO: Record<
+  PlaceholderType,
+  { title: string; description: string; urlPath: string; keywords: string }
+> = {
+  faq: {
+    title: "Frequently Asked Questions (FAQ) | YieldNest",
+    description: "Answers to common retail investor questions about mutual fund safety, capital gains tax, SIP compounding, and redemption in India.",
+    urlPath: "/faq",
+    keywords: "mutual fund FAQ, is mutual fund safe, mutual fund tax rules, SIP questions, mutual fund redemption time",
+  },
+  glossary: {
+    title: "Mutual Fund Glossary: Key Terms & Definitions | YieldNest",
+    description: "A comprehensive glossary of essential Indian mutual fund terms including NAV, TER, ISIN, CAN, IDCW, exit loads, and SEBI regulations.",
+    urlPath: "/glossary",
+    keywords: "mutual fund glossary, NAV meaning, TER meaning, ISIN mutual fund, CAN mutual fund, IDCW meaning, exit load",
+  },
+  guides: {
+    title: "Mutual Fund Investor Guides & Educational Pillars | YieldNest",
+    description: "In-depth educational guides covering mutual fund fundamentals, portfolio building, risk evaluation, and asset allocation for Indian investors.",
+    urlPath: "/guides",
+    keywords: "mutual fund guide, how to invest in mutual funds, mutual fund basics, asset allocation India, direct mutual funds",
+  },
+  calculators: {
+    title: "Quantitative Mutual Fund Calculators Suite | YieldNest",
+    description: "Interactive calculators for Indian mutual funds: Direct vs Regular TER drag, step-up SIP compounding, cost of delay, and SIP vs lumpsum.",
+    urlPath: "/calculators",
+    keywords: "mutual fund calculator, direct vs regular calculator, step up sip calculator, cost of delay calculator, sip vs lumpsum calculator",
+  },
+};
+
+export type CalculatorPageViewType = "hub" | "sip" | "step-up-sip" | "lumpsum" | "direct-vs-regular" | "cost-of-delay" | "sip-vs-lumpsum";
+
+export type GuidePageViewType = "index" | "how-to-choose" | "redemption";
+
+export const DEDICATED_GUIDE_SEO: Record<
+  "how-to-choose" | "redemption",
+  { title: string; description: string; urlPath: string; keywords: string }
+> = {
+  "how-to-choose": {
+    title: "How to Choose a Mutual Fund: 10-Point Checklist & Category Quiz | YieldNest",
+    description: "Interactive pre-investment checklist and goal/risk-profile evaluation quiz mapping your horizon to SEBI fund categories with structural rationale and risks.",
+    urlPath: "/guides/how-to-choose-a-mutual-fund",
+    keywords: "how to choose a mutual fund, mutual fund checklist, fund category quiz, SEBI mutual fund categories, mutual fund due diligence",
+  },
+  redemption: {
+    title: "Printable Mutual Fund Redemption Checklist | YieldNest",
+    description: "A printable 12-step pre-redemption verification audit covering exit loads, ELSS 3-year lock-ins, Section 112A capital gains tax, and SEBI cut-off times.",
+    urlPath: "/guides/redemption-checklist",
+    keywords: "mutual fund redemption checklist, printable mutual fund checklist, exit load mutual funds, ELSS lock in rules, capital gains tax redemption",
+  },
+};
+
+export const INDIVIDUAL_CALCULATOR_SEO: Record<
+  string,
+  { title: string; description: string; urlPath: string; keywords: string }
+> = {
+  hub: {
+    title: "Quantitative Mutual Fund Calculators Suite | YieldNest",
+    description: "Comprehensive suite of 7 Indian mutual fund calculators including SIP, Step-Up SIP, Lumpsum, SWP, Goal Planner, Direct vs Regular TER drag, and Tax Estimator.",
+    urlPath: "/calculators",
+    keywords: "mutual fund calculator, SIP calculator, lumpsum calculator, step up sip calculator, direct vs regular calculator",
+  },
+  sip: {
+    title: "SIP Calculator: Mutual Fund Wealth Compounding | YieldNest",
+    description: "Calculate future maturity value of your monthly Systematic Investment Plan (SIP) in Indian mutual funds with compounding growth chart and amortization schedule.",
+    urlPath: "/calculators/sip",
+    keywords: "SIP calculator, mutual fund SIP calculator, monthly SIP compounding, SIP maturity value India, mutual fund tax SIP",
+  },
+  "step-up-sip": {
+    title: "Step-Up SIP Calculator: Annual Top-Up Compounding | YieldNest",
+    description: "Simulate how annual step-up top-ups (5% to 25%) linked to salary appraisals accelerate mutual fund wealth creation compared to static SIPs.",
+    urlPath: "/calculators/step-up-sip",
+    keywords: "step up SIP calculator, top up SIP calculator, annual step up mutual fund, step up compounding, salary increment SIP",
+  },
+  lumpsum: {
+    title: "Lumpsum Calculator: One-Time Mutual Fund Compounding | YieldNest",
+    description: "Calculate multi-year compounded returns and capital gains tax on one-time lumpsum mutual fund investments in India.",
+    urlPath: "/calculators/lumpsum",
+    keywords: "lumpsum calculator, one time mutual fund investment, lumpsum compounding India, mutual fund lumpsum returns",
+  },
+};
+
 export default function App() {
   const [posts, setPosts] = useState<ArticlePost[]>(() => getInitialPosts());
   const [comments, setComments] = useState<Comment[]>([]);
@@ -92,7 +187,12 @@ export default function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isCalculatorView, setIsCalculatorView] = useState(false);
+  const [activeCalculatorPage, setActiveCalculatorPage] = useState<CalculatorPageViewType>("hub");
   const [calculatorTab, setCalculatorTab] = useState<"direct-vs-regular" | "step-up" | "cost-of-delay" | "sip-vs-lumpsum">("direct-vs-regular");
+  const [placeholderView, setPlaceholderView] = useState<PlaceholderType | null>(null);
+  const [activeGuidePage, setActiveGuidePage] = useState<GuidePageViewType>("index");
+  const [selectedHub, setSelectedHub] = useState<TopicHubData | null>(null);
+  const [isHubsIndexView, setIsHubsIndexView] = useState(false);
 
   // Initialize and handle URL routing (Instant zero-delay resolution from preloaded state)
   useEffect(() => {
@@ -138,42 +238,167 @@ export default function App() {
     const path = rawPath.replace(/\/+$/, "") || "/";
     const currentList = availablePosts && availablePosts.length > 0 ? availablePosts : posts;
 
-    // Check for individual calculator dedicated URLs & calculators hub
-    if (path === "/calculator/direct-vs-regular" || path === "/calculators/direct-vs-regular") {
-      setCalculatorTab("direct-vs-regular");
-      setIsCalculatorView(true);
+    // Topic Hubs Index or Specific Topic Hub
+    if (path === "/hubs" || path === "/topics") {
+      setIsHubsIndexView(true);
+      setSelectedHub(null);
+      setIsCalculatorView(false);
       setSelectedArticle(null);
       setIsAdminView(false);
+      setPlaceholderView(null);
       return;
-    } else if (path === "/calculator/step-up-sip" || path === "/calculators/step-up-sip" || path === "/calculator/step-up" || path === "/calculators/step-up") {
-      setCalculatorTab("step-up");
-      setIsCalculatorView(true);
+    } else if (path.startsWith("/hub/") || path.startsWith("/topic/") || path.startsWith("/topics/")) {
+      const hubSlug = path.replace(/^\/(hub|topic|topics)\//, "").replace(/\/+$/, "");
+      const matchedHub = getTopicHubBySlug(hubSlug);
+      if (matchedHub) {
+        setSelectedHub(matchedHub);
+        setIsHubsIndexView(false);
+        setIsCalculatorView(false);
+        setSelectedArticle(null);
+        setIsAdminView(false);
+        setPlaceholderView(null);
+        return;
+      }
+    }
+
+    // Check for individual calculator dedicated URLs & calculators hub
+    if (path === "/faq") {
+      setPlaceholderView("faq");
+      setIsCalculatorView(false);
       setSelectedArticle(null);
       setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path === "/glossary") {
+      setPlaceholderView("glossary");
+      setIsCalculatorView(false);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path === "/guides/how-to-choose-a-mutual-fund" || path === "/how-to-choose-a-mutual-fund") {
+      setPlaceholderView("guides");
+      setActiveGuidePage("how-to-choose");
+      setIsCalculatorView(false);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path === "/guides/redemption-checklist" || path === "/redemption-checklist") {
+      setPlaceholderView("guides");
+      setActiveGuidePage("redemption");
+      setIsCalculatorView(false);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path === "/guides" || path === "/guide") {
+      setPlaceholderView("guides");
+      setActiveGuidePage("index");
+      setIsCalculatorView(false);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path === "/calculators/sip" || path === "/calculator/sip") {
+      setIsCalculatorView(true);
+      setActiveCalculatorPage("sip");
+      setPlaceholderView(null);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path === "/calculators/step-up-sip" || path === "/calculator/step-up-sip" || path === "/calculator/step-up" || path === "/calculators/step-up") {
+      setIsCalculatorView(true);
+      setActiveCalculatorPage("step-up-sip");
+      setCalculatorTab("step-up");
+      setPlaceholderView(null);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path === "/calculators/lumpsum" || path === "/calculator/lumpsum") {
+      setIsCalculatorView(true);
+      setActiveCalculatorPage("lumpsum");
+      setPlaceholderView(null);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path === "/calculator/direct-vs-regular" || path === "/calculators/direct-vs-regular") {
+      setCalculatorTab("direct-vs-regular");
+      setActiveCalculatorPage("direct-vs-regular");
+      setIsCalculatorView(true);
+      setPlaceholderView(null);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
       return;
     } else if (path === "/calculator/cost-of-delay" || path === "/calculators/cost-of-delay") {
       setCalculatorTab("cost-of-delay");
+      setActiveCalculatorPage("cost-of-delay");
       setIsCalculatorView(true);
+      setPlaceholderView(null);
       setSelectedArticle(null);
       setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
       return;
     } else if (path === "/calculator/sip-vs-lumpsum" || path === "/calculators/sip-vs-lumpsum") {
       setCalculatorTab("sip-vs-lumpsum");
+      setActiveCalculatorPage("sip-vs-lumpsum");
       setIsCalculatorView(true);
+      setPlaceholderView(null);
       setSelectedArticle(null);
       setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
       return;
-    } else if (path.startsWith("/calculators") || path.startsWith("/calculator")) {
+    } else if (path === "/calculators" || path === "/calculator") {
       const searchParams = new URLSearchParams(window.location.search);
       const tabParam = searchParams.get("tab") as any;
-      if (tabParam === "step-up" || tabParam === "cost-of-delay" || tabParam === "sip-vs-lumpsum") {
-        setCalculatorTab(tabParam);
-      } else {
+      if (tabParam === "sip") {
+        setActiveCalculatorPage("sip");
+      } else if (tabParam === "step-up" || tabParam === "step-up-sip") {
+        setActiveCalculatorPage("step-up-sip");
+      } else if (tabParam === "lumpsum") {
+        setActiveCalculatorPage("lumpsum");
+      } else if (tabParam === "cost-of-delay") {
+        setActiveCalculatorPage("cost-of-delay");
+        setCalculatorTab("cost-of-delay");
+      } else if (tabParam === "sip-vs-lumpsum") {
+        setActiveCalculatorPage("sip-vs-lumpsum");
+        setCalculatorTab("sip-vs-lumpsum");
+      } else if (tabParam === "direct-vs-regular") {
+        setActiveCalculatorPage("direct-vs-regular");
         setCalculatorTab("direct-vs-regular");
+      } else {
+        setActiveCalculatorPage("hub");
       }
       setIsCalculatorView(true);
+      setPlaceholderView(null);
       setSelectedArticle(null);
       setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path.startsWith("/calculators/") || path.startsWith("/calculator/")) {
+      setActiveCalculatorPage("hub");
+      setIsCalculatorView(true);
+      setPlaceholderView(null);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
       return;
     }
 
@@ -184,6 +409,9 @@ export default function App() {
         setSelectedArticle(matched);
         setIsAdminView(false);
         setIsCalculatorView(false);
+        setPlaceholderView(null);
+        setSelectedHub(null);
+        setIsHubsIndexView(false);
         incrementPostViews(matched.id);
         return;
       }
@@ -194,6 +422,9 @@ export default function App() {
         setSelectedArticle(null);
         setIsAdminView(false);
         setIsCalculatorView(false);
+        setPlaceholderView(null);
+        setSelectedHub(null);
+        setIsHubsIndexView(false);
         return;
       }
     } else if (path === "/admin") {
@@ -202,6 +433,9 @@ export default function App() {
         setIsAdminView(true);
         setSelectedArticle(null);
         setIsCalculatorView(false);
+        setPlaceholderView(null);
+        setSelectedHub(null);
+        setIsHubsIndexView(false);
       } else {
         setShowAuthModal(true);
       }
@@ -212,19 +446,118 @@ export default function App() {
     setSelectedArticle(null);
     setIsAdminView(false);
     setIsCalculatorView(false);
+    setPlaceholderView(null);
+    setSelectedHub(null);
+    setIsHubsIndexView(false);
     if (path === "/") {
       setCurrentCategory("all");
     }
   };
 
-  // Open Calculators Suite Page
-  const handleOpenCalculators = (tab: "direct-vs-regular" | "step-up" | "cost-of-delay" | "sip-vs-lumpsum" = "direct-vs-regular") => {
+  // Open Calculators Suite Page or individual calculator
+  const handleOpenCalculators = (target?: string) => {
     setIsCalculatorView(true);
-    setCalculatorTab(tab);
+    setPlaceholderView(null);
     setSelectedArticle(null);
     setIsAdminView(false);
-    const targetUrl = CALCULATOR_CONFIG[tab]?.urlPath || "/calculators";
-    window.history.pushState({}, "", targetUrl);
+    setSelectedHub(null);
+    setIsHubsIndexView(false);
+
+    const cleanTarget = target ? target.replace(/^\/+(calculators|calculator)\//, "") : "";
+
+    if (cleanTarget === "sip") {
+      setActiveCalculatorPage("sip");
+      window.history.pushState({}, "", "/calculators/sip");
+    } else if (cleanTarget === "step-up-sip" || cleanTarget === "step-up") {
+      setActiveCalculatorPage("step-up-sip");
+      setCalculatorTab("step-up");
+      window.history.pushState({}, "", "/calculators/step-up-sip");
+    } else if (cleanTarget === "lumpsum") {
+      setActiveCalculatorPage("lumpsum");
+      window.history.pushState({}, "", "/calculators/lumpsum");
+    } else if (cleanTarget === "direct-vs-regular") {
+      setActiveCalculatorPage("direct-vs-regular");
+      setCalculatorTab("direct-vs-regular");
+      window.history.pushState({}, "", "/calculators/direct-vs-regular");
+    } else if (cleanTarget === "cost-of-delay") {
+      setActiveCalculatorPage("cost-of-delay");
+      setCalculatorTab("cost-of-delay");
+      window.history.pushState({}, "", "/calculators/cost-of-delay");
+    } else if (cleanTarget === "sip-vs-lumpsum") {
+      setActiveCalculatorPage("sip-vs-lumpsum");
+      setCalculatorTab("sip-vs-lumpsum");
+      window.history.pushState({}, "", "/calculators/sip-vs-lumpsum");
+    } else {
+      setActiveCalculatorPage("hub");
+      window.history.pushState({}, "", "/calculators");
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Navigate to Topic Hub or Hubs Directory
+  const handleNavigateHub = (hubSlug?: string) => {
+    setSelectedArticle(null);
+    setIsAdminView(false);
+    setIsCalculatorView(false);
+    setPlaceholderView(null);
+
+    if (!hubSlug || hubSlug === "all" || hubSlug === "") {
+      setIsHubsIndexView(true);
+      setSelectedHub(null);
+      window.history.pushState({}, "", "/hubs");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    const matched = getTopicHubBySlug(hubSlug);
+    if (matched) {
+      setSelectedHub(matched);
+      setIsHubsIndexView(false);
+      window.history.pushState({}, "", `/hub/${matched.slug}`);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  // Navigate to FAQ Page
+  const handleNavigateFAQ = () => {
+    setPlaceholderView("faq");
+    setIsCalculatorView(false);
+    setSelectedArticle(null);
+    setIsAdminView(false);
+    setSelectedHub(null);
+    setIsHubsIndexView(false);
+    window.history.pushState({}, "", "/faq");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Navigate to Glossary Page
+  const handleNavigateGlossary = () => {
+    setPlaceholderView("glossary");
+    setIsCalculatorView(false);
+    setSelectedArticle(null);
+    setIsAdminView(false);
+    setSelectedHub(null);
+    setIsHubsIndexView(false);
+    window.history.pushState({}, "", "/glossary");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Navigate to Guides Page or specific Guide
+  const handleNavigateGuides = (subguide?: GuidePageViewType) => {
+    setPlaceholderView("guides");
+    setActiveGuidePage(subguide || "index");
+    setIsCalculatorView(false);
+    setSelectedArticle(null);
+    setIsAdminView(false);
+    setSelectedHub(null);
+    setIsHubsIndexView(false);
+    if (subguide === "how-to-choose") {
+      window.history.pushState({}, "", "/guides/how-to-choose-a-mutual-fund");
+    } else if (subguide === "redemption") {
+      window.history.pushState({}, "", "/guides/redemption-checklist");
+    } else {
+      window.history.pushState({}, "", "/guides");
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -233,6 +566,9 @@ export default function App() {
     setSelectedArticle(post);
     setIsAdminView(false);
     setIsCalculatorView(false);
+    setPlaceholderView(null);
+    setSelectedHub(null);
+    setIsHubsIndexView(false);
     incrementPostViews(post.id);
     window.history.pushState({}, "", `/article/${post.slug}`);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -244,6 +580,9 @@ export default function App() {
     setSelectedArticle(null);
     setIsAdminView(false);
     setIsCalculatorView(false);
+    setPlaceholderView(null);
+    setSelectedHub(null);
+    setIsHubsIndexView(false);
     if (cat === "all") {
       window.history.pushState({}, "", "/");
     } else {
@@ -258,6 +597,9 @@ export default function App() {
     setIsAdminView(false);
     setIsCalculatorView(false);
     setShowAuthModal(false);
+    setSelectedHub(null);
+    setIsHubsIndexView(false);
+    setPlaceholderView(null);
     setCurrentCategory("all");
     window.history.pushState({}, "", "/");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -336,10 +678,22 @@ export default function App() {
       <SEOHead
         post={selectedArticle}
         settings={settings}
-        calculatorMeta={isCalculatorView ? (CALCULATOR_CONFIG[calculatorTab] || CALCULATOR_CONFIG["direct-vs-regular"]) : null}
+        calculatorMeta={
+          isCalculatorView && !["hub", "sip", "step-up-sip", "lumpsum"].includes(activeCalculatorPage)
+            ? (CALCULATOR_CONFIG[calculatorTab] || CALCULATOR_CONFIG["direct-vs-regular"])
+            : null
+        }
         urlPath={
-          isCalculatorView
-            ? (CALCULATOR_CONFIG[calculatorTab]?.urlPath || "/calculators")
+          selectedHub
+            ? `/hub/${selectedHub.slug}`
+            : isHubsIndexView
+            ? "/hubs"
+            : placeholderView === "guides" && (activeGuidePage === "how-to-choose" || activeGuidePage === "redemption")
+            ? DEDICATED_GUIDE_SEO[activeGuidePage].urlPath
+            : placeholderView
+            ? PLACEHOLDER_SEO[placeholderView].urlPath
+            : isCalculatorView
+            ? (INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage]?.urlPath || CALCULATOR_CONFIG[calculatorTab]?.urlPath || "/calculators")
             : selectedArticle
             ? `/article/${selectedArticle.slug}`
             : currentCategory !== "all"
@@ -347,13 +701,46 @@ export default function App() {
             : "/"
         }
         customTitle={
-          !isCalculatorView && !selectedArticle && currentCategory !== "all"
+          selectedHub
+            ? selectedHub.metaTitle
+            : isHubsIndexView
+            ? "Mutual Fund Topic Hubs: Systematic Knowledge Clusters | YieldNest"
+            : placeholderView === "guides" && (activeGuidePage === "how-to-choose" || activeGuidePage === "redemption")
+            ? DEDICATED_GUIDE_SEO[activeGuidePage].title
+            : placeholderView
+            ? PLACEHOLDER_SEO[placeholderView].title
+            : isCalculatorView && INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage]
+            ? INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage].title
+            : !isCalculatorView && !selectedArticle && currentCategory !== "all"
             ? `${currentCategory} Mutual Fund Research & Analysis | YieldNest.online`
             : undefined
         }
         customDescription={
-          !isCalculatorView && !selectedArticle && currentCategory !== "all"
+          selectedHub
+            ? selectedHub.metaDescription
+            : isHubsIndexView
+            ? "Explore our comprehensive editorial knowledge hubs organized by core investment clusters: Basics, Safety & Risk, Tax & ELSS, Fees, Redemption, SIP, and Comparisons."
+            : placeholderView === "guides" && (activeGuidePage === "how-to-choose" || activeGuidePage === "redemption")
+            ? DEDICATED_GUIDE_SEO[activeGuidePage].description
+            : placeholderView
+            ? PLACEHOLDER_SEO[placeholderView].description
+            : isCalculatorView && INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage]
+            ? INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage].description
+            : !isCalculatorView && !selectedArticle && currentCategory !== "all"
             ? `Explore data-driven ${currentCategory} mutual fund research, rolling returns, and performance analysis on YieldNest.online.`
+            : undefined
+        }
+        customKeywords={
+          selectedHub
+            ? selectedHub.keywords
+            : isHubsIndexView
+            ? "mutual fund topics, mutual fund clusters, SEBI investment guide, AMFI topic hubs, mutual fund basics"
+            : placeholderView === "guides" && (activeGuidePage === "how-to-choose" || activeGuidePage === "redemption")
+            ? DEDICATED_GUIDE_SEO[activeGuidePage].keywords
+            : placeholderView
+            ? PLACEHOLDER_SEO[placeholderView].keywords
+            : isCalculatorView && INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage]
+            ? INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage].keywords
             : undefined
         }
       />
@@ -388,58 +775,283 @@ export default function App() {
             initialTab={adminInitialTab}
           />
         </Suspense>
+      ) : selectedHub ? (
+        /* Reusable Topic Hub Page for Selected Cluster */
+        <TopicHubPage
+          hub={selectedHub}
+          settings={settings}
+          allPosts={posts}
+          onNavigateHome={handleBackToHome}
+          onNavigateCalculators={() => handleOpenCalculators()}
+          onNavigateCalculator={(url) => handleOpenCalculators(url)}
+          onNavigateFAQ={handleNavigateFAQ}
+          onNavigateGlossary={handleNavigateGlossary}
+          onNavigateGlossaryTerm={(termId) => {
+            handleNavigateGlossary();
+            setTimeout(() => {
+              const el = document.getElementById(termId);
+              if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+            }, 250);
+          }}
+          onNavigateGuides={handleNavigateGuides}
+          onNavigateHub={handleNavigateHub}
+          onSelectCategory={(cat) => {
+            setSelectedHub(null);
+            handleSelectCategory(cat);
+          }}
+          onNavigateArticle={handleOpenArticle}
+          onSearchChange={setSearchQuery}
+          searchQuery={searchQuery}
+        />
+      ) : isHubsIndexView ? (
+        /* Topic Hubs Directory / Index */
+        <TopicHubsIndexPage
+          settings={settings}
+          allPosts={posts}
+          onNavigateHome={handleBackToHome}
+          onNavigateHub={handleNavigateHub}
+          onNavigateCalculators={() => handleOpenCalculators()}
+          onNavigateFAQ={handleNavigateFAQ}
+          onNavigateGlossary={handleNavigateGlossary}
+          onNavigateGuides={handleNavigateGuides}
+          onSelectCategory={(cat) => {
+            setIsHubsIndexView(false);
+            handleSelectCategory(cat);
+          }}
+          onSearchChange={setSearchQuery}
+          searchQuery={searchQuery}
+        />
+      ) : placeholderView ? (
+        placeholderView === "faq" ? (
+          /* Full Interactive FAQ Page */
+          <FAQPage
+            settings={settings}
+            onNavigateHome={handleBackToHome}
+            onSelectCategory={(cat) => {
+              setPlaceholderView(null);
+              handleSelectCategory(cat);
+            }}
+            onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
+          />
+        ) : placeholderView === "glossary" ? (
+          /* Full Interactive Glossary Page */
+          <GlossaryPage
+            settings={settings}
+            onNavigateHome={handleBackToHome}
+            onSelectCategory={(cat) => {
+              setPlaceholderView(null);
+              handleSelectCategory(cat);
+            }}
+            onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
+            onSearchChange={setSearchQuery}
+            searchQuery={searchQuery}
+          />
+        ) : (
+          /* Interactive Guides Hub, Checklist, or Printable Redemption Page */
+          activeGuidePage === "how-to-choose" ? (
+            <HowToChooseFundGuide
+              settings={settings}
+              onNavigateHome={handleBackToHome}
+              onSelectCategory={(cat) => {
+                setPlaceholderView(null);
+                handleSelectCategory(cat);
+              }}
+              onNavigateCalculators={() => handleOpenCalculators()}
+              onNavigateFAQ={handleNavigateFAQ}
+              onNavigateGlossary={handleNavigateGlossary}
+              onNavigateGuides={() => handleNavigateGuides("index")}
+              onNavigateHub={handleNavigateHub}
+              onNavigateRedemptionChecklist={() => handleNavigateGuides("redemption")}
+              onSearchChange={setSearchQuery}
+              searchQuery={searchQuery}
+            />
+          ) : activeGuidePage === "redemption" ? (
+            <RedemptionChecklistPage
+              settings={settings}
+              onNavigateHome={handleBackToHome}
+              onSelectCategory={(cat) => {
+                setPlaceholderView(null);
+                handleSelectCategory(cat);
+              }}
+              onNavigateCalculators={() => handleOpenCalculators()}
+              onNavigateFAQ={handleNavigateFAQ}
+              onNavigateGlossary={handleNavigateGlossary}
+              onNavigateGuides={() => handleNavigateGuides("index")}
+              onNavigateHowToChooseGuide={() => handleNavigateGuides("how-to-choose")}
+              onNavigateHub={handleNavigateHub}
+              onSearchChange={setSearchQuery}
+              searchQuery={searchQuery}
+            />
+          ) : (
+            <GuidesIndexPage
+              settings={settings}
+              onNavigateHome={handleBackToHome}
+              onSelectCategory={(cat) => {
+                setPlaceholderView(null);
+                handleSelectCategory(cat);
+              }}
+              onNavigateCalculators={() => handleOpenCalculators()}
+              onNavigateFAQ={handleNavigateFAQ}
+              onNavigateGlossary={handleNavigateGlossary}
+              onNavigateGuides={() => handleNavigateGuides("index")}
+              onNavigateHowToChooseGuide={() => handleNavigateGuides("how-to-choose")}
+              onNavigateRedemptionChecklist={() => handleNavigateGuides("redemption")}
+              onNavigateHub={handleNavigateHub}
+              onSearchChange={setSearchQuery}
+              searchQuery={searchQuery}
+            />
+          )
+        )
       ) : isCalculatorView ? (
-        /* Dedicated Calculators Suite Page */
-        <>
-          <Navbar
-            currentCategory={currentCategory}
+        activeCalculatorPage === "hub" ? (
+          <CalculatorsHubPage
+            settings={settings}
+            onNavigateHome={handleBackToHome}
+            onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateCalculator={(slug) => handleOpenCalculators(slug)}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
             onSelectCategory={(cat) => {
               setIsCalculatorView(false);
               handleSelectCategory(cat);
             }}
             onSearchChange={setSearchQuery}
             searchQuery={searchQuery}
+          />
+        ) : activeCalculatorPage === "sip" ? (
+          <SipCalculatorPage
             settings={settings}
             onNavigateHome={handleBackToHome}
-            isCalculatorView={true}
             onNavigateCalculators={() => handleOpenCalculators()}
-          />
-
-          <main className="flex-1">
-            <Suspense fallback={<div className="min-h-screen py-24 text-center text-xs font-mono-data text-stone-500">Loading quantitative calculator suite...</div>}>
-              <CalculatorSuitePage
-                onBackToHome={handleBackToHome}
-                onNavigateArticle={handleOpenArticle}
-                allPosts={posts}
-                initialTab={calculatorTab}
-                onTabChange={(tab) => setCalculatorTab(tab)}
-              />
-            </Suspense>
-          </main>
-
-          <Footer
-            settings={settings}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
             onSelectCategory={(cat) => {
               setIsCalculatorView(false);
               handleSelectCategory(cat);
             }}
-            onNavigateCalculators={() => handleOpenCalculators()}
+            onSearchChange={setSearchQuery}
+            searchQuery={searchQuery}
           />
-        </>
-      ) : selectedArticle ? (
-        /* Single Article View */
-        <Suspense fallback={<div className="min-h-screen py-24 text-center text-xs font-mono-data text-stone-500">Loading research report...</div>}>
-          <ArticleReader
-            post={selectedArticle}
-            onBack={handleBackToHome}
+        ) : activeCalculatorPage === "step-up-sip" ? (
+          <StepUpSipCalculatorPage
             settings={settings}
-            onOpenCategory={(cat) => {
+            onNavigateHome={handleBackToHome}
+            onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
+            onSelectCategory={(cat) => {
+              setIsCalculatorView(false);
               handleSelectCategory(cat);
             }}
-            allPosts={posts}
-            onNavigateArticle={handleOpenArticle}
+            onSearchChange={setSearchQuery}
+            searchQuery={searchQuery}
           />
-        </Suspense>
+        ) : activeCalculatorPage === "lumpsum" ? (
+          <LumpsumCalculatorPage
+            settings={settings}
+            onNavigateHome={handleBackToHome}
+            onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
+            onSelectCategory={(cat) => {
+              setIsCalculatorView(false);
+              handleSelectCategory(cat);
+            }}
+            onSearchChange={setSearchQuery}
+            searchQuery={searchQuery}
+          />
+        ) : (
+          /* Dedicated Calculators Suite Page */
+          <>
+            <Navbar
+              currentCategory={currentCategory}
+              onSelectCategory={(cat) => {
+                setIsCalculatorView(false);
+                handleSelectCategory(cat);
+              }}
+              onSearchChange={setSearchQuery}
+              searchQuery={searchQuery}
+              settings={settings}
+              onNavigateHome={handleBackToHome}
+              isCalculatorView={true}
+              onNavigateCalculators={() => handleOpenCalculators()}
+              activeMenu="calculators"
+              onNavigateFAQ={handleNavigateFAQ}
+              onNavigateGlossary={handleNavigateGlossary}
+              onNavigateGuides={handleNavigateGuides}
+              onNavigateHubs={() => handleNavigateHub()}
+            />
+
+            <main className="flex-1">
+              <Suspense fallback={<div className="min-h-screen py-24 text-center text-xs font-mono-data text-stone-500">Loading quantitative calculator suite...</div>}>
+                <CalculatorSuitePage
+                  onBackToHome={handleBackToHome}
+                  onNavigateArticle={handleOpenArticle}
+                  allPosts={posts}
+                  initialTab={calculatorTab}
+                  onTabChange={(tab) => setCalculatorTab(tab)}
+                />
+              </Suspense>
+            </main>
+
+            <Footer
+              settings={settings}
+              onSelectCategory={(cat) => {
+                setIsCalculatorView(false);
+                handleSelectCategory(cat);
+              }}
+              onNavigateCalculators={() => handleOpenCalculators()}
+              onNavigateFAQ={handleNavigateFAQ}
+              onNavigateGlossary={handleNavigateGlossary}
+              onNavigateGuides={handleNavigateGuides}
+              onNavigateHubs={() => handleNavigateHub()}
+            />
+          </>
+        )
+      ) : selectedArticle ? (
+        /* Single Article View */
+        <>
+          <Suspense fallback={<div className="min-h-screen py-24 text-center text-xs font-mono-data text-stone-500">Loading research report...</div>}>
+            <ArticleReader
+              post={selectedArticle}
+              onBack={handleBackToHome}
+              settings={settings}
+              onOpenCategory={(cat) => {
+                handleSelectCategory(cat);
+              }}
+              allPosts={posts}
+              onNavigateArticle={handleOpenArticle}
+              onNavigateHub={handleNavigateHub}
+              onNavigateCalculator={(url) => handleOpenCalculators(url)}
+              onNavigateGlossaryTerm={(termId) => {
+                handleNavigateGlossary();
+                setTimeout(() => {
+                  const el = document.getElementById(termId);
+                  if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+                }, 250);
+              }}
+            />
+          </Suspense>
+          <Footer
+            settings={settings}
+            onSelectCategory={handleSelectCategory}
+            onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
+            onNavigateHubs={() => handleNavigateHub()}
+          />
+        </>
       ) : (
         /* Blog Main Homepage */
         <>
@@ -452,6 +1064,11 @@ export default function App() {
             onNavigateHome={handleBackToHome}
             isCalculatorView={false}
             onNavigateCalculators={() => handleOpenCalculators()}
+            activeMenu="none"
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
+            onNavigateHubs={() => handleNavigateHub()}
           />
 
           <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6 sm:py-8 space-y-10">
@@ -524,6 +1141,10 @@ export default function App() {
             settings={settings}
             onSelectCategory={handleSelectCategory}
             onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
+            onNavigateHubs={() => handleNavigateHub()}
           />
         </>
       )}

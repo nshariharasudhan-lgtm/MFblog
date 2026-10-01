@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIP Compounding Calculator | YieldNest</title>
+  <meta name="description" content="Calculate mutual fund SIP compounding, future maturity value, and post-tax returns in India.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --card-bg: #ffffff;
+      --card-border: #eae8e0;
+      --text-main: #1c1917;
+      --text-muted: #78716c;
+      --primary: #065f46;
+      --primary-light: #ecfdf5;
+      --accent: #10b981;
+      --input-bg: #f5f4ef;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0c0a09;
+        --card-bg: #1c1917;
+        --card-border: #292524;
+        --text-main: #f5f5f4;
+        --text-muted: #a8a29e;
+        --primary: #34d399;
+        --primary-light: #064e3b;
+        --accent: #10b981;
+        --input-bg: #292524;
+      }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      padding: 16px;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 820px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    }
+    .header {
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .badge {
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 3px 8px;
+      background: var(--primary-light);
+      color: var(--primary);
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    h1 { font-size: 20px; font-weight: 700; color: var(--text-main); }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 24px; }
+    @media (min-width: 680px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .form-group { margin-bottom: 16px; }
+    label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
+    .val-display { font-family: 'JetBrains Mono', monospace; color: var(--primary); }
+    input[type="number"], select {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--card-border);
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .stat-card {
+      padding: 12px;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      background: var(--input-bg);
+    }
+    .stat-card.hero {
+      grid-column: span 2;
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+    .stat-title { font-size: 10px; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; color: var(--text-muted); }
+    .stat-val { font-size: 18px; font-weight: 700; font-family: 'JetBrains Mono', monospace; margin: 4px 0 2px; }
+    .stat-card.hero .stat-val { color: var(--primary); font-size: 22px; }
+    .stat-sub { font-size: 11px; color: var(--text-muted); }
+    .chart-box {
+      margin-top: 20px;
+      padding: 16px;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+    }
+    svg { width: 100%; height: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      font-family: 'JetBrains Mono', monospace;
+      margin-top: 20px;
+    }
+    th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--card-border); }
+    th { background: var(--input-bg); font-weight: 600; color: var(--text-muted); }
+    .tax-box {
+      margin-top: 16px;
+      padding: 12px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+      font-size: 11px;
+    }
+    .statutory-footer {
+      margin-top: 24px;
+      padding: 14px;
+      background: var(--input-bg);
+      border-radius: 8px;
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .illustrative-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <span class="badge">YieldNest Embed Tool</span>
+        <h1>SIP Compounding Calculator</h1>
+      </div>
+      <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--text-muted);">
+        As on October 2026
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- Input Controls -->
+      <div>
+        <div class="form-group">
+          <label for="monthlyInput">
+            <span>Monthly SIP (₹)</span>
+            <span class="val-display" id="monthlyDisplay">₹10,000</span>
+          </label>
+          <input type="number" id="monthlyInput" min="500" max="1000000" step="500" value="10000">
+          <input type="range" id="monthlySlider" min="500" max="100000" step="500" value="10000">
+        </div>
+
+        <div class="form-group">
+          <label for="rateInput">
+            <span>Expected Return Rate (% p.a.)</span>
+            <span class="val-display" id="rateDisplay">12%</span>
+          </label>
+          <input type="number" id="rateInput" min="1" max="30" step="0.5" value="12">
+          <input type="range" id="rateSlider" min="5" max="25" step="0.5" value="12">
+        </div>
+
+        <div class="form-group">
+          <label for="yearsInput">
+            <span>Investment Horizon (Years)</span>
+            <span class="val-display" id="yearsDisplay">15 Yrs</span>
+          </label>
+          <input type="number" id="yearsInput" min="1" max="40" step="1" value="15">
+          <input type="range" id="yearsSlider" min="1" max="35" step="1" value="15">
+        </div>
+
+        <!-- Editable Tax Section -->
+        <div class="tax-box">
+          <strong>Tax Assumptions (Editable):</strong>
+          <div style="margin-top:6px;display:flex;gap:8px;">
+            <div style="flex:1;">
+              <span style="font-size:10px;">LTCG Rate (%):</span>
+              <input type="number" id="taxRateInput" value="12.5" step="0.5" style="margin:2px 0 0;padding:4px 6px;font-size:11px;">
+            </div>
+            <div style="flex:1;">
+              <span style="font-size:10px;">Exemption (₹):</span>
+              <input type="number" id="exemptionInput" value="125000" step="5000" style="margin:2px 0 0;padding:4px 6px;font-size:11px;">
+            </div>
+          </div>
+          <div style="font-size:10px;margin-top:4px;color:var(--text-muted);">
+            Defaults may change. Verify on the Income Tax Department or SEBI/AMFI websites.
+          </div>
+        </div>
+
+        <div class="illustrative-note">
+          Return assumptions are illustrative, not guaranteed.
+        </div>
+      </div>
+
+      <!-- Results Summary -->
+      <div>
+        <div class="summary-grid">
+          <div class="stat-card hero">
+            <div class="stat-title">Estimated Maturity Value</div>
+            <div class="stat-val" id="resMaturity">₹0</div>
+            <div class="stat-sub" id="resWords">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Total Invested</div>
+            <div class="stat-val" id="resInvested">₹0</div>
+            <div class="stat-sub" id="resInvestedWords">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Wealth Gain</div>
+            <div class="stat-val" id="resGains" style="color:var(--accent);">₹0</div>
+            <div class="stat-sub" id="resGainsWords">-</div>
+          </div>
+          <div class="stat-card" style="grid-column: span 2;">
+            <div class="stat-title">Post-Tax Corpus (Est.)</div>
+            <div class="stat-val" id="resPostTax">₹0</div>
+            <div class="stat-sub" id="resTaxNote">Tax Liability: ₹0</div>
+          </div>
+        </div>
+
+        <div class="chart-box">
+          <svg id="growthChart" viewBox="0 0 400 160"></svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div style="overflow-x:auto;">
+      <table id="amortTable">
+        <thead>
+          <tr>
+            <th>Year</th>
+            <th>Opening</th>
+            <th>Deposited</th>
+            <th>Total Invested</th>
+            <th>Returns (Yr)</th>
+            <th style="text-align:right;">Closing Balance</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Mandatory Footer -->
+    <div class="statutory-footer">
+      <strong>Regulatory Disclaimer:</strong> Mutual fund investments are subject to market risks. Read all scheme-related documents carefully. This site is for education only and is not investment advice. Past performance does not guarantee future returns.
+    </div>
+  </div>
+
+  <script>
+    function formatINR(val) {
+      return "₹" + Math.round(val).toLocaleString("en-IN");
+    }
+    function formatWords(amount) {
+      var abs = Math.abs(amount);
+      if (abs >= 10000000) return (amount / 10000000).toFixed(2) + " Crore";
+      if (abs >= 100000) return (amount / 100000).toFixed(2) + " Lakh";
+      if (abs >= 1000) return (amount / 1000).toFixed(1) + " Thousand";
+      return "₹" + Math.round(amount);
+    }
+
+    var monthlyInput = document.getElementById("monthlyInput");
+    var monthlySlider = document.getElementById("monthlySlider");
+    var rateInput = document.getElementById("rateInput");
+    var rateSlider = document.getElementById("rateSlider");
+    var yearsInput = document.getElementById("yearsInput");
+    var yearsSlider = document.getElementById("yearsSlider");
+    var taxRateInput = document.getElementById("taxRateInput");
+    var exemptionInput = document.getElementById("exemptionInput");
+
+    // Read URL params
+    var urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("amount")) monthlyInput.value = urlParams.get("amount");
+    if (urlParams.get("rate")) rateInput.value = urlParams.get("rate");
+    if (urlParams.get("years")) yearsInput.value = urlParams.get("years");
+    if (urlParams.get("ltcgRate")) taxRateInput.value = urlParams.get("ltcgRate");
+    if (urlParams.get("exemption")) exemptionInput.value = urlParams.get("exemption");
+
+    function syncInputs() {
+      monthlySlider.value = Math.min(200000, Number(monthlyInput.value));
+      rateSlider.value = rateInput.value;
+      yearsSlider.value = yearsInput.value;
+    }
+
+    monthlyInput.addEventListener("input", function() { monthlySlider.value = Math.min(200000, Number(this.value)); calculate(); });
+    monthlySlider.addEventListener("input", function() { monthlyInput.value = this.value; calculate(); });
+    rateInput.addEventListener("input", function() { rateSlider.value = this.value; calculate(); });
+    rateSlider.addEventListener("input", function() { rateInput.value = this.value; calculate(); });
+    yearsInput.addEventListener("input", function() { yearsSlider.value = this.value; calculate(); });
+    yearsSlider.addEventListener("input", function() { yearsInput.value = this.value; calculate(); });
+    taxRateInput.addEventListener("input", calculate);
+    exemptionInput.addEventListener("input", calculate);
+
+    function calculate() {
+      var P = Math.max(0, Number(monthlyInput.value));
+      var r = Math.max(0.01, Number(rateInput.value));
+      var y = Math.max(1, parseInt(yearsInput.value, 10));
+      var taxRate = Math.max(0, Number(taxRateInput.value));
+      var exemption = Math.max(0, Number(exemptionInput.value));
+
+      document.getElementById("monthlyDisplay").innerText = formatWords(P);
+      document.getElementById("rateDisplay").innerText = r + "%";
+      document.getElementById("yearsDisplay").innerText = y + " Yrs";
+
+      var monthlyRate = r / 100 / 12;
+      var totalInvested = P * y * 12;
+      var runningBalance = 0;
+      var cumulativeInvested = 0;
+      var schedule = [];
+
+      for (var yr = 1; yr <= y; yr++) {
+        var openBal = runningBalance;
+        var yearInvested = 0;
+        for (var m = 1; m <= 12; m++) {
+          yearInvested += P;
+          cumulativeInvested += P;
+          runningBalance = (runningBalance + P) * (1 + monthlyRate);
+        }
+        var yearGains = runningBalance - openBal - yearInvested;
+        schedule.push({
+          year: yr,
+          opening: openBal,
+          annual: yearInvested,
+          invested: cumulativeInvested,
+          gains: Math.max(0, yearGains),
+          closing: runningBalance
+        });
+      }
+
+      var futureValue = runningBalance;
+      var totalGains = Math.max(0, futureValue - totalInvested);
+
+      // Tax calc
+      var taxableGains = Math.max(0, totalGains - exemption);
+      var estimatedTax = taxableGains * (taxRate / 100);
+      var postTaxCorpus = Math.max(totalInvested, futureValue - estimatedTax);
+
+      document.getElementById("resMaturity").innerText = formatINR(futureValue);
+      document.getElementById("resWords").innerText = formatWords(futureValue);
+      document.getElementById("resInvested").innerText = formatINR(totalInvested);
+      document.getElementById("resInvestedWords").innerText = formatWords(totalInvested);
+      document.getElementById("resGains").innerText = "+" + formatINR(totalGains);
+      document.getElementById("resGainsWords").innerText = formatWords(totalGains);
+      document.getElementById("resPostTax").innerText = formatINR(postTaxCorpus);
+      document.getElementById("resTaxNote").innerText = "Est. Tax Liability: " + formatINR(estimatedTax);
+
+      // Draw SVG Chart
+      var svg = document.getElementById("growthChart");
+      var w = 400, h = 160, padX = 24, padY = 16;
+      var innerW = w - padX * 2, innerH = h - padY * 2;
+      var maxVal = Math.max(futureValue, 1000);
+
+      var points = schedule.map(function(s, idx) {
+        var x = padX + (idx / Math.max(1, schedule.length - 1)) * innerW;
+        var yVal = h - padY - (s.closing / maxVal) * innerH;
+        var yInv = h - padY - (s.invested / maxVal) * innerH;
+        return { x: x, yVal: yVal, yInv: yInv };
+      });
+
+      var valPath = points.map(function(pt, i) { return (i === 0 ? "M " : "L ") + pt.x + " " + pt.yVal; }).join(" ");
+      var invPath = points.map(function(pt, i) { return (i === 0 ? "M " : "L ") + pt.x + " " + pt.yInv; }).join(" ");
+      var fillPath = valPath + " L " + points[points.length - 1].x + " " + (h - padY) + " L " + points[0].x + " " + (h - padY) + " Z";
+
+      svg.innerHTML = `
+        <path d="${fillPath}" fill="#10b981" fill-opacity="0.15" />
+        <path d="${invPath}" fill="none" stroke="#a8a29e" stroke-width="1.5" stroke-dasharray="3 3" />
+        <path d="${valPath}" fill="none" stroke="#059669" stroke-width="2.5" />
+      `;
+
+      // Build Table
+      var tbody = document.getElementById("tableBody");
+      var tableHtml = "";
+      schedule.slice(0, 15).forEach(function(row) {
+        tableHtml += `
+          <tr>
+            <td>Yr ${row.year}</td>
+            <td>${formatINR(row.opening)}</td>
+            <td>${formatINR(row.annual)}</td>
+            <td>${formatINR(row.invested)}</td>
+            <td style="color:#059669;">+${formatINR(row.gains)}</td>
+            <td style="text-align:right;font-weight:600;">${formatINR(row.closing)}</td>
+          </tr>
+        `;
+      });
+      tbody.innerHTML = tableHtml;
+    }
+
+    syncInputs();
+    calculate();
+  </script>
+</body>
+</html>

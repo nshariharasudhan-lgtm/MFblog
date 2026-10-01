@@ -363,7 +363,7 @@ export function SEOHead({ post, settings, customTitle, customDescription, custom
       const readTime = post.readTimeMinutes || Math.max(1, Math.ceil(words / 200));
 
       const articleNode: Record<string, unknown> = {
-        "@type": "FinancialArticle",
+        "@type": ["Article", "FinancialArticle"],
         "@id": `${fullUrl}#article`,
         "isPartOf": {
           "@type": "WebPage",

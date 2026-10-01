@@ -2,6 +2,9 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import { INITIAL_ARTICLES } from "../src/lib/seedData";
+import { GLOSSARY_TERMS } from "../src/data/glossaryData";
+import { TOPIC_HUBS, TopicHubData } from "../src/data/topicHubsData";
+import { DUE_DILIGENCE_CHECKLIST, REDEMPTION_CHECKLIST, FUND_CATEGORIES } from "../src/data/guidesData";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -219,26 +222,20 @@ function buildSharedFooterHtml(): string {
         </ul>
       </div>
       <div>
-        <div style="font-weight:700;color:#1a1a1a;margin-bottom:0.75rem;text-transform:uppercase;font-size:0.75rem;letter-spacing:0.05em;">Financial Calculators</div>
+        <div style="font-weight:700;color:#1a1a1a;margin-bottom:0.75rem;text-transform:uppercase;font-size:0.75rem;letter-spacing:0.05em;">Investor Resources</div>
         <ul style="list-style:none;padding:0;margin:0;line-height:1.9;">
-          <li><a href="/calculators" style="color:#047857;font-weight:600;text-decoration:none;">🧮 Calculator Suite Hub</a></li>
-          <li><a href="/calculator/direct-vs-regular" style="color:#44403c;text-decoration:none;">Direct vs Regular (TER Drag)</a></li>
-          <li><a href="/calculator/step-up-sip" style="color:#44403c;text-decoration:none;">Step-Up SIP Calculator</a></li>
-          <li><a href="/calculator/cost-of-delay" style="color:#44403c;text-decoration:none;">Cost of Delay (Procrastination Tax)</a></li>
-          <li><a href="/calculator/sip-vs-lumpsum" style="color:#44403c;text-decoration:none;">SIP vs Lumpsum Comparator</a></li>
-        </ul>
-      </div>
-      <div>
-        <div style="font-weight:700;color:#1a1a1a;margin-bottom:0.75rem;text-transform:uppercase;font-size:0.75rem;letter-spacing:0.05em;">Sitemaps &amp; Verification</div>
-        <ul style="list-style:none;padding:0;margin:0;line-height:1.9;">
-          <li><a href="/sitemap.xml" style="color:#44403c;text-decoration:underline;">Sitemap.xml</a></li>
-          <li><a href="/robots.txt" style="color:#44403c;text-decoration:underline;">Robots.txt</a></li>
-          <li><a href="/llms.txt" style="color:#44403c;text-decoration:underline;">LLMs Context</a></li>
+          <li><a href="/hubs" style="color:#047857;font-weight:600;text-decoration:none;">🎯 Topic Hubs</a></li>
+          <li><a href="/calculators" style="color:#047857;font-weight:600;text-decoration:none;">🧮 Calculators Suite</a></li>
+          <li><a href="/guides" style="color:#44403c;text-decoration:none;">📚 Investor Guides</a></li>
+          <li><a href="/guides/how-to-choose-a-mutual-fund" style="color:#44403c;text-decoration:none;">• How to Choose a Fund</a></li>
+          <li><a href="/guides/redemption-checklist" style="color:#44403c;text-decoration:none;">• Redemption Checklist</a></li>
+          <li><a href="/faq" style="color:#44403c;text-decoration:none;">❓ Mutual Fund FAQ</a></li>
+          <li><a href="/glossary" style="color:#44403c;text-decoration:none;">📖 Term Glossary</a></li>
         </ul>
       </div>
     </div>
     <div style="padding:1rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.5rem;font-size:0.75rem;line-height:1.5;">
-      <strong>Statutory Notice:</strong> YieldNest.online is an independent quantitative investor education platform. Content is strictly for research and academic evaluation, not financial advice. Mutual fund investments are subject to market risks; read all scheme related documents carefully.
+      Mutual fund investments are subject to market risks. Read all scheme-related documents carefully. This site is for education only and is not investment advice. Past performance does not guarantee future returns.
     </div>
   </footer>`;
 }
@@ -663,6 +660,54 @@ function buildSitemapXmlString(articles: any[]): string {
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>${CANONICAL_ORIGIN}/faq</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/glossary</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/guides</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/guides/how-to-choose-a-mutual-fund</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/guides/redemption-checklist</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/calculators/sip</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/calculators/step-up-sip</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/calculators/lumpsum</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>${CANONICAL_ORIGIN}/calculator/direct-vs-regular</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
@@ -686,6 +731,18 @@ function buildSitemapXmlString(articles: any[]): string {
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/hubs</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+${TOPIC_HUBS.map((h) => `  <url>
+    <loc>${CANONICAL_ORIGIN}/hub/${h.slug}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>`).join("\n")}
 ${categories
   .map(
     (cat) => `  <url>
@@ -934,6 +991,879 @@ function injectCalculatorPage(template: string, calc: { slug: string; path: stri
   return modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
 }
 
+function injectPlaceholderModulePage(template: string, mod: {
+  slug: string;
+  path: string;
+  title: string;
+  description: string;
+  canonical: string;
+  badge: string;
+  heading: string;
+  intro: string;
+  keywords: string;
+}): string {
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${mod.canonical}#webpage`,
+        "url": mod.canonical,
+        "name": mod.title,
+        "description": mod.description,
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": `${CANONICAL_ORIGIN}/#website`,
+          "url": CANONICAL_ORIGIN,
+          "name": "YieldNest.online",
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "YieldNest.online",
+          "url": CANONICAL_ORIGIN,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${mod.canonical}#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": `${CANONICAL_ORIGIN}/`,
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": mod.heading,
+            "item": mod.canonical,
+          },
+        ],
+      },
+    ],
+  });
+
+  let modified = template;
+  modified = modified.replace(/<title>.*?<\/title>/i, `<title>${mod.title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${mod.description}" />`);
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${escapeHtml(mod.keywords)}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${mod.canonical}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${mod.title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${mod.description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${mod.canonical}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:title["'][\s\S]*?>/i, `<meta name="twitter:title" content="${mod.title}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:description["'][\s\S]*?>/i, `<meta name="twitter:description" content="${mod.description}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  const ssrBody = `<div class="max-w-5xl mx-auto px-4 py-8 font-serif-editorial">
+    <nav aria-label="Breadcrumb" style="font-size:0.75rem;font-family:monospace;margin-bottom:1.5rem;color:#78716c;">
+      <a href="/" style="color:#44403c;text-decoration:underline;">Home</a> / <span style="color:#1c1917;">${escapeHtml(mod.heading)}</span>
+    </nav>
+    <header style="margin-bottom:2rem;border-bottom:1px solid #eae8e0;padding-bottom:1.5rem;">
+      <div style="display:inline-block;padding:0.2rem 0.6rem;background:#fef3c7;color:#92400e;border-radius:0.25rem;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;font-family:monospace;">
+        ${escapeHtml(mod.badge)}
+      </div>
+      <h1 style="font-size:2.2rem;font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:0.75rem;">
+        ${escapeHtml(mod.heading)}
+      </h1>
+      <p style="font-size:1rem;line-height:1.6;color:#57534e;max-w-2xl;">
+        ${escapeHtml(mod.intro)}
+      </p>
+    </header>
+    <div style="padding:2rem;background:#fbfaf8;border:1px solid #eae8e0;border-radius:0.75rem;margin-bottom:2rem;">
+      <h2 style="font-size:1.2rem;font-weight:700;color:#1a1a1a;margin-bottom:0.75rem;">Module In Development</h2>
+      <p style="font-size:0.9rem;color:#57534e;line-height:1.6;margin-bottom:1.5rem;">
+        Coming soon: This educational section is currently being drafted and compliance-verified under our rolling release schedule.
+      </p>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;font-size:0.8rem;font-family:monospace;">
+        <a href="/" style="padding:0.4rem 0.8rem;background:#1a1a1a;color:#ffffff;border-radius:0.35rem;text-decoration:none;">Explore Research Papers</a>
+        <a href="/calculators" style="padding:0.4rem 0.8rem;background:#ffffff;border:1px solid #d6d3d1;border-radius:0.35rem;text-decoration:none;color:#1a1a1a;">Launch Calculators Suite</a>
+      </div>
+    </div>
+    <div style="padding:1rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.5rem;font-size:0.75rem;line-height:1.5;color:#57534e;">
+      <strong>Regulatory Disclaimer:</strong> Mutual fund investments are subject to market risks. Read all scheme-related documents carefully. This site is for education only and is not investment advice. Past performance does not guarantee future returns.
+    </div>
+    ${buildSharedFooterHtml()}
+  </div>`;
+
+  return modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+}
+
+function injectFAQPage(template: string): string {
+  const keywordsPath = path.resolve(__dirname, "../src/data/keywords.json");
+  let publishedEntries: any[] = [];
+  try {
+    if (fs.existsSync(keywordsPath)) {
+      const data = JSON.parse(fs.readFileSync(keywordsPath, "utf-8"));
+      publishedEntries = data.filter((k: any) => k.status === "published" && k.answer);
+    }
+  } catch (e) {
+    console.warn("Failed to load keywords.json in prerender:", e);
+  }
+
+  const title = "Frequently Asked Questions (FAQ) | YieldNest";
+  const description = "Answers to common retail investor questions about Indian mutual fund mechanics, taxation, capital safety, and operational rules under SEBI regulations.";
+  const canonical = `${CANONICAL_ORIGIN}/faq`;
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${canonical}#webpage`,
+        "url": canonical,
+        "name": title,
+        "description": description,
+        "isPartOf": {
+          "@type": "WebSite",
+          "@id": `${CANONICAL_ORIGIN}/#website`,
+          "url": CANONICAL_ORIGIN,
+          "name": "YieldNest.online",
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "YieldNest.online",
+          "url": CANONICAL_ORIGIN,
+        },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${canonical}#faqpage`,
+        "mainEntity": publishedEntries.map((entry: any) => ({
+          "@type": "Question",
+          "name": entry.keyword,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": entry.answer,
+          },
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": `${CANONICAL_ORIGIN}/`,
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "FAQ Hub",
+            "item": canonical,
+          },
+        ],
+      },
+    ],
+  });
+
+  let modified = template;
+  modified = modified.replace(/<title>.*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  const keywords = "mutual fund FAQ, is mutual fund safe, mutual fund tax rules, SIP questions, mutual fund redemption time, SEBI regulations, Direct vs Regular";
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${escapeHtml(keywords)}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${canonical}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${canonical}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:title["'][\s\S]*?>/i, `<meta name="twitter:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:description["'][\s\S]*?>/i, `<meta name="twitter:description" content="${description}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  const faqItemsHtml = publishedEntries
+    .map(
+      (item: any) => `
+    <article style="margin-bottom:1.5rem;padding:1.5rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.75rem;">
+      <div style="font-size:0.7rem;font-family:monospace;text-transform:uppercase;color:#047857;font-weight:600;margin-bottom:0.4rem;">
+        ${escapeHtml(item.cluster)} • ${escapeHtml(item.intent)}
+      </div>
+      <h2 style="font-size:1.15rem;font-weight:700;color:#1a1a1a;margin-bottom:0.75rem;line-height:1.3;">
+        ${escapeHtml(item.keyword)}
+      </h2>
+      ${
+        item.variants && item.variants.length > 0
+          ? `<div style="font-size:0.75rem;color:#78716c;margin-bottom:0.75rem;font-family:monospace;">
+              Also asked as: ${item.variants.map((v: string) => `"${escapeHtml(v)}"`).join(", ")}
+            </div>`
+          : ""
+      }
+      <p style="font-size:0.9rem;line-height:1.6;color:#44403c;margin:0;">
+        ${escapeHtml(item.answer)}
+      </p>
+    </article>`
+    )
+    .join("\n");
+
+  const ssrBody = `<div class="max-w-5xl mx-auto px-4 py-8 font-serif-editorial">
+    <nav aria-label="Breadcrumb" style="font-size:0.75rem;font-family:monospace;margin-bottom:1.5rem;color:#78716c;">
+      <a href="/" style="color:#44403c;text-decoration:underline;">Home</a> / <span style="color:#1c1917;">FAQ Hub</span>
+    </nav>
+    <header style="margin-bottom:2rem;border-bottom:1px solid #eae8e0;padding-bottom:1.5rem;">
+      <div style="display:inline-block;padding:0.2rem 0.6rem;background:#d1fae5;color:#065f46;border-radius:0.25rem;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;font-family:monospace;">
+        Verified Educational Hub
+      </div>
+      <h1 style="font-size:2.2rem;font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:0.75rem;">
+        Mutual Fund Frequently Asked Questions (FAQ)
+      </h1>
+      <p style="font-size:1rem;line-height:1.6;color:#57534e;max-width:48rem;">
+        Evidence-backed answers to the most frequent retail investor inquiries regarding Indian mutual fund mechanics, taxation, capital safety, and operational rules under SEBI regulations. Never recommends specific schemes.
+      </p>
+    </header>
+    <div class="faq-list">
+      ${faqItemsHtml}
+    </div>
+    <div style="margin-top:2rem;padding:1rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.5rem;font-size:0.75rem;line-height:1.5;color:#57534e;">
+      <strong>Regulatory Disclaimer:</strong> Mutual fund investments are subject to market risks. Read all scheme-related documents carefully. This site is for education only and is not investment advice. Past performance does not guarantee future returns.
+    </div>
+    ${buildSharedFooterHtml()}
+  </div>`;
+
+  return modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+}
+
+function injectGlossaryPage(template: string): string {
+  const canonical = `${CANONICAL_ORIGIN}/glossary`;
+  const title = "Mutual Fund Glossary: Key Terms & Definitions | YieldNest";
+  const description = "Comprehensive glossary of over 50 essential Indian mutual fund terms including NAV, TER, ISIN, CAN, IDCW, exit loads, SEBI, and AMFI regulations.";
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "DefinedTermSet",
+        "@id": `${canonical}#terms`,
+        "name": "Indian Mutual Fund Investor Educational Glossary",
+        "description": description,
+        "url": canonical,
+        "hasDefinedTerm": GLOSSARY_TERMS.map((term) => ({
+          "@type": "DefinedTerm",
+          "@id": `${canonical}#${term.id}`,
+          "name": term.term,
+          "description": term.definition,
+          "termCode": term.abbreviation || term.id,
+          "url": `${canonical}#${term.id}`,
+          "inDefinedTermSet": `${canonical}#terms`,
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": `${CANONICAL_ORIGIN}/`,
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Glossary",
+            "item": canonical,
+          },
+        ],
+      },
+    ],
+  });
+
+  let modified = template;
+  modified = modified.replace(/<title>.*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  const keywords = "mutual fund glossary, NAV meaning, TER meaning, ISIN mutual fund, CAN mutual fund, IDCW meaning, exit load, SEBI regulations";
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${escapeHtml(keywords)}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${canonical}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${canonical}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:title["'][\s\S]*?>/i, `<meta name="twitter:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:description["'][\s\S]*?>/i, `<meta name="twitter:description" content="${description}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  const termsHtml = GLOSSARY_TERMS.map((item) => `
+    <article id="${item.id}" style="margin-bottom:1.25rem;padding:1.25rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.75rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
+        <span style="font-size:0.7rem;font-family:monospace;text-transform:uppercase;color:#047857;font-weight:600;">
+          ${escapeHtml(item.cluster)}
+        </span>
+        <a href="#${item.id}" style="font-size:0.75rem;font-family:monospace;color:#a8a29e;text-decoration:none;">#${item.id}</a>
+      </div>
+      <h2 style="font-size:1.15rem;font-weight:700;color:#1a1a1a;margin-bottom:0.5rem;line-height:1.3;">
+        ${escapeHtml(item.term)}
+      </h2>
+      <p style="font-size:0.9rem;line-height:1.6;color:#44403c;margin:0;">
+        ${escapeHtml(item.definition)}
+      </p>
+    </article>
+  `).join("\n");
+
+  const ssrBody = `<div class="max-w-5xl mx-auto px-4 py-8 font-serif-editorial">
+    <nav aria-label="Breadcrumb" style="font-size:0.75rem;font-family:monospace;margin-bottom:1.5rem;color:#78716c;">
+      <a href="/" style="color:#44403c;text-decoration:underline;">Home</a> / <span style="color:#1c1917;">Glossary</span>
+    </nav>
+    <header style="margin-bottom:2rem;border-bottom:1px solid #eae8e0;padding-bottom:1.5rem;">
+      <div style="display:inline-block;padding:0.2rem 0.6rem;background:#d1fae5;color:#065f46;border-radius:0.25rem;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;font-family:monospace;">
+        Authoritative Regulatory Glossary
+      </div>
+      <h1 style="font-size:2.2rem;font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:0.75rem;">
+        Mutual Fund Glossary: Key Terms & Definitions
+      </h1>
+      <p style="font-size:1rem;line-height:1.6;color:#57534e;max-width:48rem;">
+        An authoritative, jargon-free reference dictionary explaining essential technical metrics, regulatory abbreviations, and valuation concepts for Indian mutual fund investors.
+      </p>
+    </header>
+    <div class="glossary-list">
+      ${termsHtml}
+    </div>
+    <div style="margin-top:2rem;padding:1rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.5rem;font-size:0.75rem;line-height:1.5;color:#57534e;">
+      <strong>Regulatory Disclaimer:</strong> Mutual fund investments are subject to market risks. Read all scheme-related documents carefully. This site is for education only and is not investment advice. Past performance does not guarantee future returns.
+    </div>
+    ${buildSharedFooterHtml()}
+  </div>`;
+
+  return modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+}
+
+function injectTopicHub(template: string, hub: TopicHubData, articles: any[]): string {
+  const canonical = `${CANONICAL_ORIGIN}/hub/${hub.slug}`;
+  const title = hub.metaTitle;
+  const description = hub.metaDescription;
+
+  const relatedArticles = articles.filter(
+    (a) => a.status === "published" && hub.matchedArticleSlugs.includes(a.slug)
+  );
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${canonical}#webpage`,
+        url: canonical,
+        name: title,
+        description: description,
+        publisher: {
+          "@type": "Organization",
+          name: "YieldNest",
+          url: CANONICAL_ORIGIN,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: CANONICAL_ORIGIN,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Topic Hubs",
+            item: `${CANONICAL_ORIGIN}/hubs`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: hub.title,
+            item: canonical,
+          },
+        ],
+      },
+    ],
+  });
+
+  let modified = template;
+  modified = modified.replace(/<title>.*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${escapeHtml(hub.keywords)}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${canonical}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${canonical}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:title["'][\s\S]*?>/i, `<meta name="twitter:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:description["'][\s\S]*?>/i, `<meta name="twitter:description" content="${description}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  const articlesHtml = relatedArticles.map((art) => `
+    <article style="margin-bottom:1.5rem;padding:1.5rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.75rem;">
+      <span style="font-size:0.7rem;font-family:monospace;text-transform:uppercase;color:#047857;font-weight:600;">${escapeHtml(art.category)}</span>
+      <h2 style="font-size:1.2rem;font-weight:700;margin:0.5rem 0;line-height:1.3;">
+        <a href="/article/${art.slug}" style="color:#1a1a1a;text-decoration:none;">${escapeHtml(art.title)}</a>
+      </h2>
+      <p style="font-size:0.9rem;line-height:1.6;color:#57534e;margin-bottom:1rem;">${escapeHtml(art.excerpt)}</p>
+      <a href="/article/${art.slug}" style="font-size:0.8rem;font-family:monospace;color:#047857;font-weight:600;text-decoration:none;">Read Research Paper &rarr;</a>
+    </article>
+  `).join("\n");
+
+  const faqsHtml = hub.faqs.map((f) => `
+    <div style="margin-bottom:1rem;padding:1rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.5rem;">
+      <h3 style="font-size:1rem;font-weight:700;color:#1a1a1a;margin-bottom:0.4rem;">${escapeHtml(f.question)}</h3>
+      <p style="font-size:0.85rem;line-height:1.6;color:#44403c;margin:0;">${escapeHtml(f.answer)}</p>
+    </div>
+  `).join("\n");
+
+  const ssrBody = `<div class="max-w-5xl mx-auto px-4 py-8 font-serif-editorial">
+    <nav aria-label="Breadcrumb" style="font-size:0.75rem;font-family:monospace;margin-bottom:1.5rem;color:#78716c;">
+      <a href="/" style="color:#44403c;text-decoration:underline;">Home</a> / <a href="/hubs" style="color:#44403c;text-decoration:underline;">Topic Hubs</a> / <span style="color:#1c1917;">${escapeHtml(hub.title)}</span>
+    </nav>
+    <header style="margin-bottom:2rem;border-bottom:1px solid #eae8e0;padding-bottom:1.5rem;">
+      <div style="display:inline-block;padding:0.2rem 0.6rem;background:#d1fae5;color:#065f46;border-radius:0.25rem;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;font-family:monospace;">
+        ${escapeHtml(hub.badge)}
+      </div>
+      <h1 style="font-size:2.2rem;font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:0.75rem;">
+        ${escapeHtml(hub.title)}
+      </h1>
+      <p style="font-size:1rem;line-height:1.6;color:#57534e;max-width:48rem;">
+        ${escapeHtml(hub.intro)}
+      </p>
+    </header>
+    <section style="margin-bottom:2rem;">
+      <h2 style="font-size:1.4rem;font-weight:700;margin-bottom:1rem;color:#1a1a1a;">Research Papers in this Cluster</h2>
+      ${articlesHtml || "<p>Explore foundational research notes.</p>"}
+    </section>
+    <section style="margin-bottom:2rem;">
+      <h2 style="font-size:1.4rem;font-weight:700;margin-bottom:1rem;color:#1a1a1a;">Regulatory FAQs</h2>
+      ${faqsHtml}
+    </section>
+    <div style="margin-top:2rem;padding:1rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.5rem;font-size:0.75rem;line-height:1.5;color:#57534e;">
+      <strong>Regulatory Disclaimer:</strong> Mutual fund investments are subject to market risks. Read all scheme-related documents carefully. This site is for education only and is not investment advice.
+    </div>
+    ${buildSharedFooterHtml()}
+  </div>`;
+
+  return modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+}
+
+function injectTopicHubsIndex(template: string): string {
+  const canonical = `${CANONICAL_ORIGIN}/hubs`;
+  const title = "Mutual Fund Topic Hubs: Systematic Knowledge Clusters | YieldNest";
+  const description = "Explore our comprehensive editorial knowledge hubs organized by core investment clusters: Basics, Safety & Risk, Tax & ELSS, Fees, Redemption, SIP, and Comparisons.";
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${canonical}#webpage`,
+        url: canonical,
+        name: title,
+        description: description,
+        publisher: {
+          "@type": "Organization",
+          name: "YieldNest",
+          url: CANONICAL_ORIGIN,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: CANONICAL_ORIGIN,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Topic Hubs",
+            item: canonical,
+          },
+        ],
+      },
+    ],
+  });
+
+  let modified = template;
+  modified = modified.replace(/<title>.*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  const keywords = "mutual fund topics, mutual fund clusters, SEBI investment guide, AMFI topic hubs, mutual fund basics";
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${escapeHtml(keywords)}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${canonical}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${canonical}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:title["'][\s\S]*?>/i, `<meta name="twitter:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+name=["']twitter:description["'][\s\S]*?>/i, `<meta name="twitter:description" content="${description}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  const hubsHtml = TOPIC_HUBS.map((h) => `
+    <div style="margin-bottom:1.5rem;padding:1.5rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.75rem;">
+      <span style="font-size:0.7rem;font-family:monospace;text-transform:uppercase;color:#047857;font-weight:600;">${escapeHtml(h.badge)}</span>
+      <h2 style="font-size:1.3rem;font-weight:700;margin:0.5rem 0;line-height:1.3;">
+        <a href="/hub/${h.slug}" style="color:#1a1a1a;text-decoration:none;">${escapeHtml(h.title)}</a>
+      </h2>
+      <p style="font-size:0.9rem;line-height:1.6;color:#57534e;margin-bottom:1rem;">${escapeHtml(h.intro)}</p>
+      <a href="/hub/${h.slug}" style="font-size:0.8rem;font-family:monospace;color:#047857;font-weight:600;text-decoration:none;">Explore ${escapeHtml(h.title)} Hub &rarr;</a>
+    </div>
+  `).join("\n");
+
+  const ssrBody = `<div class="max-w-5xl mx-auto px-4 py-8 font-serif-editorial">
+    <nav aria-label="Breadcrumb" style="font-size:0.75rem;font-family:monospace;margin-bottom:1.5rem;color:#78716c;">
+      <a href="/" style="color:#44403c;text-decoration:underline;">Home</a> / <span style="color:#1c1917;">Topic Hubs</span>
+    </nav>
+    <header style="margin-bottom:2rem;border-bottom:1px solid #eae8e0;padding-bottom:1.5rem;">
+      <div style="display:inline-block;padding:0.2rem 0.6rem;background:#d1fae5;color:#065f46;border-radius:0.25rem;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;font-family:monospace;">
+        Authoritative Topic Hubs
+      </div>
+      <h1 style="font-size:2.2rem;font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:0.75rem;">
+        Mutual Fund Topic Hubs
+      </h1>
+      <p style="font-size:1rem;line-height:1.6;color:#57534e;max-width:48rem;">
+        ${escapeHtml(description)}
+      </p>
+    </header>
+    <div>
+      ${hubsHtml}
+    </div>
+    ${buildSharedFooterHtml()}
+  </div>`;
+
+  return modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+}
+
+function injectGuidesIndex(template: string): string {
+  const canonical = `${CANONICAL_ORIGIN}/guides`;
+  const title = "Mutual Fund Investor Guides & Educational Pillars | YieldNest";
+  const description = "Objective, evidence-backed educational guides and interactive frameworks designed to help Indian retail investors make disciplined decisions. Strictly category-focused and aligned with SEBI regulations.";
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${canonical}#webpage`,
+        "url": canonical,
+        "name": title,
+        "description": description,
+        "publisher": {
+          "@type": "Organization",
+          "name": "YieldNest",
+          "url": CANONICAL_ORIGIN,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": CANONICAL_ORIGIN,
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Guides",
+            "item": canonical,
+          },
+        ],
+      },
+    ],
+  });
+
+  let modified = template;
+  modified = modified.replace(/<title>.*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  const keywords = "mutual fund guides, how to choose mutual funds, mutual fund redemption checklist, SEBI categories, direct mutual funds";
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${escapeHtml(keywords)}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${canonical}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${canonical}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  const ssrBody = `<div class="max-w-5xl mx-auto px-4 py-8 font-serif-editorial">
+    <nav aria-label="Breadcrumb" style="font-size:0.75rem;font-family:monospace;margin-bottom:1.5rem;color:#78716c;">
+      <a href="/" style="color:#44403c;text-decoration:underline;">Home</a> / <span style="color:#1c1917;">Guides</span>
+    </nav>
+    <header style="margin-bottom:2rem;border-bottom:1px solid #eae8e0;padding-bottom:1.5rem;">
+      <div style="display:inline-block;padding:0.2rem 0.6rem;background:#d1fae5;color:#065f46;border-radius:0.25rem;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;font-family:monospace;">
+        Authoritative Investor Guides
+      </div>
+      <h1 style="font-size:2.2rem;font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:0.75rem;">
+        Mutual Fund Investor Guides & Educational Pillars
+      </h1>
+      <p style="font-size:1rem;line-height:1.6;color:#57534e;max-width:48rem;">
+        Objective, evidence-backed educational guides and interactive frameworks designed to help Indian retail investors make disciplined decisions. Strictly category-focused, mathematically grounded, and aligned with SEBI regulations.
+      </p>
+    </header>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:1.5rem;margin-bottom:2rem;">
+      <div style="background:#ffffff;border:1px solid #eae8e0;border-radius:0.75rem;padding:1.5rem;">
+        <span style="font-size:0.7rem;font-family:monospace;color:#047857;text-transform:uppercase;font-weight:600;">Interactive Due Diligence</span>
+        <h2 style="font-size:1.3rem;font-weight:700;margin:0.5rem 0;line-height:1.3;">
+          <a href="/guides/how-to-choose-a-mutual-fund" style="color:#1a1a1a;text-decoration:none;">How to Choose a Mutual Fund (10-Point Checklist & Quiz)</a>
+        </h2>
+        <p style="font-size:0.875rem;line-height:1.6;color:#57534e;margin-bottom:1rem;">
+          Run through 10 quantitative checks before committing capital: verify rolling returns, downside capture ratio, Direct vs Regular expense drag, and AUM liquidity stress. Includes a 5-step Goal & Risk-Profile Quiz that outputs official SEBI fund categories without naming commercial schemes.
+        </p>
+        <a href="/guides/how-to-choose-a-mutual-fund" style="font-size:0.8rem;font-family:monospace;color:#047857;font-weight:600;text-decoration:none;">Launch Checklist & Quiz &rarr;</a>
+      </div>
+      <div style="background:#ffffff;border:1px solid #eae8e0;border-radius:0.75rem;padding:1.5rem;">
+        <span style="font-size:0.7rem;font-family:monospace;color:#0369a1;text-transform:uppercase;font-weight:600;">Printable Operational Audit</span>
+        <h2 style="font-size:1.3rem;font-weight:700;margin:0.5rem 0;line-height:1.3;">
+          <a href="/guides/redemption-checklist" style="color:#1a1a1a;text-decoration:none;">Printable Mutual Fund Redemption Checklist</a>
+        </h2>
+        <p style="font-size:0.875rem;line-height:1.6;color:#57534e;margin-bottom:1rem;">
+          A formal 12-step pre-redemption verification sheet. Avoid costly exit load traps, comply with ELSS 36-month lock-in rules per installment, optimize LTCG ₹1.25L annual exemptions under Section 112A, and verify payout bank account details prior to submission.
+        </p>
+        <a href="/guides/redemption-checklist" style="font-size:0.8rem;font-family:monospace;color:#0369a1;font-weight:600;text-decoration:none;">Open Printable Checklist &rarr;</a>
+      </div>
+    </div>
+    ${buildSharedFooterHtml()}
+  </div>`;
+
+  return modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+}
+
+function injectHowToChooseGuide(template: string): string {
+  const canonical = `${CANONICAL_ORIGIN}/guides/how-to-choose-a-mutual-fund`;
+  const title = "How to Choose a Mutual Fund: 10-Point Checklist & Category Quiz | YieldNest";
+  const description = "Interactive pre-investment checklist and goal/risk-profile evaluation quiz mapping your horizon to SEBI fund categories with structural rationale and risks.";
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "HowTo",
+        "@id": `${canonical}#howto`,
+        "name": "How to Choose a Mutual Fund: 10-Point Pre-Investment Due Diligence",
+        "description": description,
+        "step": DUE_DILIGENCE_CHECKLIST.map((item, index) => ({
+          "@type": "HowToStep",
+          "position": index + 1,
+          "name": item.title,
+          "itemListElement": [
+            {
+              "@type": "HowToDirection",
+              "text": item.actionableStep,
+            },
+          ],
+        })),
+      },
+      {
+        "@type": "Article",
+        "@id": `${canonical}#article`,
+        "headline": title,
+        "description": description,
+        "url": canonical,
+        "author": {
+          "@type": "Organization",
+          "name": "YieldNest Research Desk",
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "YieldNest",
+          "url": CANONICAL_ORIGIN,
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": CANONICAL_ORIGIN,
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Guides",
+            "item": `${CANONICAL_ORIGIN}/guides`,
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "How to Choose a Mutual Fund",
+            "item": canonical,
+          },
+        ],
+      },
+    ],
+  });
+
+  let modified = template;
+  modified = modified.replace(/<title>.*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  const keywords = "how to choose a mutual fund, mutual fund checklist, fund category quiz, SEBI mutual fund categories, mutual fund due diligence";
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${escapeHtml(keywords)}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${canonical}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${canonical}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  const checklistHtml = DUE_DILIGENCE_CHECKLIST.map((item, i) => `
+    <article style="margin-bottom:1.25rem;padding:1.25rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.75rem;">
+      <div style="font-size:0.75rem;font-family:monospace;color:#047857;font-weight:600;text-transform:uppercase;">
+        Check ${i + 1} &bull; ${escapeHtml(item.categoryLabel)}
+      </div>
+      <h2 style="font-size:1.15rem;font-weight:700;color:#1a1a1a;margin:0.4rem 0;">
+        ${escapeHtml(item.title)}
+      </h2>
+      <p style="font-size:0.875rem;line-height:1.6;color:#44403c;margin-bottom:0.75rem;">
+        ${escapeHtml(item.shortDesc)}
+      </p>
+      <div style="background:#f4f2eb;padding:0.75rem;border-radius:0.5rem;font-size:0.8rem;line-height:1.5;color:#292524;">
+        <strong>Action Step:</strong> ${escapeHtml(item.actionableStep)}
+      </div>
+    </article>
+  `).join("\n");
+
+  const ssrBody = `<div class="max-w-5xl mx-auto px-4 py-8 font-serif-editorial">
+    <nav aria-label="Breadcrumb" style="font-size:0.75rem;font-family:monospace;margin-bottom:1.5rem;color:#78716c;">
+      <a href="/" style="color:#44403c;text-decoration:underline;">Home</a> / <a href="/guides" style="color:#44403c;text-decoration:underline;">Guides</a> / <span style="color:#1c1917;">How to Choose a Mutual Fund</span>
+    </nav>
+    <header style="margin-bottom:2rem;border-bottom:1px solid #eae8e0;padding-bottom:1.5rem;">
+      <div style="display:inline-block;padding:0.2rem 0.6rem;background:#d1fae5;color:#065f46;border-radius:0.25rem;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;font-family:monospace;">
+        Pre-Investment Due Diligence
+      </div>
+      <h1 style="font-size:2.2rem;font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:0.75rem;">
+        How to Choose a Mutual Fund: 10-Point Checklist &amp; Category Evaluation
+      </h1>
+      <p style="font-size:1rem;line-height:1.6;color:#57534e;max-width:48rem;">
+        An evidence-backed educational guide featuring an interactive pre-investment due diligence checklist and a goal-horizon evaluation engine that maps your profile to official SEBI fund categories without endorsing specific commercial schemes.
+      </p>
+    </header>
+    <section style="margin-bottom:2rem;">
+      <h2 style="font-size:1.5rem;font-weight:700;margin-bottom:1rem;">10-Point Pre-Investment Checklist</h2>
+      ${checklistHtml}
+    </section>
+    ${buildSharedFooterHtml()}
+  </div>`;
+
+  return modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+}
+
+function injectRedemptionChecklistPage(template: string): string {
+  const canonical = `${CANONICAL_ORIGIN}/guides/redemption-checklist`;
+  const title = "Printable Mutual Fund Redemption Checklist | YieldNest";
+  const description = "A printable 12-step pre-redemption verification audit covering exit loads, ELSS 3-year lock-ins, Section 112A capital gains tax, and SEBI cut-off times.";
+
+  const schemaJson = JSON.stringify({
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "HowTo",
+        "@id": `${canonical}#howto`,
+        "name": "Mutual Fund Redemption Checklist: 12 Pre-Flight Safeguards",
+        "description": description,
+        "step": REDEMPTION_CHECKLIST.map((item, index) => ({
+          "@type": "HowToStep",
+          "position": index + 1,
+          "name": item.title,
+          "itemListElement": [
+            {
+              "@type": "HowToDirection",
+              "text": item.instruction,
+            },
+          ],
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${canonical}#breadcrumb`,
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": CANONICAL_ORIGIN,
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Guides",
+            "item": `${CANONICAL_ORIGIN}/guides`,
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Redemption Checklist",
+            "item": canonical,
+          },
+        ],
+      },
+    ],
+  });
+
+  let modified = template;
+  modified = modified.replace(/<title>.*?<\/title>/i, `<title>${title}</title>`);
+  modified = modified.replace(/<meta\s+name=["']description["'][\s\S]*?>/i, `<meta name="description" content="${description}" />`);
+  const keywords = "mutual fund redemption checklist, printable mutual fund checklist, exit load mutual funds, ELSS lock in rules, capital gains tax redemption";
+  modified = modified.replace(/<meta\s+name=["']keywords["'][\s\S]*?>/i, `<meta name="keywords" content="${escapeHtml(keywords)}" />`);
+  modified = modified.replace(/<link\s+rel=["']canonical["'][\s\S]*?>/i, `<link rel="canonical" href="${canonical}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:title["'][\s\S]*?>/i, `<meta property="og:title" content="${title}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:description["'][\s\S]*?>/i, `<meta property="og:description" content="${description}" />`);
+  modified = modified.replace(/<meta\s+property=["']og:url["'][\s\S]*?>/i, `<meta property="og:url" content="${canonical}" />`);
+
+  const schemaScript = `\n    <script type="application/ld+json" id="server-structured-data">\n${schemaJson}\n    </script>\n  `;
+  modified = modified.replace("</head>", `${schemaScript}</head>`);
+
+  const itemsHtml = REDEMPTION_CHECKLIST.map((item) => `
+    <div style="margin-bottom:1rem;padding:1rem;background:#ffffff;border:1px solid #eae8e0;border-radius:0.5rem;">
+      <div style="font-size:0.75rem;font-family:monospace;color:#0284c7;font-weight:600;text-transform:uppercase;">
+        Step ${item.itemNumber} &bull; ${escapeHtml(item.phaseTitle)}
+      </div>
+      <h3 style="font-size:1.05rem;font-weight:700;color:#1a1a1a;margin:0.3rem 0;">
+        ${escapeHtml(item.title)}
+      </h3>
+      <p style="font-size:0.875rem;line-height:1.5;color:#44403c;margin:0 0 0.5rem 0;">
+        ${escapeHtml(item.instruction)}
+      </p>
+      <div style="font-size:0.75rem;line-height:1.4;color:#78716c;">
+        <strong>Regulatory Context:</strong> ${escapeHtml(item.regulatoryDetail)}
+      </div>
+    </div>
+  `).join("\n");
+
+  const ssrBody = `<div class="max-w-5xl mx-auto px-4 py-8 font-serif-editorial">
+    <nav aria-label="Breadcrumb" style="font-size:0.75rem;font-family:monospace;margin-bottom:1.5rem;color:#78716c;">
+      <a href="/" style="color:#44403c;text-decoration:underline;">Home</a> / <a href="/guides" style="color:#44403c;text-decoration:underline;">Guides</a> / <span style="color:#1c1917;">Redemption Checklist</span>
+    </nav>
+    <header style="margin-bottom:2rem;border-bottom:1px solid #eae8e0;padding-bottom:1.5rem;">
+      <div style="display:inline-block;padding:0.2rem 0.6rem;background:#e0f2fe;color:#0369a1;border-radius:0.25rem;font-size:0.75rem;font-weight:600;margin-bottom:0.75rem;font-family:monospace;">
+        Printable Operational Checklist
+      </div>
+      <h1 style="font-size:2.2rem;font-weight:700;line-height:1.2;color:#1a1a1a;margin-bottom:0.75rem;">
+        Printable Mutual Fund Redemption Checklist
+      </h1>
+      <p style="font-size:1rem;line-height:1.6;color:#57534e;max-width:48rem;">
+        A comprehensive 12-step pre-redemption verification checklist covering exit loads, ELSS 36-month lock-ins, Section 112A capital gains tax, SEBI cut-off times, and payout bank validation.
+      </p>
+    </header>
+    <div>
+      ${itemsHtml}
+    </div>
+    ${buildSharedFooterHtml()}
+  </div>`;
+
+  return modified.replace('<div id="root"></div>', `<div id="root">${ssrBody}</div>`);
+}
+
 async function runPrerender() {
   console.log("🚀 [Prerender] Starting static HTML generation for Vercel/production deployment...");
 
@@ -990,6 +1920,20 @@ async function runPrerender() {
       canonical: "https://www.yieldnest.online/calculators",
     },
     {
+      slug: "sip",
+      path: "calculator/sip",
+      title: "SIP Calculator: Mutual Fund Wealth Compounding | YieldNest",
+      description: "Calculate mutual fund SIP compounding, future maturity value, and post-tax returns in India with yearly amortization table.",
+      canonical: "https://www.yieldnest.online/calculators/sip",
+    },
+    {
+      slug: "lumpsum",
+      path: "calculator/lumpsum",
+      title: "Lumpsum Calculator: One-Time Mutual Fund Compounding | YieldNest",
+      description: "Calculate multi-year compounded returns and capital gains tax on one-time lumpsum mutual fund investments in India.",
+      canonical: "https://www.yieldnest.online/calculators/lumpsum",
+    },
+    {
       slug: "direct-vs-regular",
       path: "calculator/direct-vs-regular",
       title: "Direct vs Regular Fund Calculator | YieldNest",
@@ -1040,7 +1984,108 @@ async function runPrerender() {
     console.log(`  ✓ Prerendered /${calc.path} (Canonical: ${calc.canonical})`);
   }
 
-  // 3c. Generate static HTML fallbacks for legacy/typo slugs so direct file access never 404s
+  // 3c. Prerender Static Modules (FAQ, Glossary, Guides)
+  const STATIC_MODULE_PAGES = [
+    {
+      slug: "faq",
+      path: "faq",
+      title: "Frequently Asked Questions (FAQ) | YieldNest",
+      description: "Answers to common retail investor questions about mutual fund safety, capital gains tax, SIP compounding, and redemption in India.",
+      canonical: "https://www.yieldnest.online/faq",
+      badge: "Coming Soon",
+      heading: "Frequently Asked Questions (FAQ)",
+      intro: "Clear, evidence-backed answers to the most common retail questions regarding Indian mutual funds, capital gains taxation, SIP execution, and safety.",
+      keywords: "mutual fund FAQ, is mutual fund safe, mutual fund tax rules, SIP questions, mutual fund redemption time",
+    },
+    {
+      slug: "glossary",
+      path: "glossary",
+      title: "Mutual Fund Glossary: Key Terms & Definitions | YieldNest",
+      description: "A comprehensive glossary of essential Indian mutual fund terms including NAV, TER, ISIN, CAN, IDCW, exit loads, and SEBI regulations.",
+      canonical: "https://www.yieldnest.online/glossary",
+      badge: "Coming Soon",
+      heading: "Mutual Fund Glossary: Key Terms & Definitions",
+      intro: "An authoritative, jargon-free reference dictionary explaining essential technical metrics, regulatory abbreviations, and valuation concepts for Indian mutual fund investors.",
+      keywords: "mutual fund glossary, NAV meaning, TER meaning, ISIN mutual fund, CAN mutual fund, IDCW meaning, exit load",
+    },
+    {
+      slug: "guides",
+      path: "guides",
+      title: "Mutual Fund Investor Guides & Educational Pillars | YieldNest",
+      description: "In-depth educational guides covering mutual fund fundamentals, portfolio building, risk evaluation, and asset allocation for Indian investors.",
+      canonical: "https://www.yieldnest.online/guides",
+      badge: "Coming Soon",
+      heading: "Mutual Fund Investor Guides & Educational Pillars",
+      intro: "Step-by-step educational pillar frameworks mapping financial horizons to SEBI fund categories without naming or promoting individual schemes.",
+      keywords: "mutual fund guide, how to invest in mutual funds, mutual fund basics, asset allocation India, direct mutual funds",
+    },
+  ];
+
+  for (const mod of STATIC_MODULE_PAGES) {
+    const pageHtml = mod.slug === "faq" ? injectFAQPage(baseHtml) : mod.slug === "glossary" ? injectGlossaryPage(baseHtml) : injectGuidesIndex(baseHtml);
+    const targetDir = path.join(distDir, mod.path);
+    fs.mkdirSync(targetDir, { recursive: true });
+    fs.writeFileSync(path.join(distDir, `${mod.path}.html`), pageHtml, "utf-8");
+    fs.writeFileSync(path.join(targetDir, "index.html"), pageHtml, "utf-8");
+    console.log(`  ✓ Prerendered /${mod.path} (Canonical: ${mod.canonical})`);
+  }
+
+  // 3c-1. Prerender Dedicated Guides: How to Choose a Mutual Fund & Printable Redemption Checklist
+  const howToChooseHtml = injectHowToChooseGuide(baseHtml);
+  const howToChooseDir = path.join(distDir, "guides", "how-to-choose-a-mutual-fund");
+  fs.mkdirSync(howToChooseDir, { recursive: true });
+  fs.writeFileSync(path.join(distDir, "guides", "how-to-choose-a-mutual-fund.html"), howToChooseHtml, "utf-8");
+  fs.writeFileSync(path.join(howToChooseDir, "index.html"), howToChooseHtml, "utf-8");
+
+  // Root alias: /how-to-choose-a-mutual-fund
+  const howToChooseRoot = path.join(distDir, "how-to-choose-a-mutual-fund");
+  fs.mkdirSync(howToChooseRoot, { recursive: true });
+  fs.writeFileSync(path.join(distDir, "how-to-choose-a-mutual-fund.html"), howToChooseHtml, "utf-8");
+  fs.writeFileSync(path.join(howToChooseRoot, "index.html"), howToChooseHtml, "utf-8");
+  console.log(`  ✓ Prerendered /guides/how-to-choose-a-mutual-fund (Canonical: ${CANONICAL_ORIGIN}/guides/how-to-choose-a-mutual-fund)`);
+
+  const redemptionHtml = injectRedemptionChecklistPage(baseHtml);
+  const redemptionDir = path.join(distDir, "guides", "redemption-checklist");
+  fs.mkdirSync(redemptionDir, { recursive: true });
+  fs.writeFileSync(path.join(distDir, "guides", "redemption-checklist.html"), redemptionHtml, "utf-8");
+  fs.writeFileSync(path.join(redemptionDir, "index.html"), redemptionHtml, "utf-8");
+
+  // Root alias: /redemption-checklist
+  const redemptionRoot = path.join(distDir, "redemption-checklist");
+  fs.mkdirSync(redemptionRoot, { recursive: true });
+  fs.writeFileSync(path.join(distDir, "redemption-checklist.html"), redemptionHtml, "utf-8");
+  fs.writeFileSync(path.join(redemptionRoot, "index.html"), redemptionHtml, "utf-8");
+  console.log(`  ✓ Prerendered /guides/redemption-checklist (Canonical: ${CANONICAL_ORIGIN}/guides/redemption-checklist)`);
+
+  // 3c-2. Prerender Topic Hubs (Directory + 7 Individual Hub Pages)
+  const hubsIndexHtml = injectTopicHubsIndex(baseHtml);
+  const hubsDir = path.join(distDir, "hubs");
+  fs.mkdirSync(hubsDir, { recursive: true });
+  fs.writeFileSync(path.join(distDir, "hubs.html"), hubsIndexHtml, "utf-8");
+  fs.writeFileSync(path.join(hubsDir, "index.html"), hubsIndexHtml, "utf-8");
+
+  const topicsDir = path.join(distDir, "topics");
+  fs.mkdirSync(topicsDir, { recursive: true });
+  fs.writeFileSync(path.join(distDir, "topics.html"), hubsIndexHtml, "utf-8");
+  fs.writeFileSync(path.join(topicsDir, "index.html"), hubsIndexHtml, "utf-8");
+  console.log(`  ✓ Prerendered /hubs and /topics (Canonical: ${CANONICAL_ORIGIN}/hubs)`);
+
+  for (const hub of TOPIC_HUBS) {
+    const hubHtml = injectTopicHub(baseHtml, hub, articles);
+    const hubDir = path.join(distDir, "hub", hub.slug);
+    fs.mkdirSync(hubDir, { recursive: true });
+    fs.writeFileSync(path.join(distDir, "hub", `${hub.slug}.html`), hubHtml, "utf-8");
+    fs.writeFileSync(path.join(hubDir, "index.html"), hubHtml, "utf-8");
+
+    const topicDir = path.join(distDir, "topic", hub.slug);
+    fs.mkdirSync(topicDir, { recursive: true });
+    fs.writeFileSync(path.join(distDir, "topic", `${hub.slug}.html`), hubHtml, "utf-8");
+    fs.writeFileSync(path.join(topicDir, "index.html"), hubHtml, "utf-8");
+
+    console.log(`  ✓ Prerendered /hub/${hub.slug} (Canonical: ${CANONICAL_ORIGIN}/hub/${hub.slug})`);
+  }
+
+  // 3d. Generate static HTML fallbacks for legacy/typo slugs so direct file access never 404s
   const LEGACY_ALIASES = [
     {
       sourceSlug: "direct-vs-regular-mutual-funds-charges-commissions-compissions",

@@ -16,6 +16,7 @@ import {
 import { ArticlePost, SiteSettings } from "../types";
 import { CommentSection } from "./CommentSection";
 import { FormattedInlineText } from "./FormattedInlineText";
+import { ArticleRelatedBlock } from "./ArticleRelatedBlock";
 
 interface ArticleReaderProps {
   post: ArticlePost;
@@ -24,6 +25,9 @@ interface ArticleReaderProps {
   onOpenCategory: (cat: any) => void;
   allPosts?: ArticlePost[];
   onNavigateArticle?: (post: ArticlePost) => void;
+  onNavigateHub?: (hubSlug: string) => void;
+  onNavigateCalculator?: (url: string) => void;
+  onNavigateGlossaryTerm?: (termId: string) => void;
 }
 
 export function ArticleReader({
@@ -33,6 +37,9 @@ export function ArticleReader({
   onOpenCategory,
   allPosts = [],
   onNavigateArticle,
+  onNavigateHub,
+  onNavigateCalculator,
+  onNavigateGlossaryTerm,
 }: ArticleReaderProps) {
   const [copied, setCopied] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -442,11 +449,11 @@ export function ArticleReader({
               <div className="flex items-center gap-2">
                 <BarChart2 className="w-4 h-4 text-stone-700" />
                 <h3 className="font-semibold text-xs sm:text-sm uppercase tracking-wider text-stone-900 font-mono-data">
-                  Scheme Data & Historical Performance Snapshot
+                  Category Strategy Archetypes &amp; AMFI Metrics
                 </h3>
               </div>
-              <span className="text-[10px] font-mono-data bg-amber-50 text-amber-900 px-2 py-0.5 rounded border border-amber-200/80 self-start sm:self-auto">
-                Lagged Educational Snapshot (Archived Data)
+              <span className="text-[10px] font-mono-data bg-amber-50 text-amber-900 px-2 py-0.5 rounded border border-amber-200/80 self-start sm:self-auto font-medium">
+                Lagged Educational Snapshot • No Scheme Endorsements
               </span>
             </div>
 
@@ -511,7 +518,7 @@ export function ArticleReader({
 
                     {/* Prominent Secondary Line Directly Under Each Figure */}
                     <div className="pt-2.5 border-t border-stone-200/80 text-[10.5px] text-stone-600 italic leading-snug">
-                      Historical data shown for educational illustration only; not a recommendation or performance claim.
+                      Historical data shown for educational category illustration only; not an individual scheme recommendation or performance claim.
                     </div>
                   </div>
                 );
@@ -533,82 +540,15 @@ export function ArticleReader({
           </p>
         </div>
 
-        {/* Related Posts Section (Fallback for mobile and tablet screens) */}
-        {relatedArticles.length > 0 && (
-          <div className="lg:hidden mt-14 pt-8 border-t border-[#EAE8E0]">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
-              <div>
-                <div className="flex items-center gap-1.5 text-xs font-mono-data uppercase tracking-wider text-emerald-700 font-semibold mb-1">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Curated For You</span>
-                </div>
-                <h3 className="font-serif-editorial text-xl sm:text-2xl font-bold text-stone-900 tracking-tight">
-                  Related Posts &amp; Research Notes
-                </h3>
-                <p className="text-xs text-stone-500 font-sans mt-0.5">
-                  Suggested quantitative analyses matched by category (<em>{post.category}</em>) and relevant investment themes.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {relatedArticles.slice(0, 3).map((rel: any) => (
-                <div
-                  key={rel.id}
-                  onClick={() => handleInternalSlugNavigation(rel.slug)}
-                  className="group cursor-pointer p-5 rounded-2xl bg-white border border-[#EAE8E0] hover:border-emerald-600/40 hover:shadow-md transition-all duration-200 flex flex-col justify-between relative overflow-hidden"
-                >
-                  <div className="space-y-3">
-                    {/* Category & Topic Match Badges */}
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-[10px] uppercase font-mono-data tracking-wider px-2 py-0.5 rounded-full bg-stone-100 text-stone-700 font-medium">
-                        {rel.category}
-                      </span>
-                      {rel.matchReason && (
-                        <span className="text-[10px] font-mono-data px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 font-medium flex items-center gap-1">
-                          <Tag className="w-2.5 h-2.5" />
-                          <span className="truncate max-w-[120px]">{rel.matchReason}</span>
-                        </span>
-                      )}
-                    </div>
-
-                    <h4 className="font-serif-editorial text-base font-semibold text-stone-900 group-hover:text-emerald-700 transition-colors line-clamp-2 leading-snug">
-                      {rel.title}
-                    </h4>
-
-                    <p className="text-stone-600 text-xs line-clamp-2 leading-relaxed font-sans">
-                      {rel.excerpt}
-                    </p>
-
-                    {/* Display top tags if available */}
-                    {rel.tags && rel.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 pt-1">
-                        {rel.tags.slice(0, 2).map((t: string, idx: number) => (
-                          <span
-                            key={idx}
-                            className="text-[10px] px-1.5 py-0.5 rounded bg-[#FAF9F5] text-stone-500 font-mono-data border border-stone-200/60"
-                          >
-                            #{t}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="pt-3.5 mt-4 border-t border-stone-100 flex items-center justify-between text-xs font-mono-data text-stone-500">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-stone-400" />
-                      {rel.readTimeMinutes} min read
-                    </span>
-                    <span className="flex items-center gap-1 text-emerald-700 font-semibold group-hover:translate-x-1 transition-transform">
-                      Read Analysis <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {/* Automated Related Block: 1 Calculator, 1 Glossary Term, 2 Sibling Articles & Link to its Topic Hub */}
+        <ArticleRelatedBlock
+          post={post}
+          allPosts={allPosts}
+          onNavigateArticle={onNavigateArticle}
+          onNavigateHub={onNavigateHub}
+          onNavigateCalculator={onNavigateCalculator}
+          onNavigateGlossaryTerm={onNavigateGlossaryTerm}
+        />
 
         {/* Comments Section */}
         <div className="mt-14 pt-8 border-t border-[#EAE8E0]">

@@ -48,3 +48,31 @@
   background: #B5B2A6;
 }
 
+/* Print Optimization for Checklists & Reports */
+@media print {
+  header,
+  footer,
+  nav,
+  .no-print,
+  button.no-print,
+  #server-structured-data {
+    display: none !important;
+  }
+  body,
+  main,
+  .printable-content {
+    background-color: #ffffff !important;
+    color: #111111 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  .print-avoid-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .print-border {
+    border: 1px solid #cccccc !important;
+  }
+}
+

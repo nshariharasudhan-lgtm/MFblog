@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Menu, X, Calculator } from "lucide-react";
+import { Search, Menu, X, Calculator, HelpCircle, BookMarked, BookOpen, Compass } from "lucide-react";
 import { ArticleCategory, SiteSettings } from "../types";
 import { YieldNestLogo } from "./YieldNestLogo";
 
@@ -12,6 +12,11 @@ interface NavbarProps {
   onNavigateHome: () => void;
   isCalculatorView?: boolean;
   onNavigateCalculators?: () => void;
+  activeMenu?: "calculators" | "faq" | "glossary" | "guides" | "hubs" | "categories" | "none";
+  onNavigateFAQ?: () => void;
+  onNavigateGlossary?: () => void;
+  onNavigateGuides?: () => void;
+  onNavigateHubs?: () => void;
 }
 
 export function Navbar({
@@ -22,6 +27,11 @@ export function Navbar({
   onNavigateHome,
   isCalculatorView = false,
   onNavigateCalculators,
+  activeMenu = "none",
+  onNavigateFAQ,
+  onNavigateGlossary,
+  onNavigateGuides,
+  onNavigateHubs,
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -32,6 +42,44 @@ export function Navbar({
     { id: "Market Trends", label: "Market Trends", href: "/category/market-trends" },
     { id: "Category Deep-Dive", label: "Category Deep-Dive", href: "/category/category-deep-dive" },
     { id: "SIP Strategies", label: "SIP Tactics", href: "/category/sip-strategies" },
+  ];
+
+  const menuTools = [
+    {
+      id: "hubs" as const,
+      label: "Topic Hubs",
+      href: "/hubs",
+      icon: Compass,
+      onClick: onNavigateHubs,
+    },
+    {
+      id: "calculators" as const,
+      label: "Calculators",
+      href: "/calculators",
+      icon: Calculator,
+      onClick: onNavigateCalculators,
+    },
+    {
+      id: "faq" as const,
+      label: "FAQ",
+      href: "/faq",
+      icon: HelpCircle,
+      onClick: onNavigateFAQ,
+    },
+    {
+      id: "glossary" as const,
+      label: "Glossary",
+      href: "/glossary",
+      icon: BookMarked,
+      onClick: onNavigateGlossary,
+    },
+    {
+      id: "guides" as const,
+      label: "Guides",
+      href: "/guides",
+      icon: BookOpen,
+      onClick: onNavigateGuides,
+    },
   ];
 
   return (
@@ -112,8 +160,8 @@ export function Navbar({
                   onSelectCategory(cat.id);
                 }
               }}
-              className={`px-3.5 py-1.5 rounded-md transition-all font-medium text-xs tracking-wide no-underline ${
-                !isCalculatorView && currentCategory === cat.id
+              className={`px-3 py-1.5 rounded-md transition-all font-medium text-xs tracking-wide no-underline ${
+                activeMenu === "none" && !isCalculatorView && currentCategory === cat.id
                   ? "bg-[#1A1A1A] text-white shadow-xs font-semibold"
                   : "text-[#5A574E] hover:text-[#1A1A1A] hover:bg-[#EFECE3]"
               }`}
@@ -122,32 +170,41 @@ export function Navbar({
             </a>
           ))}
 
-          {/* Dedicated Calculators Link in Navbar */}
-          <a
-            href="/calculators"
-            onClick={(e) => {
-              if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
-                e.preventDefault();
-                if (onNavigateCalculators) onNavigateCalculators();
-              }
-            }}
-            className={`px-3 py-1.5 rounded-md transition-all font-medium text-xs tracking-wide no-underline flex items-center gap-1.5 ${
-              isCalculatorView
-                ? "bg-emerald-700 text-white shadow-xs font-semibold"
-                : "bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200"
-            }`}
-          >
-            <Calculator className="w-3.5 h-3.5 text-current" />
-            <span>Calculators</span>
-          </a>
+          <span className="h-4 w-px bg-stone-300 mx-1 shrink-0"></span>
+
+          {/* Educational Tools & Resource Links: Calculators, FAQ, Glossary, Guides */}
+          {menuTools.map((tool) => {
+            const Icon = tool.icon;
+            const isActive = activeMenu === tool.id || (tool.id === "calculators" && isCalculatorView);
+            return (
+              <a
+                key={tool.id}
+                href={tool.href}
+                onClick={(e) => {
+                  if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                    e.preventDefault();
+                    if (tool.onClick) tool.onClick();
+                  }
+                }}
+                className={`px-2.5 py-1.5 rounded-md transition-all font-medium text-xs tracking-wide no-underline flex items-center gap-1.5 ${
+                  isActive
+                    ? "bg-emerald-700 text-white shadow-xs font-semibold"
+                    : "text-stone-700 hover:text-stone-950 hover:bg-[#EFECE3]"
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5 text-current shrink-0" />
+                <span>{tool.label}</span>
+              </a>
+            );
+          })}
         </div>
       </nav>
 
       {/* Mobile Drawer */}
       {mobileMenuOpen && (
-        <div className="sm:hidden bg-[#FAF9F5] border-t border-[#EAE8E0] px-4 py-3 space-y-2 shadow-inner">
+        <div className="sm:hidden bg-[#FAF9F5] border-t border-[#EAE8E0] px-4 py-3 space-y-3 shadow-inner">
           <div className="text-[10px] font-mono-data text-stone-500 uppercase tracking-wider pb-1">
-            Research Categories &amp; Tools
+            Research Categories
           </div>
           <div className="grid grid-cols-2 gap-1.5">
             {categories.map((cat) => (
@@ -162,34 +219,45 @@ export function Navbar({
                   }
                 }}
                 className={`text-center px-3 py-2 rounded-lg text-xs font-medium transition-colors no-underline ${
-                  !isCalculatorView && currentCategory === cat.id
-                    ? "bg-[#1A1A1A] text-white"
+                  activeMenu === "none" && !isCalculatorView && currentCategory === cat.id
+                    ? "bg-[#1A1A1A] text-white font-semibold"
                     : "bg-white border border-stone-200 text-[#4A4740] hover:bg-[#EFECE3]"
                 }`}
               >
                 {cat.label}
               </a>
             ))}
+          </div>
 
-            {/* Calculators link in mobile drawer */}
-            <a
-              href="/calculators"
-              onClick={(e) => {
-                if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
-                  e.preventDefault();
-                  if (onNavigateCalculators) onNavigateCalculators();
-                  setMobileMenuOpen(false);
-                }
-              }}
-              className={`col-span-2 text-center px-3 py-2.5 rounded-lg text-xs font-semibold transition-colors no-underline flex items-center justify-center gap-1.5 ${
-                isCalculatorView
-                  ? "bg-emerald-700 text-white"
-                  : "bg-emerald-50 border border-emerald-300 text-emerald-900 hover:bg-emerald-100"
-              }`}
-            >
-              <Calculator className="w-3.5 h-3.5" />
-              <span>Quantitative Calculators Suite</span>
-            </a>
+          <div className="text-[10px] font-mono-data text-stone-500 uppercase tracking-wider pt-2 pb-1 border-t border-stone-200">
+            Educational Tools &amp; Hubs
+          </div>
+          <div className="grid grid-cols-2 gap-1.5">
+            {menuTools.map((tool) => {
+              const Icon = tool.icon;
+              const isActive = activeMenu === tool.id || (tool.id === "calculators" && isCalculatorView);
+              return (
+                <a
+                  key={tool.id}
+                  href={tool.href}
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                      e.preventDefault();
+                      if (tool.onClick) tool.onClick();
+                      setMobileMenuOpen(false);
+                    }
+                  }}
+                  className={`text-center px-3 py-2.5 rounded-lg text-xs font-medium transition-colors no-underline flex items-center justify-center gap-1.5 ${
+                    isActive
+                      ? "bg-emerald-700 text-white font-semibold"
+                      : "bg-white border border-stone-200 text-stone-800 hover:bg-[#EFECE3]"
+                  }`}
+                >
+                  <Icon className="w-3.5 h-3.5 shrink-0" />
+                  <span>{tool.label}</span>
+                </a>
+              );
+            })}
           </div>
         </div>
       )}
