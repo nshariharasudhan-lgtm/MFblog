@@ -138,13 +138,19 @@ export function Navbar({
         </div>
 
         {/* Centered Site Logo */}
-        <div
-          onClick={onNavigateHome}
-          className="cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99] text-center"
+        <a
+          href="/"
+          onClick={(e) => {
+            if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+              e.preventDefault();
+              onNavigateHome();
+            }
+          }}
+          className="cursor-pointer transition-transform hover:scale-[1.01] active:scale-[0.99] text-center block text-inherit no-underline"
           title="YieldNest.online - Return to Homepage"
         >
           <YieldNestLogo size="md" showTagline={true} />
-        </div>
+        </a>
       </div>
 
       {/* Category Navigation Tabs Below Logo - Centered */}

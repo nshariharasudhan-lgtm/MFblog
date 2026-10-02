@@ -86,14 +86,21 @@ export function ArticleReader({
 
   // Helper to resolve internal slug navigation
   const handleInternalSlugNavigation = (targetSlug: string) => {
+    const clean = targetSlug.replace(/^\/+/, "");
+    if (clean.startsWith("calculator") || clean.startsWith("guides") || clean.startsWith("how-to-choose") || clean.startsWith("redemption") || clean.startsWith("faq") || clean.startsWith("glossary") || clean.startsWith("hubs") || clean.startsWith("category")) {
+      window.history.pushState({}, "", `/${clean}`);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     const matched = allPosts.find(
-      (p) => p.slug.toLowerCase() === targetSlug.toLowerCase() || p.id === targetSlug
+      (p) => p.slug.toLowerCase() === clean.toLowerCase() || p.id === clean
     );
     if (matched && onNavigateArticle) {
       onNavigateArticle(matched);
     } else {
       // Fallback navigation via history API
-      window.history.pushState({}, "", `/article/${targetSlug}`);
+      window.history.pushState({}, "", `/article/${clean}`);
       window.dispatchEvent(new PopStateEvent("popstate"));
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -595,41 +602,49 @@ export function ArticleReader({
             {/* List of Suggested Related Articles */}
             <div className="divide-y divide-[#F0EEE6]">
               {relatedArticles.map((rel: any) => (
-                <article
+                <a
                   key={rel.id}
-                  onClick={() => handleInternalSlugNavigation(rel.slug)}
-                  className="group cursor-pointer py-3.5 first:pt-0 last:pb-0 transition-colors"
+                  href={`/article/${rel.slug}`}
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                      e.preventDefault();
+                      handleInternalSlugNavigation(rel.slug);
+                    }
+                  }}
+                  className="block group text-inherit no-underline py-3.5 first:pt-0 last:pb-0 transition-colors"
                 >
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <span className="text-[9.5px] uppercase font-mono-data tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-stone-700 font-medium">
-                      {rel.category}
-                    </span>
-                    {rel.matchReason && (
-                      <span className="text-[9.5px] font-mono-data px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-medium flex items-center gap-0.5 truncate max-w-[130px]">
-                        <Tag className="w-2.5 h-2.5 shrink-0" />
-                        <span className="truncate">{rel.matchReason}</span>
+                  <article>
+                    <div className="flex items-center gap-1.5 mb-1.5">
+                      <span className="text-[9.5px] uppercase font-mono-data tracking-wider px-1.5 py-0.5 rounded bg-stone-100 text-stone-700 font-medium">
+                        {rel.category}
                       </span>
-                    )}
-                  </div>
+                      {rel.matchReason && (
+                        <span className="text-[9.5px] font-mono-data px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 font-medium flex items-center gap-0.5 truncate max-w-[130px]">
+                          <Tag className="w-2.5 h-2.5 shrink-0" />
+                          <span className="truncate">{rel.matchReason}</span>
+                        </span>
+                      )}
+                    </div>
 
-                  <h4 className="font-serif-editorial text-[14.5px] font-semibold text-stone-900 group-hover:text-emerald-700 transition-colors leading-snug line-clamp-2 mb-1.5">
-                    {rel.title}
-                  </h4>
+                    <h4 className="font-serif-editorial text-[14.5px] font-semibold text-stone-900 group-hover:text-emerald-700 transition-colors leading-snug line-clamp-2 mb-1.5">
+                      {rel.title}
+                    </h4>
 
-                  <p className="text-stone-600 text-[11.5px] line-clamp-2 leading-relaxed font-sans mb-2">
-                    {rel.excerpt}
-                  </p>
+                    <p className="text-stone-600 text-[11.5px] line-clamp-2 leading-relaxed font-sans mb-2">
+                      {rel.excerpt}
+                    </p>
 
-                  <div className="flex items-center justify-between text-[10.5px] font-mono-data text-stone-500">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-stone-400" />
-                      {rel.readTimeMinutes} min read
-                    </span>
-                    <span className="flex items-center gap-1 text-emerald-700 font-medium group-hover:translate-x-0.5 transition-transform">
-                      Read Paper <ArrowRight className="w-3 h-3" />
-                    </span>
-                  </div>
-                </article>
+                    <div className="flex items-center justify-between text-[10.5px] font-mono-data text-stone-500">
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-stone-400" />
+                        {rel.readTimeMinutes} min read
+                      </span>
+                      <span className="flex items-center gap-1 text-emerald-700 font-medium group-hover:translate-x-0.5 transition-transform">
+                        Read Paper <ArrowRight className="w-3 h-3" />
+                      </span>
+                    </div>
+                  </article>
+                </a>
               ))}
             </div>
           </div>

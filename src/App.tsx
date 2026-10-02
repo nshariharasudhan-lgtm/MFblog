@@ -25,6 +25,9 @@ import { CalculatorsHubPage } from "./components/calculators/CalculatorsHubPage"
 import { SipCalculatorPage } from "./components/calculators/SipCalculatorPage";
 import { StepUpSipCalculatorPage } from "./components/calculators/StepUpSipCalculatorPage";
 import { LumpsumCalculatorPage } from "./components/calculators/LumpsumCalculatorPage";
+import { SwpCalculatorPage } from "./components/calculators/SwpCalculatorPage";
+import { GoalPlannerCalculatorPage } from "./components/calculators/GoalPlannerCalculatorPage";
+import { TaxEstimatorCalculatorPage } from "./components/calculators/TaxEstimatorCalculatorPage";
 import { TopicHubPage } from "./components/TopicHubPage";
 import { TopicHubsIndexPage } from "./components/TopicHubsIndexPage";
 import { TopicHubData, getTopicHubBySlug, TOPIC_HUBS } from "./data/topicHubsData";
@@ -122,7 +125,7 @@ export const PLACEHOLDER_SEO: Record<
   },
 };
 
-export type CalculatorPageViewType = "hub" | "sip" | "step-up-sip" | "lumpsum" | "direct-vs-regular" | "cost-of-delay" | "sip-vs-lumpsum";
+export type CalculatorPageViewType = "hub" | "sip" | "step-up-sip" | "lumpsum" | "swp" | "goal-planner" | "tax-estimator" | "direct-vs-regular" | "cost-of-delay" | "sip-vs-lumpsum";
 
 export type GuidePageViewType = "index" | "how-to-choose" | "redemption";
 
@@ -171,6 +174,24 @@ export const INDIVIDUAL_CALCULATOR_SEO: Record<
     description: "Calculate multi-year compounded returns and capital gains tax on one-time lumpsum mutual fund investments in India.",
     urlPath: "/calculators/lumpsum",
     keywords: "lumpsum calculator, one time mutual fund investment, lumpsum compounding India, mutual fund lumpsum returns",
+  },
+  swp: {
+    title: "SWP Calculator: Systematic Withdrawal Plan & Longevity | YieldNest",
+    description: "Simulate systematic monthly withdrawals from your mutual fund corpus. Calculate total withdrawals, final balance, and portfolio depletion horizon with monthly compounding.",
+    urlPath: "/calculators/swp",
+    keywords: "SWP calculator, systematic withdrawal plan calculator, mutual fund SWP, retirement monthly withdrawal, SWP corpus longevity",
+  },
+  "goal-planner": {
+    title: "Goal Planner Calculator: Inflation-Adjusted Target & Required SIP | YieldNest",
+    description: "Calculate inflation-adjusted future target cost and the required monthly mutual fund SIP to achieve life goals like child education, home purchase, and retirement.",
+    urlPath: "/calculators/goal-planner",
+    keywords: "goal planner calculator, inflation adjusted goal calculator, mutual fund goal planning, target SIP calculator, child education SIP calculator",
+  },
+  "tax-estimator": {
+    title: "Mutual Fund Tax Estimator: Capital Gains & Net Proceeds | YieldNest",
+    description: "Calculate capital gains tax, holding period classification, Section 112A exemption, and net realization proceeds on mutual fund redemptions in India under Finance Act 2024.",
+    urlPath: "/calculators/tax-estimator",
+    keywords: "mutual fund tax calculator, capital gains tax mutual funds, equity LTCG calculator, debt fund taxation, Section 112A calculator",
   },
 };
 
@@ -333,6 +354,33 @@ export default function App() {
       setSelectedHub(null);
       setIsHubsIndexView(false);
       return;
+    } else if (path === "/calculators/swp" || path === "/calculator/swp") {
+      setIsCalculatorView(true);
+      setActiveCalculatorPage("swp");
+      setPlaceholderView(null);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path === "/calculators/goal-planner" || path === "/calculator/goal-planner") {
+      setIsCalculatorView(true);
+      setActiveCalculatorPage("goal-planner");
+      setPlaceholderView(null);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
+    } else if (path === "/calculators/tax-estimator" || path === "/calculator/tax-estimator") {
+      setIsCalculatorView(true);
+      setActiveCalculatorPage("tax-estimator");
+      setPlaceholderView(null);
+      setSelectedArticle(null);
+      setIsAdminView(false);
+      setSelectedHub(null);
+      setIsHubsIndexView(false);
+      return;
     } else if (path === "/calculator/direct-vs-regular" || path === "/calculators/direct-vs-regular") {
       setCalculatorTab("direct-vs-regular");
       setActiveCalculatorPage("direct-vs-regular");
@@ -372,6 +420,12 @@ export default function App() {
         setActiveCalculatorPage("step-up-sip");
       } else if (tabParam === "lumpsum") {
         setActiveCalculatorPage("lumpsum");
+      } else if (tabParam === "swp") {
+        setActiveCalculatorPage("swp");
+      } else if (tabParam === "goal-planner") {
+        setActiveCalculatorPage("goal-planner");
+      } else if (tabParam === "tax-estimator") {
+        setActiveCalculatorPage("tax-estimator");
       } else if (tabParam === "cost-of-delay") {
         setActiveCalculatorPage("cost-of-delay");
         setCalculatorTab("cost-of-delay");
@@ -475,6 +529,15 @@ export default function App() {
     } else if (cleanTarget === "lumpsum") {
       setActiveCalculatorPage("lumpsum");
       window.history.pushState({}, "", "/calculators/lumpsum");
+    } else if (cleanTarget === "swp") {
+      setActiveCalculatorPage("swp");
+      window.history.pushState({}, "", "/calculators/swp");
+    } else if (cleanTarget === "goal-planner") {
+      setActiveCalculatorPage("goal-planner");
+      window.history.pushState({}, "", "/calculators/goal-planner");
+    } else if (cleanTarget === "tax-estimator") {
+      setActiveCalculatorPage("tax-estimator");
+      window.history.pushState({}, "", "/calculators/tax-estimator");
     } else if (cleanTarget === "direct-vs-regular") {
       setActiveCalculatorPage("direct-vs-regular");
       setCalculatorTab("direct-vs-regular");
@@ -679,7 +742,7 @@ export default function App() {
         post={selectedArticle}
         settings={settings}
         calculatorMeta={
-          isCalculatorView && !["hub", "sip", "step-up-sip", "lumpsum"].includes(activeCalculatorPage)
+          isCalculatorView && !["hub", "sip", "step-up-sip", "lumpsum", "swp", "goal-planner", "tax-estimator"].includes(activeCalculatorPage)
             ? (CALCULATOR_CONFIG[calculatorTab] || CALCULATOR_CONFIG["direct-vs-regular"])
             : null
         }
@@ -970,6 +1033,54 @@ export default function App() {
             onSearchChange={setSearchQuery}
             searchQuery={searchQuery}
           />
+        ) : activeCalculatorPage === "swp" ? (
+          <SwpCalculatorPage
+            settings={settings}
+            onNavigateHome={handleBackToHome}
+            onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateCalculator={(target) => handleOpenCalculators(target)}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
+            onSelectCategory={(cat) => {
+              setIsCalculatorView(false);
+              handleSelectCategory(cat);
+            }}
+            onSearchChange={setSearchQuery}
+            searchQuery={searchQuery}
+          />
+        ) : activeCalculatorPage === "goal-planner" ? (
+          <GoalPlannerCalculatorPage
+            settings={settings}
+            onNavigateHome={handleBackToHome}
+            onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateCalculator={(target) => handleOpenCalculators(target)}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
+            onSelectCategory={(cat) => {
+              setIsCalculatorView(false);
+              handleSelectCategory(cat);
+            }}
+            onSearchChange={setSearchQuery}
+            searchQuery={searchQuery}
+          />
+        ) : activeCalculatorPage === "tax-estimator" ? (
+          <TaxEstimatorCalculatorPage
+            settings={settings}
+            onNavigateHome={handleBackToHome}
+            onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateCalculator={(target) => handleOpenCalculators(target)}
+            onNavigateFAQ={handleNavigateFAQ}
+            onNavigateGlossary={handleNavigateGlossary}
+            onNavigateGuides={handleNavigateGuides}
+            onSelectCategory={(cat) => {
+              setIsCalculatorView(false);
+              handleSelectCategory(cat);
+            }}
+            onSearchChange={setSearchQuery}
+            searchQuery={searchQuery}
+          />
         ) : (
           /* Dedicated Calculators Suite Page */
           <>
@@ -1011,6 +1122,7 @@ export default function App() {
                 handleSelectCategory(cat);
               }}
               onNavigateCalculators={() => handleOpenCalculators()}
+              onNavigateCalculator={handleOpenCalculators}
               onNavigateFAQ={handleNavigateFAQ}
               onNavigateGlossary={handleNavigateGlossary}
               onNavigateGuides={handleNavigateGuides}
@@ -1046,6 +1158,7 @@ export default function App() {
             settings={settings}
             onSelectCategory={handleSelectCategory}
             onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateCalculator={handleOpenCalculators}
             onNavigateFAQ={handleNavigateFAQ}
             onNavigateGlossary={handleNavigateGlossary}
             onNavigateGuides={handleNavigateGuides}
@@ -1141,6 +1254,7 @@ export default function App() {
             settings={settings}
             onSelectCategory={handleSelectCategory}
             onNavigateCalculators={() => handleOpenCalculators()}
+            onNavigateCalculator={handleOpenCalculators}
             onNavigateFAQ={handleNavigateFAQ}
             onNavigateGlossary={handleNavigateGlossary}
             onNavigateGuides={handleNavigateGuides}

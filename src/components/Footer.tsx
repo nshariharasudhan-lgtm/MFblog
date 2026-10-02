@@ -7,6 +7,7 @@ interface FooterProps {
   settings: SiteSettings;
   onSelectCategory: (cat: ArticleCategory | "all") => void;
   onNavigateCalculators?: () => void;
+  onNavigateCalculator?: (target: string) => void;
   onNavigateFAQ?: () => void;
   onNavigateGlossary?: () => void;
   onNavigateGuides?: () => void;
@@ -17,6 +18,7 @@ export function Footer({
   settings,
   onSelectCategory,
   onNavigateCalculators,
+  onNavigateCalculator,
   onNavigateFAQ,
   onNavigateGlossary,
   onNavigateGuides,
@@ -118,6 +120,98 @@ export function Footer({
                 >
                   <span>🧮 Calculators Suite</span>
                 </a>
+              </li>
+              <li className="pl-4 text-[11px] text-stone-500 space-y-1">
+                <div>
+                  <a
+                    href="/calculators/sip"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && onNavigateCalculator) {
+                        e.preventDefault();
+                        onNavigateCalculator("sip");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="hover:text-stone-900 transition-colors"
+                  >
+                    • SIP Calculator
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="/calculators/swp"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && onNavigateCalculator) {
+                        e.preventDefault();
+                        onNavigateCalculator("swp");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="hover:text-stone-900 transition-colors"
+                  >
+                    • SWP Calculator
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="/calculators/goal-planner"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && onNavigateCalculator) {
+                        e.preventDefault();
+                        onNavigateCalculator("goal-planner");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="hover:text-stone-900 transition-colors"
+                  >
+                    • Goal Planner Calculator
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="/calculators/tax-estimator"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && onNavigateCalculator) {
+                        e.preventDefault();
+                        onNavigateCalculator("tax-estimator");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="hover:text-stone-900 transition-colors"
+                  >
+                    • Mutual Fund Tax Estimator
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="/calculators/lumpsum"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && onNavigateCalculator) {
+                        e.preventDefault();
+                        onNavigateCalculator("lumpsum");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="hover:text-stone-900 transition-colors"
+                  >
+                    • Lumpsum Calculator
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="/calculators/direct-vs-regular"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && onNavigateCalculator) {
+                        e.preventDefault();
+                        onNavigateCalculator("direct-vs-regular");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="hover:text-stone-900 transition-colors"
+                  >
+                    • Direct vs Regular TER Drag
+                  </a>
+                </div>
               </li>
               <li>
                 <a

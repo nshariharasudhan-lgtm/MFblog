@@ -23,6 +23,7 @@ interface ToolLayoutProps {
   searchQuery?: string;
   onNavigateHome: () => void;
   onNavigateCalculators?: () => void;
+  onNavigateCalculator?: (target: string) => void;
   onNavigateFAQ?: () => void;
   onNavigateGlossary?: () => void;
   onNavigateGuides?: () => void;
@@ -43,6 +44,7 @@ export function ToolLayout({
   searchQuery = "",
   onNavigateHome,
   onNavigateCalculators,
+  onNavigateCalculator,
   onNavigateFAQ,
   onNavigateGlossary,
   onNavigateGuides,
@@ -71,23 +73,35 @@ export function ToolLayout({
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-6 sm:py-10 space-y-8">
         {/* Breadcrumb Navigation */}
         <nav aria-label="Breadcrumbs" className="flex items-center gap-1.5 text-[11px] font-mono-data text-stone-500 overflow-x-auto whitespace-nowrap pb-1">
-          <button
-            onClick={onNavigateHome}
-            className="hover:text-stone-900 transition-colors cursor-pointer flex items-center gap-1"
+          <a
+            href="/"
+            onClick={(e) => {
+              if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                e.preventDefault();
+                onNavigateHome();
+              }
+            }}
+            className="hover:text-stone-900 transition-colors cursor-pointer flex items-center gap-1 text-inherit no-underline"
           >
             <ArrowLeft className="w-3 h-3" />
             <span>Home</span>
-          </button>
+          </a>
           {breadcrumbs.map((crumb, idx) => (
             <React.Fragment key={idx}>
               <ChevronRight className="w-3 h-3 text-stone-400 shrink-0" />
               {crumb.onClick || crumb.href ? (
-                <button
-                  onClick={crumb.onClick}
-                  className="hover:text-stone-900 transition-colors cursor-pointer"
+                <a
+                  href={crumb.href || "/calculators"}
+                  onClick={(e) => {
+                    if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && crumb.onClick) {
+                      e.preventDefault();
+                      crumb.onClick();
+                    }
+                  }}
+                  className="hover:text-stone-900 transition-colors cursor-pointer text-inherit no-underline"
                 >
                   {crumb.label}
-                </button>
+                </a>
               ) : (
                 <span className="text-stone-800 font-semibold truncate max-w-[240px]">
                   {crumb.label}
@@ -134,6 +148,7 @@ export function ToolLayout({
         settings={settings}
         onSelectCategory={onSelectCategory}
         onNavigateCalculators={onNavigateCalculators}
+        onNavigateCalculator={onNavigateCalculator}
         onNavigateFAQ={onNavigateFAQ}
         onNavigateGlossary={onNavigateGlossary}
         onNavigateGuides={onNavigateGuides}

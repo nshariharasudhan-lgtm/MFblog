@@ -8,7 +8,19 @@ We are strictly an investor education and quantitative research publication. Not
 
 ## Core Research Articles
 
-- [How to Compare Mutual Funds in India: A Data-Driven Framework (2024)](https://www.yieldnest.online/article/best-mutual-funds-india-performance-analysis-2024): Navigate India's volatile market with our data-backed analysis. We evaluate top-performing funds using Alpha, Beta, and expense ratios for smarter investing.
+- [Mutual Funds vs FD vs SIP: The 2026 Strategic Wealth Guide](https://www.yieldnest.online/article/mutual-funds-vs-fd-vs-sip-2026-analysis): Confused between FDs and Mutual Funds? Our 2026 analysis compares risk, returns, and tax efficiency to help you optimize your portfolio for long-term wealth.
+- [Mutual Funds vs Real Estate: The 2026 Wealth Creation Verdict](https://www.yieldnest.online/article/mutual-funds-vs-real-estate-investing-2026): Should you invest in property or equity funds in 2026? We analyze liquidity, taxation, and 5-year CAGR data to help you decide your optimal asset allocation.
+- [Decoding Mutual Fund NAV: How It Is Calculated and Why It Matters](https://www.yieldnest.online/article/decoding-mutual-fund-nav-calculation-and-importance): Confused by NAV? Discover how NAV is calculated, why it differs from stock prices, and what it means for your 2026 investment strategy at YieldNest.online.
+- [Mid-Cap vs. Multi-Cap: Navigating the 2026 Valuation Premium](https://www.yieldnest.online/article/mid-cap-vs-multi-cap-navigating-2026-valuation-premium): As Indian equities hit record valuations in September 2026, we analyze whether Mid-Cap or Multi-Cap strategies offer better risk-adjusted returns for investors.
+- [Mid-Cap vs. Small-Cap: Analyzing Risk-Adjusted Returns Amidst Current Market Volatility](https://www.yieldnest.online/article/mid-cap-vs-small-cap-analyzing-risk-adjusted-returns-amidst-current-market): With mid and small-cap indices testing new highs, we analyze the Sharpe and Sortino ratios of top-performing schemes to determine if the current valuation premium is justified by fundamental growth.
+- [Mutual Funds vs ETFs: The Definitive Indian Investor Guide](https://www.yieldnest.online/article/mutual-funds-vs-etfs-india-guide): Should you choose Mutual Funds or ETFs? We analyze TER, liquidity, and alpha generation using AMFI data to help you optimize your portfolio strategy.
+- [Can Mutual Funds Change Expense Ratio? A Deep Dive for Investors](https://www.yieldnest.online/article/can-mutual-funds-change-expense-ratio): Does your mutual fund's expense ratio fluctuate? Discover how SEBI regulations govern TER changes and how they impact your long-term compounding returns.
+- [Can Mutual Funds Invest in IPOs? A Quantitative Perspective](https://www.yieldnest.online/article/can-mutual-funds-invest-in-ipo): Explore how mutual funds participate in IPOs, the regulatory framework governing these investments, and what it means for your portfolio's alpha generation.
+- [Transferring Mutual Funds to Your Son: Legal and Tax Implications](https://www.yieldnest.online/article/transfer-mutual-funds-to-son-legal-tax-guide): Can you gift mutual funds to your son? Discover the legal, tax, and procedural requirements for transferring units in India as per AMFI and SEBI guidelines.
+- [Are Mutual Funds Tax-Free? A Quantitative Guide to Indian Taxation](https://www.yieldnest.online/article/are-mutual-funds-tax-free-india-guide): Demystifying mutual fund taxation in India. Learn how LTCG, STCG, and dividend distribution impact your net returns and portfolio compounding.
+- [Are Mutual Funds Safe? A Data-Driven Reality Check for Investors](https://www.yieldnest.online/article/are-mutual-funds-safe-investment-analysis): Are mutual funds safe? We dissect market volatility, AMFI riskometers, and historical CAGR to separate investment risk from capital loss.
+- [How Mutual Funds Make Money: Decoding the Asset Management Business](https://www.yieldnest.online/article/how-mutual-funds-make-money-business-model): Ever wondered how AMCs profit from your investments? We break down the Total Expense Ratio (TER), management fees, and the economics of fund management.
+- [Decoding Mutual Fund Taxation in India: A 2026 Comprehensive Guide](https://www.yieldnest.online/article/mutual-fund-taxation-india-guide): Master the complexities of Indian mutual fund taxation. Learn how Equity, Debt, and Hybrid funds are taxed post-2024 updates to optimize your post-tax returns.
 - [How to Compare Mutual Funds in India: A Data-Driven Framework (2026)](https://www.yieldnest.online/article/best-mutual-funds-india-2026-data-analysis): Discover the top-performing mutual funds for 2026. Our data-driven analysis covers CAGR, alpha, and risk metrics to help you build a robust investment portfolio.
 - [Quant Small Cap vs Nippon India Small Cap: A Data-Driven Analysis](https://www.yieldnest.online/article/quant-small-cap-vs-nippon-india-small-cap-comparison): Analyzing Quant Small Cap and Nippon India Small Cap: Which fund deserves a spot in your portfolio? We break down performance, risk, and strategy.
 - [The Hidden Tax: Why Total Expense Ratio (TER) Dictates Your Wealth](https://www.yieldnest.online/article/why-total-expense-ratio-ter-is-important-for-investors): Discover how the Total Expense Ratio (TER) silently erodes your long-term mutual fund returns. Learn why even a 1% difference matters for your financial goals.
@@ -18,6 +30,27 @@ We are strictly an investor education and quantitative research publication. Not
 - [Parag Parikh Flexi Cap vs Mirae Asset Large & Midcap: 5-Year Rolling Return Analysis](https://www.yieldnest.online/article/parag-parikh-flexi-cap-vs-mirae-asset-large-midcap): A comprehensive analysis of downside protection, international equity allocations, and expense ratio drag across bull and bear market cycles.
 - [Small Cap Mutual Funds Stress Test: Liquidity Risk, Days-to-Liquidate & Market Resilience](https://www.yieldnest.online/article/small-cap-mutual-funds-stress-test-sebi-amfi-liquidity): An empirical examination of liquidity stress test disclosures across top small-cap funds, analyzing redemption shock absorption.
 - [NIFTY 50 Index Funds vs Active Large-Cap Funds: Is Alpha Dead in Indian Equities?](https://www.yieldnest.online/article/nifty-50-index-funds-vs-active-large-cap-funds): SPIVA scorecards reveal over 85% of active large-cap managers fail to beat their benchmark. A quantitative comparison of expense ratios and compounding.
+
+## Quantitative Calculators Suite
+
+- [Mutual Fund Calculators Hub](https://www.yieldnest.online/calculators): Central directory of financial math simulators for Indian mutual fund investors.
+- [SIP Compounding Calculator](https://www.yieldnest.online/calculators/sip): Simulate systematic compounding, post-tax returns, and multi-year wealth accumulation.
+- [SWP Longevity Calculator](https://www.yieldnest.online/calculators/swp): Simulate systematic withdrawal plans, monthly cash flows, principal preservation, and portfolio longevity.
+- [Goal Planner Calculator](https://www.yieldnest.online/calculators/goal-planner): Back-calculate the required monthly SIP to achieve inflation-adjusted life goals (education, house, retirement).
+- [Mutual Fund Tax Estimator](https://www.yieldnest.online/calculators/tax-estimator): Calculate capital gains tax, holding periods, Section 112A exemption, and net proceeds under Finance Act 2024.
+- [Lumpsum Calculator](https://www.yieldnest.online/calculators/lumpsum): Calculate compounded growth and wealth multipliers on one-time mutual fund deposits.
+- [Direct vs Regular TER Drag Calculator](https://www.yieldnest.online/calculators/direct-vs-regular): Quantify wealth erosion caused by distributor trail commissions (0.5%–1.5% TER headwind).
+- [Step-Up SIP Calculator](https://www.yieldnest.online/calculators/step-up-sip): Model annual SIP contribution increments (5%–25%) alongside salary growth.
+- [Cost of Delay Calculator](https://www.yieldnest.online/calculators/cost-of-delay): Calculate the financial penalty of procrastinating SIP start dates by 6 to 24 months.
+
+## Investor Guides & Educational Resources
+
+- [Investor Guides Hub](https://www.yieldnest.online/guides): Practical, step-by-step frameworks for retail mutual fund decision-making.
+- [How to Choose a Mutual Fund Guide](https://www.yieldnest.online/guides/how-to-choose-a-mutual-fund): Systematic 6-step due diligence process covering rolling returns, expense ratio drag, downside capture, and AMFI liquidity tests.
+- [Mutual Fund Redemption Checklist](https://www.yieldnest.online/guides/redemption-checklist): Interactive pre-redemption audit covering exit loads, capital gains tax optimization, bank account verification, and settlement cycles.
+- [Topic Hubs](https://www.yieldnest.online/hubs): Curated knowledge bases covering Fund Basics, Risk & Safety, Taxation & ELSS, Expense Ratios, Redemptions, and SIP/SWP/STP mechanics.
+- [Mutual Fund FAQ](https://www.yieldnest.online/faq): Clear, evidence-backed answers to retail investor questions on safety, tax, SIP, and redemptions.
+- [Mutual Fund Glossary](https://www.yieldnest.online/glossary): Authoritative glossary explaining NAV, TER, ISIN, CAN, IDCW, exit loads, and SEBI regulations.
 
 ## Research Categories
 

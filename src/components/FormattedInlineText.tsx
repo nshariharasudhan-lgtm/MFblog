@@ -94,20 +94,23 @@ export function FormattedInlineText({ text, onNavigateSlug, className }: Formatt
       }
       // Remove any trailing query/hash
       slug = slug.split("?")[0].split("#")[0];
+      const fullHref = href.startsWith("/") ? href : `/article/${slug}`;
 
       parts.push(
-        <button
+        <a
           key={linkKey}
-          type="button"
+          href={fullHref}
           onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onNavigateSlug(slug);
+            if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+              e.preventDefault();
+              e.stopPropagation();
+              onNavigateSlug(slug);
+            }
           }}
-          className="inline font-medium text-[#4F46E5] hover:text-[#3730A3] underline decoration-[#C7D2FE] underline-offset-3 hover:decoration-[#4F46E5] transition-colors cursor-pointer text-left font-sans text-[0.98em]"
+          className="inline font-medium text-[#065f46] hover:text-[#047857] underline decoration-[#a7f3d0] underline-offset-3 hover:decoration-[#059669] transition-colors cursor-pointer text-left font-sans text-[0.98em]"
         >
           {anchorText}
-        </button>
+        </a>
       );
     } else {
       parts.push(
@@ -116,7 +119,7 @@ export function FormattedInlineText({ text, onNavigateSlug, className }: Formatt
           href={href}
           target={href.startsWith("http") ? "_blank" : undefined}
           rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-          className="inline font-medium text-[#4F46E5] hover:text-[#3730A3] underline decoration-[#C7D2FE] underline-offset-3 hover:decoration-[#4F46E5] transition-colors"
+          className="inline font-medium text-[#065f46] hover:text-[#047857] underline decoration-[#a7f3d0] underline-offset-3 hover:decoration-[#059669] transition-colors"
         >
           {anchorText}
         </a>

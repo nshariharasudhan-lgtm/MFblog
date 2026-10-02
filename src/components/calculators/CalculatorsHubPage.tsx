@@ -166,21 +166,21 @@ export function CalculatorsHubPage({
     {
       id: "swp",
       title: "Systematic Withdrawal Plan (SWP)",
-      badge: "Next Phase",
-      badgeColor: "bg-amber-100 text-amber-800 border-amber-300",
-      status: "next-phase",
+      badge: "Live",
+      badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+      status: "live",
       description: "Plan tax-efficient monthly cash flows in retirement or financial independence without prematurely exhausting your invested mutual fund corpus.",
       route: "/calculators/swp",
-      formula: "B_{t} = (B_{t-1} - W) × (1+r)",
+      formula: "Balance = (Balance - W) × (1 + r/12)",
       features: ["Monthly pension-style withdrawal", "Corpus longevity forecast", "Principal preservation tracker"],
       icon: ArrowDownRight,
     },
     {
       id: "goal-planner",
       title: "Goal Planner Calculator",
-      badge: "Next Phase",
-      badgeColor: "bg-amber-100 text-amber-800 border-amber-300",
-      status: "next-phase",
+      badge: "Live",
+      badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+      status: "live",
       description: "Back-calculate the exact monthly SIP required to achieve a future target (e.g. child education, house down payment) after factoring in inflation.",
       route: "/calculators/goal-planner",
       formula: "Target_adj = Target × (1+inf)^t",
@@ -190,9 +190,9 @@ export function CalculatorsHubPage({
     {
       id: "tax-estimator",
       title: "Mutual Fund Tax Estimator",
-      badge: "Next Phase",
-      badgeColor: "bg-amber-100 text-amber-800 border-amber-300",
-      status: "next-phase",
+      badge: "Live",
+      badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
+      status: "live",
       description: "Comprehensive capital gains tax simulator under Finance Act 2024. Computes 12.5% LTCG, 20% STCG, ₹1.25L exemption, and indexation changes.",
       route: "/calculators/tax-estimator",
       formula: "Tax = (Gain - ₹1.25L) × 12.5%",
@@ -284,13 +284,19 @@ export function CalculatorsHubPage({
                 {/* Card Action Link */}
                 <div className="pt-3 border-t border-stone-100">
                   {isLive ? (
-                    <button
-                      onClick={() => onNavigateCalculator(calc.id)}
-                      className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-stone-900 text-white font-mono-data text-xs font-semibold hover:bg-emerald-800 transition-colors shadow-xs cursor-pointer group-hover:bg-emerald-700"
+                    <a
+                      href={calc.route}
+                      onClick={(e) => {
+                        if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                          e.preventDefault();
+                          onNavigateCalculator(calc.id);
+                        }
+                      }}
+                      className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-stone-900 text-white font-mono-data text-xs font-semibold hover:bg-emerald-800 transition-colors shadow-xs cursor-pointer group-hover:bg-emerald-700 no-underline"
                     >
                       <span>Launch Calculator</span>
                       <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                    </button>
+                    </a>
                   ) : (
                     <div className="w-full text-center py-2 px-3 rounded-xl bg-stone-100 text-stone-500 font-mono-data text-xs">
                       Phase 2 Integration In Progress

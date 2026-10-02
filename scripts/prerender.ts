@@ -708,6 +708,24 @@ function buildSitemapXmlString(articles: any[]): string {
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>${CANONICAL_ORIGIN}/calculators/swp</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/calculators/goal-planner</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>${CANONICAL_ORIGIN}/calculators/tax-estimator</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>${CANONICAL_ORIGIN}/calculator/direct-vs-regular</loc>
     <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
@@ -1932,6 +1950,27 @@ async function runPrerender() {
       title: "Lumpsum Calculator: One-Time Mutual Fund Compounding | YieldNest",
       description: "Calculate multi-year compounded returns and capital gains tax on one-time lumpsum mutual fund investments in India.",
       canonical: "https://www.yieldnest.online/calculators/lumpsum",
+    },
+    {
+      slug: "swp",
+      path: "calculator/swp",
+      title: "SWP Calculator: Systematic Withdrawal Plan & Longevity | YieldNest",
+      description: "Simulate systematic monthly withdrawals from your mutual fund corpus. Calculate total withdrawals, final balance, and portfolio depletion horizon with monthly compounding.",
+      canonical: "https://www.yieldnest.online/calculators/swp",
+    },
+    {
+      slug: "goal-planner",
+      path: "calculator/goal-planner",
+      title: "Goal Planner Calculator: Inflation-Adjusted Target & Required SIP | YieldNest",
+      description: "Calculate inflation-adjusted future target cost and the required monthly mutual fund SIP to achieve life goals like child education, home purchase, and retirement.",
+      canonical: "https://www.yieldnest.online/calculators/goal-planner",
+    },
+    {
+      slug: "tax-estimator",
+      path: "calculator/tax-estimator",
+      title: "Mutual Fund Tax Estimator: Capital Gains & Net Proceeds | YieldNest",
+      description: "Calculate capital gains tax, holding period classification, Section 112A exemption, and net realization proceeds on mutual fund redemptions in India under Finance Act 2024.",
+      canonical: "https://www.yieldnest.online/calculators/tax-estimator",
     },
     {
       slug: "direct-vs-regular",
