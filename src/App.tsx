@@ -149,49 +149,77 @@ export const DEDICATED_GUIDE_SEO: Record<
 
 export const INDIVIDUAL_CALCULATOR_SEO: Record<
   string,
-  { title: string; description: string; urlPath: string; keywords: string }
+  { name: string; title: string; description: string; urlPath: string; keywords: string }
 > = {
   hub: {
+    name: "Quantitative Mutual Fund Calculators Suite",
     title: "Quantitative Mutual Fund Calculators Suite | YieldNest",
-    description: "Comprehensive suite of 7 Indian mutual fund calculators including SIP, Step-Up SIP, Lumpsum, SWP, Goal Planner, Direct vs Regular TER drag, and Tax Estimator.",
+    description: "Comprehensive suite of quantitative Indian mutual fund calculators including SIP, Step-Up SIP, Lumpsum, SWP, Goal Planner, Direct vs Regular TER drag, and Tax Estimator.",
     urlPath: "/calculators",
     keywords: "mutual fund calculator, SIP calculator, lumpsum calculator, step up sip calculator, direct vs regular calculator",
   },
   sip: {
+    name: "SIP Compounding Calculator",
     title: "SIP Calculator: Mutual Fund Wealth Compounding | YieldNest",
     description: "Calculate future maturity value of your monthly Systematic Investment Plan (SIP) in Indian mutual funds with compounding growth chart and amortization schedule.",
     urlPath: "/calculators/sip",
     keywords: "SIP calculator, mutual fund SIP calculator, monthly SIP compounding, SIP maturity value India, mutual fund tax SIP",
   },
   "step-up-sip": {
+    name: "Step-Up SIP Compounding Calculator",
     title: "Step-Up SIP Calculator: Annual Top-Up Compounding | YieldNest",
     description: "Simulate how annual step-up top-ups (5% to 25%) linked to salary appraisals accelerate mutual fund wealth creation compared to static SIPs.",
     urlPath: "/calculators/step-up-sip",
     keywords: "step up SIP calculator, top up SIP calculator, annual step up mutual fund, step up compounding, salary increment SIP",
   },
   lumpsum: {
+    name: "Lumpsum Investment Calculator",
     title: "Lumpsum Calculator: One-Time Mutual Fund Compounding | YieldNest",
     description: "Calculate multi-year compounded returns and capital gains tax on one-time lumpsum mutual fund investments in India.",
     urlPath: "/calculators/lumpsum",
     keywords: "lumpsum calculator, one time mutual fund investment, lumpsum compounding India, mutual fund lumpsum returns",
   },
   swp: {
+    name: "Systematic Withdrawal Plan (SWP) Calculator",
     title: "SWP Calculator: Systematic Withdrawal Plan & Longevity | YieldNest",
     description: "Simulate systematic monthly withdrawals from your mutual fund corpus. Calculate total withdrawals, final balance, and portfolio depletion horizon with monthly compounding.",
     urlPath: "/calculators/swp",
     keywords: "SWP calculator, systematic withdrawal plan calculator, mutual fund SWP, retirement monthly withdrawal, SWP corpus longevity",
   },
   "goal-planner": {
+    name: "Mutual Fund Goal Planner Calculator",
     title: "Goal Planner Calculator: Inflation-Adjusted Target & Required SIP | YieldNest",
     description: "Calculate inflation-adjusted future target cost and the required monthly mutual fund SIP to achieve life goals like child education, home purchase, and retirement.",
     urlPath: "/calculators/goal-planner",
     keywords: "goal planner calculator, inflation adjusted goal calculator, mutual fund goal planning, target SIP calculator, child education SIP calculator",
   },
   "tax-estimator": {
+    name: "Mutual Fund Capital Gains Tax Estimator",
     title: "Mutual Fund Tax Estimator: Capital Gains & Net Proceeds | YieldNest",
     description: "Calculate capital gains tax, holding period classification, Section 112A exemption, and net realization proceeds on mutual fund redemptions in India under Finance Act 2024.",
     urlPath: "/calculators/tax-estimator",
     keywords: "mutual fund tax calculator, capital gains tax mutual funds, equity LTCG calculator, debt fund taxation, Section 112A calculator",
+  },
+  "direct-vs-regular": {
+    name: "Direct vs Regular Mutual Fund Calculator",
+    title: "Direct vs Regular Fund Calculator | YieldNest",
+    description: "Calculate how much wealth you lose to distributor commissions and Total Expense Ratio (TER) drag over your SIP tenure in Indian mutual funds.",
+    urlPath: "/calculators/direct-vs-regular",
+    keywords: "direct vs regular mutual fund, TER drag calculator, mutual fund commission loss, direct fund compounding",
+  },
+  "cost-of-delay": {
+    name: "Cost of Delay SIP Calculator",
+    title: "Cost of Delay SIP Calculator | YieldNest",
+    description: "Find out how much money you lose by delaying your mutual fund SIP by 6 months, 1 year, or 2 years. Calculate the compound interest penalty of waiting.",
+    urlPath: "/calculators/cost-of-delay",
+    keywords: "cost of delay calculator, delay SIP penalty, mutual fund procrastination cost, compounding delay loss",
+  },
+  "sip-vs-lumpsum": {
+    name: "SIP vs Lumpsum Strategy Comparator",
+    title: "SIP vs Lumpsum Calculator | YieldNest",
+    description: "Compare mutual fund returns between a one-time lumpsum investment and a staggered monthly SIP over the same time horizon with delta analysis.",
+    urlPath: "/calculators/sip-vs-lumpsum",
+    keywords: "SIP vs lumpsum calculator, lump sum vs SIP comparison, mutual fund investing strategy comparator",
   },
 };
 
@@ -335,7 +363,14 @@ export default function App() {
       setSelectedHub(null);
       setIsHubsIndexView(false);
       return;
-    } else if (path === "/calculators/step-up-sip" || path === "/calculator/step-up-sip" || path === "/calculator/step-up" || path === "/calculators/step-up") {
+    } else if (
+      path === "/calculators/step-up-sip" ||
+      path === "/calculator/step-up-sip" ||
+      path === "/calculator/step-up" ||
+      path === "/calculators/step-up" ||
+      path === "/calculator/stepup" ||
+      path === "/calculators/stepup"
+    ) {
       setIsCalculatorView(true);
       setActiveCalculatorPage("step-up-sip");
       setCalculatorTab("step-up");
@@ -345,7 +380,7 @@ export default function App() {
       setSelectedHub(null);
       setIsHubsIndexView(false);
       return;
-    } else if (path === "/calculators/lumpsum" || path === "/calculator/lumpsum") {
+    } else if (path === "/calculators/lumpsum" || path === "/calculator/lumpsum" || path === "/calculators/lump-sum" || path === "/calculator/lump-sum") {
       setIsCalculatorView(true);
       setActiveCalculatorPage("lumpsum");
       setPlaceholderView(null);
@@ -363,7 +398,14 @@ export default function App() {
       setSelectedHub(null);
       setIsHubsIndexView(false);
       return;
-    } else if (path === "/calculators/goal-planner" || path === "/calculator/goal-planner") {
+    } else if (
+      path === "/calculators/goal-planner" ||
+      path === "/calculator/goal-planner" ||
+      path === "/calculators/goal" ||
+      path === "/calculator/goal" ||
+      path === "/calculators/goalplanner" ||
+      path === "/calculator/goalplanner"
+    ) {
       setIsCalculatorView(true);
       setActiveCalculatorPage("goal-planner");
       setPlaceholderView(null);
@@ -372,7 +414,14 @@ export default function App() {
       setSelectedHub(null);
       setIsHubsIndexView(false);
       return;
-    } else if (path === "/calculators/tax-estimator" || path === "/calculator/tax-estimator") {
+    } else if (
+      path === "/calculators/tax-estimator" ||
+      path === "/calculator/tax-estimator" ||
+      path === "/calculators/tax" ||
+      path === "/calculator/tax" ||
+      path === "/calculators/taxestimator" ||
+      path === "/calculator/taxestimator"
+    ) {
       setIsCalculatorView(true);
       setActiveCalculatorPage("tax-estimator");
       setPlaceholderView(null);
@@ -381,7 +430,12 @@ export default function App() {
       setSelectedHub(null);
       setIsHubsIndexView(false);
       return;
-    } else if (path === "/calculator/direct-vs-regular" || path === "/calculators/direct-vs-regular") {
+    } else if (
+      path === "/calculator/direct-vs-regular" ||
+      path === "/calculators/direct-vs-regular" ||
+      path === "/calculators/ter" ||
+      path === "/calculator/ter"
+    ) {
       setCalculatorTab("direct-vs-regular");
       setActiveCalculatorPage("direct-vs-regular");
       setIsCalculatorView(true);
@@ -391,7 +445,7 @@ export default function App() {
       setSelectedHub(null);
       setIsHubsIndexView(false);
       return;
-    } else if (path === "/calculator/cost-of-delay" || path === "/calculators/cost-of-delay") {
+    } else if (path === "/calculator/cost-of-delay" || path === "/calculators/cost-of-delay" || path === "/calculators/delay" || path === "/calculator/delay") {
       setCalculatorTab("cost-of-delay");
       setActiveCalculatorPage("cost-of-delay");
       setIsCalculatorView(true);
@@ -401,7 +455,12 @@ export default function App() {
       setSelectedHub(null);
       setIsHubsIndexView(false);
       return;
-    } else if (path === "/calculator/sip-vs-lumpsum" || path === "/calculators/sip-vs-lumpsum") {
+    } else if (
+      path === "/calculator/sip-vs-lumpsum" ||
+      path === "/calculators/sip-vs-lumpsum" ||
+      path === "/calculators/comparator" ||
+      path === "/calculator/comparator"
+    ) {
       setCalculatorTab("sip-vs-lumpsum");
       setActiveCalculatorPage("sip-vs-lumpsum");
       setIsCalculatorView(true);
@@ -411,28 +470,43 @@ export default function App() {
       setSelectedHub(null);
       setIsHubsIndexView(false);
       return;
-    } else if (path === "/calculators" || path === "/calculator") {
+    } else if (
+      path === "/calculators" ||
+      path === "/calculator" ||
+      path === "/calculator-suite" ||
+      path === "/calculators-suite"
+    ) {
       const searchParams = new URLSearchParams(window.location.search);
-      const tabParam = searchParams.get("tab") as any;
+      const tabParam = (
+        searchParams.get("tab") ||
+        searchParams.get("calc") ||
+        searchParams.get("calculator") ||
+        searchParams.get("tool") ||
+        searchParams.get("type") ||
+        searchParams.get("view") ||
+        ""
+      ).toLowerCase();
+
       if (tabParam === "sip") {
         setActiveCalculatorPage("sip");
-      } else if (tabParam === "step-up" || tabParam === "step-up-sip") {
+      } else if (tabParam === "step-up" || tabParam === "step-up-sip" || tabParam === "stepup") {
         setActiveCalculatorPage("step-up-sip");
-      } else if (tabParam === "lumpsum") {
+        setCalculatorTab("step-up");
+      } else if (tabParam === "lumpsum" || tabParam === "lump-sum") {
         setActiveCalculatorPage("lumpsum");
       } else if (tabParam === "swp") {
         setActiveCalculatorPage("swp");
-      } else if (tabParam === "goal-planner") {
+      } else if (tabParam === "goal-planner" || tabParam === "goal" || tabParam === "goalplanner") {
         setActiveCalculatorPage("goal-planner");
-      } else if (tabParam === "tax-estimator") {
+      } else if (tabParam === "tax-estimator" || tabParam === "tax" || tabParam === "taxestimator") {
         setActiveCalculatorPage("tax-estimator");
-      } else if (tabParam === "cost-of-delay") {
+      } else if (tabParam === "cost-of-delay" || tabParam === "delay") {
         setActiveCalculatorPage("cost-of-delay");
         setCalculatorTab("cost-of-delay");
-      } else if (tabParam === "sip-vs-lumpsum") {
+      } else if (tabParam === "sip-vs-lumpsum" || tabParam === "comparator" || tabParam === "compare") {
         setActiveCalculatorPage("sip-vs-lumpsum");
         setCalculatorTab("sip-vs-lumpsum");
-      } else if (tabParam === "direct-vs-regular") {
+      } else if (tabParam === "direct-vs-regular" || tabParam === "ter" || tabParam === "regular-vs-direct") {
         setActiveCalculatorPage("direct-vs-regular");
         setCalculatorTab("direct-vs-regular");
       } else {
@@ -446,7 +520,32 @@ export default function App() {
       setIsHubsIndexView(false);
       return;
     } else if (path.startsWith("/calculators/") || path.startsWith("/calculator/")) {
-      setActiveCalculatorPage("hub");
+      const sub = path.replace(/^\/(calculators|calculator)\//, "").toLowerCase();
+      if (sub === "sip") {
+        setActiveCalculatorPage("sip");
+      } else if (sub === "step-up-sip" || sub === "step-up" || sub === "stepup") {
+        setActiveCalculatorPage("step-up-sip");
+        setCalculatorTab("step-up");
+      } else if (sub === "lumpsum" || sub === "lump-sum") {
+        setActiveCalculatorPage("lumpsum");
+      } else if (sub === "swp") {
+        setActiveCalculatorPage("swp");
+      } else if (sub === "goal-planner" || sub === "goal" || sub === "goalplanner") {
+        setActiveCalculatorPage("goal-planner");
+      } else if (sub === "tax-estimator" || sub === "tax" || sub === "taxestimator") {
+        setActiveCalculatorPage("tax-estimator");
+      } else if (sub === "direct-vs-regular" || sub === "ter") {
+        setActiveCalculatorPage("direct-vs-regular");
+        setCalculatorTab("direct-vs-regular");
+      } else if (sub === "cost-of-delay" || sub === "delay") {
+        setActiveCalculatorPage("cost-of-delay");
+        setCalculatorTab("cost-of-delay");
+      } else if (sub === "sip-vs-lumpsum" || sub === "compare" || sub === "comparator") {
+        setActiveCalculatorPage("sip-vs-lumpsum");
+        setCalculatorTab("sip-vs-lumpsum");
+      } else {
+        setActiveCalculatorPage("hub");
+      }
       setIsCalculatorView(true);
       setPlaceholderView(null);
       setSelectedArticle(null);
@@ -517,42 +616,49 @@ export default function App() {
     setSelectedHub(null);
     setIsHubsIndexView(false);
 
-    const cleanTarget = target ? target.replace(/^\/+(calculators|calculator)\//, "") : "";
+    const queryString = target && target.includes("?") ? `?${target.split("?")[1]}` : "";
+    const cleanTarget = target
+      ? target
+          .split("?")[0]
+          .replace(/^\/+(calculators|calculator|calculator-suite)?\//, "")
+          .replace(/^\//, "")
+          .toLowerCase()
+      : "";
 
     if (cleanTarget === "sip") {
       setActiveCalculatorPage("sip");
-      window.history.pushState({}, "", "/calculators/sip");
-    } else if (cleanTarget === "step-up-sip" || cleanTarget === "step-up") {
+      window.history.pushState({}, "", `/calculators/sip${queryString}`);
+    } else if (cleanTarget === "step-up-sip" || cleanTarget === "step-up" || cleanTarget === "stepup") {
       setActiveCalculatorPage("step-up-sip");
       setCalculatorTab("step-up");
-      window.history.pushState({}, "", "/calculators/step-up-sip");
-    } else if (cleanTarget === "lumpsum") {
+      window.history.pushState({}, "", `/calculators/step-up-sip${queryString}`);
+    } else if (cleanTarget === "lumpsum" || cleanTarget === "lump-sum") {
       setActiveCalculatorPage("lumpsum");
-      window.history.pushState({}, "", "/calculators/lumpsum");
+      window.history.pushState({}, "", `/calculators/lumpsum${queryString}`);
     } else if (cleanTarget === "swp") {
       setActiveCalculatorPage("swp");
-      window.history.pushState({}, "", "/calculators/swp");
-    } else if (cleanTarget === "goal-planner") {
+      window.history.pushState({}, "", `/calculators/swp${queryString}`);
+    } else if (cleanTarget === "goal-planner" || cleanTarget === "goal" || cleanTarget === "goalplanner") {
       setActiveCalculatorPage("goal-planner");
-      window.history.pushState({}, "", "/calculators/goal-planner");
-    } else if (cleanTarget === "tax-estimator") {
+      window.history.pushState({}, "", `/calculators/goal-planner${queryString}`);
+    } else if (cleanTarget === "tax-estimator" || cleanTarget === "tax" || cleanTarget === "taxestimator") {
       setActiveCalculatorPage("tax-estimator");
-      window.history.pushState({}, "", "/calculators/tax-estimator");
-    } else if (cleanTarget === "direct-vs-regular") {
+      window.history.pushState({}, "", `/calculators/tax-estimator${queryString}`);
+    } else if (cleanTarget === "direct-vs-regular" || cleanTarget === "ter") {
       setActiveCalculatorPage("direct-vs-regular");
       setCalculatorTab("direct-vs-regular");
-      window.history.pushState({}, "", "/calculators/direct-vs-regular");
-    } else if (cleanTarget === "cost-of-delay") {
+      window.history.pushState({}, "", `/calculators/direct-vs-regular${queryString}`);
+    } else if (cleanTarget === "cost-of-delay" || cleanTarget === "delay") {
       setActiveCalculatorPage("cost-of-delay");
       setCalculatorTab("cost-of-delay");
-      window.history.pushState({}, "", "/calculators/cost-of-delay");
-    } else if (cleanTarget === "sip-vs-lumpsum") {
+      window.history.pushState({}, "", `/calculators/cost-of-delay${queryString}`);
+    } else if (cleanTarget === "sip-vs-lumpsum" || cleanTarget === "compare" || cleanTarget === "comparator") {
       setActiveCalculatorPage("sip-vs-lumpsum");
       setCalculatorTab("sip-vs-lumpsum");
-      window.history.pushState({}, "", "/calculators/sip-vs-lumpsum");
+      window.history.pushState({}, "", `/calculators/sip-vs-lumpsum${queryString}`);
     } else {
       setActiveCalculatorPage("hub");
-      window.history.pushState({}, "", "/calculators");
+      window.history.pushState({}, "", `/calculators${queryString}`);
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -742,8 +848,25 @@ export default function App() {
         post={selectedArticle}
         settings={settings}
         calculatorMeta={
-          isCalculatorView && !["hub", "sip", "step-up-sip", "lumpsum", "swp", "goal-planner", "tax-estimator"].includes(activeCalculatorPage)
-            ? (CALCULATOR_CONFIG[calculatorTab] || CALCULATOR_CONFIG["direct-vs-regular"])
+          isCalculatorView
+            ? {
+                name:
+                  INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage]?.name ||
+                  CALCULATOR_CONFIG[calculatorTab]?.name ||
+                  "Quantitative Mutual Fund Calculators Suite",
+                title:
+                  INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage]?.title ||
+                  CALCULATOR_CONFIG[calculatorTab]?.title ||
+                  "Quantitative Mutual Fund Calculators Suite | YieldNest",
+                description:
+                  INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage]?.description ||
+                  CALCULATOR_CONFIG[calculatorTab]?.description ||
+                  "Comprehensive suite of quantitative Indian mutual fund calculators.",
+                urlPath:
+                  INDIVIDUAL_CALCULATOR_SEO[activeCalculatorPage]?.urlPath ||
+                  CALCULATOR_CONFIG[calculatorTab]?.urlPath ||
+                  "/calculators",
+              }
             : null
         }
         urlPath={

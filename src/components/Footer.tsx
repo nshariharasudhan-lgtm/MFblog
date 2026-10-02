@@ -10,7 +10,7 @@ interface FooterProps {
   onNavigateCalculator?: (target: string) => void;
   onNavigateFAQ?: () => void;
   onNavigateGlossary?: () => void;
-  onNavigateGuides?: () => void;
+  onNavigateGuides?: (target?: "index" | "how-to-choose" | "redemption") => void;
   onNavigateHubs?: () => void;
 }
 
@@ -139,6 +139,36 @@ export function Footer({
                 </div>
                 <div>
                   <a
+                    href="/calculators/step-up-sip"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && onNavigateCalculator) {
+                        e.preventDefault();
+                        onNavigateCalculator("step-up-sip");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="hover:text-stone-900 transition-colors"
+                  >
+                    • Step-Up SIP Calculator
+                  </a>
+                </div>
+                <div>
+                  <a
+                    href="/calculators/lumpsum"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && onNavigateCalculator) {
+                        e.preventDefault();
+                        onNavigateCalculator("lumpsum");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className="hover:text-stone-900 transition-colors"
+                  >
+                    • Lumpsum Calculator
+                  </a>
+                </div>
+                <div>
+                  <a
                     href="/calculators/swp"
                     onClick={(e) => {
                       if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && onNavigateCalculator) {
@@ -180,21 +210,6 @@ export function Footer({
                     className="hover:text-stone-900 transition-colors"
                   >
                     • Mutual Fund Tax Estimator
-                  </a>
-                </div>
-                <div>
-                  <a
-                    href="/calculators/lumpsum"
-                    onClick={(e) => {
-                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey && onNavigateCalculator) {
-                        e.preventDefault();
-                        onNavigateCalculator("lumpsum");
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }
-                    }}
-                    className="hover:text-stone-900 transition-colors"
-                  >
-                    • Lumpsum Calculator
                   </a>
                 </div>
                 <div>
@@ -249,7 +264,7 @@ export function Footer({
                   onClick={(e) => {
                     if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
                       e.preventDefault();
-                      if (onNavigateGuides) onNavigateGuides();
+                      if (onNavigateGuides) onNavigateGuides("index");
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }
                   }}
@@ -262,6 +277,13 @@ export function Footer({
                 <div>
                   <a
                     href="/guides/how-to-choose-a-mutual-fund"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                        e.preventDefault();
+                        if (onNavigateGuides) onNavigateGuides("how-to-choose");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
                     className="hover:text-stone-900 transition-colors"
                   >
                     • How to Choose a Fund
@@ -270,6 +292,13 @@ export function Footer({
                 <div>
                   <a
                     href="/guides/redemption-checklist"
+                    onClick={(e) => {
+                      if (e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+                        e.preventDefault();
+                        if (onNavigateGuides) onNavigateGuides("redemption");
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
                     className="hover:text-stone-900 transition-colors"
                   >
                     • Redemption Checklist

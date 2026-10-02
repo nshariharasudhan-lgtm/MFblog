@@ -148,7 +148,7 @@ export function SwpCalculatorPage({
   };
 
   // Embed snippet code
-  const embedSnippet = `<iframe src="https://www.yieldnest.online/swp-calculator.html" width="100%" height="720" frameborder="0" style="border-radius:12px;border:1px solid #e5e3dc;"></iframe>`;
+  const embedSnippet = `<iframe src="https://www.yieldnest.online/calculators/swp" width="100%" height="720" frameborder="0" style="border-radius:12px;border:1px solid #e5e3dc;"></iframe>`;
 
   // Inject WebApplication JSON-LD into DOM
   useEffect(() => {

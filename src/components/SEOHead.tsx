@@ -150,7 +150,7 @@ export function resolveSocialImageUrl(imageUrl?: string, fallbackOrigin?: string
 export function SEOHead({ post, settings, customTitle, customDescription, customKeywords, urlPath = "", calculatorMeta }: SEOHeadProps) {
   // Canonical origin is strictly the primary domain for Google Search Console & Vercel production
   const canonicalOrigin = "https://www.yieldnest.online";
-  const activePath = calculatorMeta?.urlPath || urlPath || (typeof window !== "undefined" ? window.location.pathname : "/");
+  const activePath = urlPath || calculatorMeta?.urlPath || (typeof window !== "undefined" ? window.location.pathname : "/");
   const cleanPath = activePath.length > 1 ? activePath.replace(/\/+$/, "") : activePath;
   const fullUrl = cleanPath === "/" ? `${canonicalOrigin}/` : `${canonicalOrigin}${cleanPath}`;
 
@@ -308,6 +308,31 @@ export function SEOHead({ post, settings, customTitle, customDescription, custom
     }
 
     if (calculatorMeta) {
+      const isHub = cleanPath === "/calculators" || cleanPath === "/calculator";
+      const itemListElement = [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: canonicalOrigin,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Calculators",
+          item: `${canonicalOrigin}/calculators`,
+        },
+      ];
+
+      if (!isHub) {
+        itemListElement.push({
+          "@type": "ListItem",
+          position: 3,
+          name: calculatorMeta.name,
+          item: fullUrl,
+        });
+      }
+
       const calculatorSchema = {
         "@context": "https://schema.org",
         "@graph": [
@@ -334,26 +359,7 @@ export function SEOHead({ post, settings, customTitle, customDescription, custom
           {
             "@type": "BreadcrumbList",
             "@id": `${fullUrl}#breadcrumb`,
-            itemListElement: [
-              {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: canonicalOrigin,
-              },
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: "Calculators",
-                item: `${canonicalOrigin}/calculators`,
-              },
-              {
-                "@type": "ListItem",
-                position: 3,
-                name: calculatorMeta.name,
-                item: fullUrl,
-              },
-            ],
+            itemListElement,
           },
         ],
       };
@@ -480,7 +486,7 @@ export function SEOHead({ post, settings, customTitle, customDescription, custom
       const dynamicTags = document.querySelectorAll('meta[property="article:tag"]');
       dynamicTags.forEach((el) => el.remove());
     };
-  }, [title, description, fullUrl, socialImage, authorName, post, settings]);
+  }, [title, description, fullUrl, socialImage, authorName, post, settings, calculatorMeta, urlPath]);
 
   return null;
 }
