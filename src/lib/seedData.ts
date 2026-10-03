@@ -1,4 +1,5 @@
 import { ArticlePost, Comment, SiteSettings } from "../types";
+import { CALENDAR_12_WEEKS_ARTICLES } from "./calendarArticles";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   siteName: "YieldNest.online",
@@ -1519,6 +1520,7 @@ A: Direct plans are always recommended to eliminate compounding distributor comm
     "createdAt": "2026-09-28T03:40:17.731574+00:00",
     "updatedAt": "2026-09-28T08:18:58.895Z"
   },
+  ...CALENDAR_12_WEEKS_ARTICLES,
 ];
 
 export const INITIAL_COMMENTS: Comment[] = [];

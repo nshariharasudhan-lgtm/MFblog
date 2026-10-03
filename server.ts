@@ -1620,6 +1620,38 @@ ${articles
 </urlset>`;
 }
 
+function buildRssXmlString(articles: any[]): string {
+  const siteUrl = "https://www.yieldnest.online";
+  const now = new Date().toUTCString();
+  const items = articles.slice(0, 30).map((art) => {
+    const pubDate = new Date(art.publishedAt || art.createdAt || Date.now()).toUTCString();
+    const title = escapeHtml(art.title || "");
+    const desc = escapeHtml(art.excerpt || "");
+    const link = `${siteUrl}/article/${encodeURIComponent(art.slug)}`;
+    return `    <item>
+      <title>${title}</title>
+      <link>${link}</link>
+      <guid isPermaLink="true">${link}</guid>
+      <pubDate>${pubDate}</pubDate>
+      <description>${desc}</description>
+      <category>${escapeHtml(art.category || "Mutual Funds")}</category>
+    </item>`;
+  }).join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>YieldNest.online - Independent Mutual Fund Research &amp; Analytics</title>
+    <link>${siteUrl}</link>
+    <description>Data-driven research on Indian Mutual Funds, AMFI NAV analysis, and objective fund category comparisons.</description>
+    <language>en-in</language>
+    <lastBuildDate>${now}</lastBuildDate>
+    <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml"/>
+${items}
+  </channel>
+</rss>`;
+}
+
 async function syncStaticSitemapAndLlms() {
   try {
     const articles = await getPublishedArticlesList();
@@ -1699,6 +1731,19 @@ app.get("/sitemap.xml", async (_req, res) => {
   } catch (err: any) {
     console.error("Failed to generate sitemap.xml:", err);
     return res.status(500).send("Error generating sitemap");
+  }
+});
+
+app.get(["/rss.xml", "/feed.xml", "/feed"], async (_req, res) => {
+  try {
+    const articles = await getPublishedArticlesList();
+    const xml = buildRssXmlString(articles);
+    res.setHeader("Content-Type", "application/xml; charset=utf-8");
+    res.setHeader("Cache-Control", "public, max-age=1800, s-maxage=1800");
+    return res.status(200).send(xml);
+  } catch (err: any) {
+    console.error("Failed to generate rss.xml:", err);
+    return res.status(500).send("Error generating RSS feed");
   }
 });
 
