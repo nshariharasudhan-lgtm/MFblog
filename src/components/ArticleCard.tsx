@@ -72,7 +72,7 @@ export function ArticleCard({ post, onOpen, featured = false }: ArticleCardProps
                 <div className="flex items-center gap-2 text-[11px] font-mono-data text-stone-500">
                   <span>Code: {primaryAmfi.schemeCode}</span>
                   <span>•</span>
-                  <span className="italic">Full historical metrics &amp; dates inside</span>
+                  <span className="italic">AMFI &amp; MFINDIA Sourced • As on Date</span>
                 </div>
               </div>
             )}
@@ -123,7 +123,7 @@ export function ArticleCard({ post, onOpen, featured = false }: ArticleCardProps
             <div className="pt-1.5 flex items-center justify-between text-[11px] font-mono-data text-stone-600 border-t border-stone-100">
               <span className="truncate max-w-[220px]">Scheme: {primaryAmfi.schemeName}</span>
               <span className="text-[10px] text-stone-700 bg-stone-100 px-1.5 py-0.5 rounded shrink-0">
-                AMFI Data Inside
+                AMFI &amp; MFINDIA • As on Date
               </span>
             </div>
           )}

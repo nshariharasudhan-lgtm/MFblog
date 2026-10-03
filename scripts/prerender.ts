@@ -213,24 +213,31 @@ function buildSharedFooterHtml(): string {
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:2rem;margin-bottom:2rem;">
       <div>
         <div style="font-weight:700;color:#1a1a1a;margin-bottom:0.75rem;text-transform:uppercase;font-size:0.75rem;letter-spacing:0.05em;">Research Categories</div>
-        <ul style="list-style:none;padding:0;margin:0;line-height:1.9;">
-          <li><a href="/category/fund-comparison" style="color:#44403c;text-decoration:none;">Fund Comparisons</a></li>
-          <li><a href="/category/performance-analysis" style="color:#44403c;text-decoration:none;">Performance Analysis</a></li>
-          <li><a href="/category/market-trends" style="color:#44403c;text-decoration:none;">Market Trends</a></li>
-          <li><a href="/category/category-deep-dive" style="color:#44403c;text-decoration:none;">Category Deep-Dive</a></li>
-          <li><a href="/category/sip-strategies" style="color:#44403c;text-decoration:none;">SIP Strategies</a></li>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li><a href="/category/fund-comparison" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">Fund Comparisons</a></li>
+          <li><a href="/category/performance-analysis" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">Performance Analysis</a></li>
+          <li><a href="/category/market-trends" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">Market Trends</a></li>
+          <li><a href="/category/category-deep-dive" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">Category Deep-Dive</a></li>
+          <li><a href="/category/sip-strategies" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">SIP Strategies</a></li>
         </ul>
       </div>
       <div>
         <div style="font-weight:700;color:#1a1a1a;margin-bottom:0.75rem;text-transform:uppercase;font-size:0.75rem;letter-spacing:0.05em;">Investor Resources</div>
-        <ul style="list-style:none;padding:0;margin:0;line-height:1.9;">
-          <li><a href="/hubs" style="color:#047857;font-weight:600;text-decoration:none;">🎯 Topic Hubs</a></li>
-          <li><a href="/calculators" style="color:#047857;font-weight:600;text-decoration:none;">🧮 Calculators Suite</a></li>
-          <li><a href="/guides" style="color:#44403c;text-decoration:none;">📚 Investor Guides</a></li>
-          <li><a href="/guides/how-to-choose-a-mutual-fund" style="color:#44403c;text-decoration:none;">• How to Choose a Fund</a></li>
-          <li><a href="/guides/redemption-checklist" style="color:#44403c;text-decoration:none;">• Redemption Checklist</a></li>
-          <li><a href="/faq" style="color:#44403c;text-decoration:none;">❓ Mutual Fund FAQ</a></li>
-          <li><a href="/glossary" style="color:#44403c;text-decoration:none;">📖 Term Glossary</a></li>
+        <ul style="list-style:none;padding:0;margin:0;">
+          <li><a href="/hubs" style="color:#047857;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">🎯 Topic Hubs</a></li>
+          <li><a href="/calculators" style="color:#047857;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">🧮 Calculators Suite</a></li>
+          <li><a href="/calculators/sip" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">• SIP Calculator</a></li>
+          <li><a href="/calculators/step-up-sip" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">• Step-Up SIP Calculator</a></li>
+          <li><a href="/calculators/lumpsum" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">• Lumpsum Calculator</a></li>
+          <li><a href="/calculators/swp" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">• SWP Calculator</a></li>
+          <li><a href="/calculators/goal-planner" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">• Goal Planner Calculator</a></li>
+          <li><a href="/calculators/tax-estimator" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">• Mutual Fund Tax Estimator</a></li>
+          <li><a href="/calculators/direct-vs-regular" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">• Direct vs Regular TER Drag</a></li>
+          <li><a href="/guides" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">📚 Investor Guides</a></li>
+          <li><a href="/guides/how-to-choose-a-mutual-fund" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">• How to Choose a Fund</a></li>
+          <li><a href="/guides/redemption-checklist" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">• Redemption Checklist</a></li>
+          <li><a href="/faq" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">❓ Mutual Fund FAQ</a></li>
+          <li><a href="/glossary" style="color:#44403c;text-decoration:none;display:inline-flex;align-items:center;min-height:44px;padding:0.25rem 0;">📖 Term Glossary</a></li>
         </ul>
       </div>
     </div>

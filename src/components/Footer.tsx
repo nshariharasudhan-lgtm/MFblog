@@ -90,7 +90,7 @@ export function Footer({
             <div className="font-semibold text-stone-900 font-mono-data uppercase tracking-wider text-[11px]">
               Investor Resources
             </div>
-            <ul className="space-y-1.5 text-stone-600 text-xs">
+            <ul className="space-y-0.5 text-stone-600 text-xs">
               <li>
                 <a
                   href="/hubs"
@@ -101,7 +101,7 @@ export function Footer({
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }
                   }}
-                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5"
+                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5 py-2 px-1 min-h-[44px] text-xs font-medium"
                 >
                   <span>🎯 Topic Hubs</span>
                 </a>
@@ -116,12 +116,12 @@ export function Footer({
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }
                   }}
-                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5"
+                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5 py-2 px-1 min-h-[44px] text-xs font-medium"
                 >
                   <span>🧮 Calculators Suite</span>
                 </a>
               </li>
-              <li className="pl-4 text-[11px] text-stone-500 space-y-1">
+              <li className="pl-3 text-[11px] text-stone-500 space-y-0.5">
                 <div>
                   <a
                     href="/calculators/sip"
@@ -132,7 +132,7 @@ export function Footer({
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="hover:text-stone-900 transition-colors"
+                    className="hover:text-stone-900 transition-colors py-2 px-1 min-h-[44px] flex items-center"
                   >
                     • SIP Calculator
                   </a>
@@ -147,7 +147,7 @@ export function Footer({
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="hover:text-stone-900 transition-colors"
+                    className="hover:text-stone-900 transition-colors py-2 px-1 min-h-[44px] flex items-center"
                   >
                     • Step-Up SIP Calculator
                   </a>
@@ -162,7 +162,7 @@ export function Footer({
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="hover:text-stone-900 transition-colors"
+                    className="hover:text-stone-900 transition-colors py-2 px-1 min-h-[44px] flex items-center"
                   >
                     • Lumpsum Calculator
                   </a>
@@ -177,7 +177,7 @@ export function Footer({
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="hover:text-stone-900 transition-colors"
+                    className="hover:text-stone-900 transition-colors py-2 px-1 min-h-[44px] flex items-center"
                   >
                     • SWP Calculator
                   </a>
@@ -192,7 +192,7 @@ export function Footer({
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="hover:text-stone-900 transition-colors"
+                    className="hover:text-stone-900 transition-colors py-2 px-1 min-h-[44px] flex items-center"
                   >
                     • Goal Planner Calculator
                   </a>
@@ -207,7 +207,7 @@ export function Footer({
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="hover:text-stone-900 transition-colors"
+                    className="hover:text-stone-900 transition-colors py-2 px-1 min-h-[44px] flex items-center"
                   >
                     • Mutual Fund Tax Estimator
                   </a>
@@ -222,7 +222,7 @@ export function Footer({
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="hover:text-stone-900 transition-colors"
+                    className="hover:text-stone-900 transition-colors py-2 px-1 min-h-[44px] flex items-center"
                   >
                     • Direct vs Regular TER Drag
                   </a>
@@ -238,7 +238,7 @@ export function Footer({
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }
                   }}
-                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5"
+                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5 py-2 px-1 min-h-[44px] text-xs font-medium"
                 >
                   <span>❓ Mutual Fund FAQ</span>
                 </a>
@@ -253,7 +253,7 @@ export function Footer({
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }
                   }}
-                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5"
+                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5 py-2 px-1 min-h-[44px] text-xs font-medium"
                 >
                   <span>📖 Term Glossary</span>
                 </a>
@@ -268,12 +268,12 @@ export function Footer({
                       window.scrollTo({ top: 0, behavior: "smooth" });
                     }
                   }}
-                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5"
+                  className="text-stone-700 hover:text-black transition-colors flex items-center gap-1.5 py-2 px-1 min-h-[44px] text-xs font-medium"
                 >
                   <span>📚 Investor Guides Hub</span>
                 </a>
               </li>
-              <li className="pl-4 text-[11px] text-stone-500 space-y-1">
+              <li className="pl-3 text-[11px] text-stone-500 space-y-0.5">
                 <div>
                   <a
                     href="/guides/how-to-choose-a-mutual-fund"
@@ -284,7 +284,7 @@ export function Footer({
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="hover:text-stone-900 transition-colors"
+                    className="hover:text-stone-900 transition-colors py-2 px-1 min-h-[44px] flex items-center"
                   >
                     • How to Choose a Fund
                   </a>
@@ -299,7 +299,7 @@ export function Footer({
                         window.scrollTo({ top: 0, behavior: "smooth" });
                       }
                     }}
-                    className="hover:text-stone-900 transition-colors"
+                    className="hover:text-stone-900 transition-colors py-2 px-1 min-h-[44px] flex items-center"
                   >
                     • Redemption Checklist
                   </a>

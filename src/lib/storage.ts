@@ -269,6 +269,8 @@ function getLocalPosts(): ArticlePost[] {
           content: seedMatch.content,
           seoMetadata: seedMatch.seoMetadata || p.seoMetadata,
           amfiDataSnapshot: seedMatch.amfiDataSnapshot || p.amfiDataSnapshot,
+          amfiSchemeCodes: seedMatch.amfiSchemeCodes || p.amfiSchemeCodes,
+          dataFreshness: seedMatch.dataFreshness || p.dataFreshness,
           tags: seedMatch.tags || p.tags,
           category: seedMatch.category || p.category,
           title: seedMatch.title || p.title,
