@@ -23,13 +23,13 @@ CREATE TABLE IF NOT EXISTS public.admin_profiles (
 );
 
 -- Seed Initial Super Admin Profile with ns.hariharasudhan@gmail.com
--- Initial dummy password: AdminNivesh2026! (can be changed immediately after login)
+-- Initial password is cryptographically SHA-256 hashed
 INSERT INTO public.admin_profiles (email, role, full_name, password_hash, must_change_password)
 VALUES (
     'ns.hariharasudhan@gmail.com',
     'super_admin',
     'Hari Hara Sudhan',
-    'AdminNivesh2026!',
+    '4bb8710bb0e8877ecc4eb08b126fcfd627787b8ded7f7e40b94672105a63bed7',
     true
 )
 ON CONFLICT (email) DO UPDATE SET
@@ -135,7 +135,7 @@ CREATE TABLE IF NOT EXISTS public.site_settings (
 );
 
 -- ==============================================================================
--- ROW LEVEL SECURITY (RLS) POLICIES
+-- ROW LEVEL SECURITY (RLS) POLICIES - PRODUCTION SECURITY HARDENING
 -- ==============================================================================
 ALTER TABLE public.admin_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.subscribers ENABLE ROW LEVEL SECURITY;
@@ -144,43 +144,46 @@ ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.social_schedules ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.site_settings ENABLE ROW LEVEL SECURITY;
 
--- 1. Posts Policies
+-- 1. Posts Policies: Public read-only for published content
 CREATE POLICY "Public read published posts" ON public.posts
     FOR SELECT USING (status = 'published');
 
-CREATE POLICY "Allow anon/authenticated insert and update posts" ON public.posts
-    FOR ALL USING (true) WITH CHECK (true);
+-- Write operations restricted to service_role or authenticated administrators
+CREATE POLICY "Admin manage posts" ON public.posts
+    FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
 
--- 2. Subscribers Policies
+-- 2. Subscribers Policies: Public can insert (subscribe), but NEVER read or dump emails
 CREATE POLICY "Anyone can subscribe" ON public.subscribers
     FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Allow select subscribers" ON public.subscribers
-    FOR SELECT USING (true);
+-- Strictly protect subscriber list from public scraping; only service role or admins can view
+CREATE POLICY "Admin manage subscribers" ON public.subscribers
+    FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY "Allow update subscribers" ON public.subscribers
-    FOR UPDATE USING (true);
-
--- 3. Comments Policies
+-- 3. Comments Policies: Public can read approved, submit new comments
 CREATE POLICY "Public can view approved comments" ON public.comments
     FOR SELECT USING (status = 'approved');
 
 CREATE POLICY "Anyone can submit comments" ON public.comments
     FOR INSERT WITH CHECK (true);
 
-CREATE POLICY "Allow comment management" ON public.comments
-    FOR ALL USING (true);
+CREATE POLICY "Admin manage comments" ON public.comments
+    FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
 
--- 4. Admin Profiles Policies
-CREATE POLICY "Admin profiles select" ON public.admin_profiles
-    FOR SELECT USING (true);
+-- 4. Admin Profiles Policies: NEVER allow public anon access to password hashes or admin profiles
+-- Only authenticated users can access their own profile; service role has full access
+CREATE POLICY "Admin profiles self access" ON public.admin_profiles
+    FOR ALL TO authenticated USING (auth.uid() = auth_user_id) WITH CHECK (auth.uid() = auth_user_id);
 
-CREATE POLICY "Admin profiles update" ON public.admin_profiles
-    FOR UPDATE USING (true);
+CREATE POLICY "Service role full access to admin_profiles" ON public.admin_profiles
+    FOR ALL TO service_role USING (true) WITH CHECK (true);
 
 -- 5. Site Settings & Social Schedules Policies
-CREATE POLICY "Full access to site_settings" ON public.site_settings
-    FOR ALL USING (true);
+CREATE POLICY "Public read site_settings" ON public.site_settings
+    FOR SELECT USING (true);
 
-CREATE POLICY "Full access to social_schedules" ON public.social_schedules
-    FOR ALL USING (true);
+CREATE POLICY "Admin manage site_settings" ON public.site_settings
+    FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);
+
+CREATE POLICY "Admin manage social_schedules" ON public.social_schedules
+    FOR ALL TO authenticated, service_role USING (true) WITH CHECK (true);

@@ -5,10 +5,9 @@ let cachedClient: SupabaseClient | null = null;
 let currentUrl: string = "";
 let currentKey: string = "";
 
-// Production fallback credentials (Public Anon key for YieldNest publication database)
-export const DEFAULT_SUPABASE_URL = "https://iguesvdehoxhsanasrcm.supabase.co";
-export const DEFAULT_SUPABASE_ANON_KEY =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlndWVzdmRlaG94aHNhbmFzcmNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MjQzMDAsImV4cCI6MjEwNjAwMDMwMH0.7fVc5O0r3zXy5ijkUfKperP1AO4LrvRUuNz6xaYvBBc";
+// Environment-based credentials (Public Anon key for YieldNest publication database)
+export const DEFAULT_SUPABASE_URL = "";
+export const DEFAULT_SUPABASE_ANON_KEY = "";
 
 // Helper to sanitize Supabase URL (e.g. remove /rest/v1 or trailing slashes)
 export function sanitizeSupabaseUrl(url?: string): string {

@@ -1,4 +1,5 @@
 import express from "express";
+import crypto from "crypto";
 import { GoogleGenAI } from "@google/genai";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
@@ -15,7 +16,23 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
-app.use(express.json({ limit: "10mb" }));
+// -------------------------------------------------------------
+// Hardened Security Headers Middleware (Zero Leakage & Armor)
+// -------------------------------------------------------------
+app.use((_req, res, next) => {
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "SAMEORIGIN");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+  res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+  res.setHeader(
+    "Permissions-Policy",
+    "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+  );
+  next();
+});
+
+// JSON body parser with safety limit (1MB max prevents payload explosion attacks)
+app.use(express.json({ limit: "1mb" }));
 
 // Canonical Host & URL Normalization: 301 redirect naked domain to www.yieldnest.online & strip trailing slashes
 app.use((req, res, next) => {
@@ -222,10 +239,255 @@ function calculateCAGR(startNav: number, endNav: number, years: number) {
 }
 
 // -------------------------------------------------------------
+// Rate Limiting System (Brute Force & DoS Shield)
+// -------------------------------------------------------------
+interface RateLimitRecord {
+  count: number;
+  resetTime: number;
+}
+
+function createRateLimiter(options: { windowMs: number; max: number; message: string }) {
+  const store = new Map<string, RateLimitRecord>();
+
+  // Periodically clean expired rate limits
+  setInterval(() => {
+    const now = Date.now();
+    for (const [key, value] of store.entries()) {
+      if (now > value.resetTime) {
+        store.delete(key);
+      }
+    }
+  }, Math.min(options.windowMs, 60000));
+
+  return (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const ip = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.socket.remoteAddress || "client-ip";
+    const now = Date.now();
+    let record = store.get(ip);
+
+    if (!record || now > record.resetTime) {
+      record = { count: 1, resetTime: now + options.windowMs };
+      store.set(ip, record);
+      return next();
+    }
+
+    record.count++;
+    if (record.count > options.max) {
+      const retryAfter = Math.ceil((record.resetTime - now) / 1000);
+      res.setHeader("Retry-After", String(retryAfter));
+      return res.status(429).json({ error: options.message, retryAfterSeconds: retryAfter });
+    }
+
+    next();
+  };
+}
+
+const loginLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: "Too many login attempts from this IP. Please try again after 15 minutes.",
+});
+
+const aiLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: "AI rate limit reached. Please wait a minute before making more requests.",
+});
+
+const publicApiLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  max: 120,
+  message: "API rate limit reached. Please slow down your requests.",
+});
+
+// -------------------------------------------------------------
+// Admin Authentication & Session Management
+// -------------------------------------------------------------
+interface AdminSession {
+  token: string;
+  email: string;
+  role: string;
+  fullName: string;
+  expiresAt: number;
+}
+
+const ADMIN_SESSIONS = new Map<string, AdminSession>();
+const ADMIN_CONFIG_PATH = path.join(__dirname, "server_data", "admin_config.json");
+
+function getAdminConfig(): { email: string; passwordHash: string; fullName: string; mustChangePassword: boolean } {
+  try {
+    if (fs.existsSync(ADMIN_CONFIG_PATH)) {
+      const raw = fs.readFileSync(ADMIN_CONFIG_PATH, "utf-8");
+      return JSON.parse(raw);
+    }
+  } catch (err) {
+    console.warn("Failed to read admin_config.json:", err);
+  }
+  return {
+    email: process.env.ADMIN_EMAIL || "ns.hariharasudhan@gmail.com",
+    passwordHash: process.env.ADMIN_PASSWORD_HASH || "4bb8710bb0e8877ecc4eb08b126fcfd627787b8ded7f7e40b94672105a63bed7",
+    fullName: "Hari Hara Sudhan",
+    mustChangePassword: true,
+  };
+}
+
+function saveAdminConfig(config: { email: string; passwordHash: string; fullName: string; mustChangePassword: boolean }) {
+  try {
+    const dir = path.dirname(ADMIN_CONFIG_PATH);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(ADMIN_CONFIG_PATH, JSON.stringify(config, null, 2), "utf-8");
+  } catch (err) {
+    console.error("Failed to save admin_config.json:", err);
+  }
+}
+
+function timingSafeEqualStr(a: string, b: string): boolean {
+  if (typeof a !== "string" || typeof b !== "string") return false;
+  const bufA = Buffer.from(a.toLowerCase());
+  const bufB = Buffer.from(b.toLowerCase());
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
+
+function generateSecureSessionToken(): string {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+function requireAdminAuth(req: express.Request, res: express.Response, next: express.NextFunction) {
+  const authHeader = req.headers["authorization"] || "";
+  let token = "";
+  if (authHeader.startsWith("Bearer ")) {
+    token = authHeader.slice(7).trim();
+  } else if (req.headers["x-admin-token"]) {
+    token = String(req.headers["x-admin-token"]).trim();
+  }
+
+  if (!token) {
+    return res.status(401).json({ error: "Unauthorized: Administrator authentication required." });
+  }
+
+  const session = ADMIN_SESSIONS.get(token);
+  if (!session || Date.now() > session.expiresAt) {
+    if (session) ADMIN_SESSIONS.delete(token);
+    return res.status(401).json({ error: "Session expired or invalid. Please log in again." });
+  }
+
+  // Extend session on active use (rolling 24h)
+  session.expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+  (req as any).adminUser = session;
+  next();
+}
+
+// -------------------------------------------------------------
+// Admin Auth Endpoints
+// -------------------------------------------------------------
+app.post("/api/admin/login", loginLimiter, (req, res) => {
+  const { email, password, passwordHash } = req.body || {};
+  if (!email || (!password && !passwordHash)) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  const config = getAdminConfig();
+  const inputEmail = String(email).trim().toLowerCase();
+  const targetEmail = config.email.trim().toLowerCase();
+
+  const inputHash = passwordHash
+    ? String(passwordHash).toLowerCase()
+    : crypto.createHash("sha256").update(String(password)).digest("hex").toLowerCase();
+
+  const isEmailMatch = inputEmail === targetEmail;
+  const isHashMatch = timingSafeEqualStr(inputHash, config.passwordHash);
+
+  if (!isEmailMatch || !isHashMatch) {
+    return res.status(401).json({ success: false, message: "Invalid administrator credentials. Access denied." });
+  }
+
+  const token = generateSecureSessionToken();
+  const session: AdminSession = {
+    token,
+    email: config.email,
+    role: "super_admin",
+    fullName: config.fullName,
+    expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+  };
+  ADMIN_SESSIONS.set(token, session);
+
+  return res.json({
+    success: true,
+    token,
+    user: {
+      id: "admin-master",
+      email: config.email,
+      fullName: config.fullName,
+      role: "super_admin",
+      mustChangePassword: config.mustChangePassword,
+      lastLogin: new Date().toISOString(),
+      token,
+    },
+  });
+});
+
+app.get("/api/admin/me", requireAdminAuth, (req, res) => {
+  const session = (req as any).adminUser as AdminSession;
+  const config = getAdminConfig();
+  return res.json({
+    success: true,
+    user: {
+      id: "admin-master",
+      email: session.email,
+      fullName: session.fullName,
+      role: session.role,
+      mustChangePassword: config.mustChangePassword,
+      token: session.token,
+    },
+  });
+});
+
+app.post("/api/admin/change-password", requireAdminAuth, (req, res) => {
+  const { oldPassword, oldPasswordHash, newPassword, newPasswordHash } = req.body || {};
+  const config = getAdminConfig();
+
+  const currentOldHash = oldPasswordHash
+    ? String(oldPasswordHash).toLowerCase()
+    : crypto.createHash("sha256").update(String(oldPassword || "")).digest("hex").toLowerCase();
+
+  if (!timingSafeEqualStr(currentOldHash, config.passwordHash)) {
+    return res.status(400).json({ success: false, message: "Current password is incorrect." });
+  }
+
+  const computedNewHash = newPasswordHash
+    ? String(newPasswordHash).toLowerCase()
+    : crypto.createHash("sha256").update(String(newPassword || "")).digest("hex").toLowerCase();
+
+  if (computedNewHash.length !== 64) {
+    return res.status(400).json({ success: false, message: "Invalid new password hash format." });
+  }
+
+  config.passwordHash = computedNewHash;
+  config.mustChangePassword = false;
+  saveAdminConfig(config);
+
+  return res.json({ success: true, message: "Password updated successfully." });
+});
+
+app.post("/api/admin/logout", (req, res) => {
+  const authHeader = req.headers["authorization"] || "";
+  let token = "";
+  if (authHeader.startsWith("Bearer ")) {
+    token = authHeader.slice(7).trim();
+  } else if (req.headers["x-admin-token"]) {
+    token = String(req.headers["x-admin-token"]).trim();
+  }
+  if (token) {
+    ADMIN_SESSIONS.delete(token);
+  }
+  return res.json({ success: true, message: "Logged out successfully" });
+});
+
+// -------------------------------------------------------------
 // 1. AMFI India Mutual Fund APIs
 // -------------------------------------------------------------
-app.get("/api/amfi/search", async (req, res) => {
-  const query = ((req.query.q as string) || "").trim().toLowerCase();
+app.get("/api/amfi/search", publicApiLimiter, async (req, res) => {
+  const query = ((req.query.q as string) || "").trim().toLowerCase().slice(0, 80);
   if (!query) {
     return res.json(CURATED_AMFI_FUNDS.slice(0, 10));
   }
@@ -241,7 +503,7 @@ app.get("/api/amfi/search", async (req, res) => {
     if (response.ok) {
       const results = (await response.json()) as Array<{ schemeCode: number; schemeName: string }>;
       const mapped = results.slice(0, 15).map((item) => ({
-        schemeCode: String(item.schemeCode),
+        schemeCode: String(item.schemeCode).replace(/[^0-9]/g, ""),
         schemeName: item.schemeName,
         fundHouse: item.schemeName.split(" ")[0] + " Mutual Fund",
         category: item.schemeName.toLowerCase().includes("direct") ? "Direct Plan" : "Regular Plan",
@@ -261,14 +523,17 @@ app.get("/api/amfi/search", async (req, res) => {
   return res.json(filtered.length ? filtered : CURATED_AMFI_FUNDS.slice(0, 5));
 });
 
-app.get("/api/amfi/fund/:schemeCode", async (req, res) => {
-  const { schemeCode } = req.params;
+app.get("/api/amfi/fund/:schemeCode", publicApiLimiter, async (req, res) => {
+  const schemeCode = String(req.params.schemeCode || "").replace(/[^0-9a-zA-Z_-]/g, "").slice(0, 30);
+  if (!schemeCode) {
+    return res.status(400).json({ error: "Invalid scheme code format" });
+  }
   const curated = CURATED_AMFI_FUNDS.find((f) => f.schemeCode === schemeCode);
 
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 4500);
-    const response = await fetch(`https://api.mfapi.in/mf/${schemeCode}`, {
+    const response = await fetch(`https://api.mfapi.in/mf/${encodeURIComponent(schemeCode)}`, {
       signal: controller.signal,
     });
     clearTimeout(timeout);
@@ -329,7 +594,7 @@ app.get("/api/amfi/fund/:schemeCode", async (req, res) => {
 // -------------------------------------------------------------
 // 2. Keyword Research Engine
 // -------------------------------------------------------------
-app.post("/api/ai/research-keywords", async (req, res) => {
+app.post("/api/ai/research-keywords", requireAdminAuth, aiLimiter, async (req, res) => {
   const { topic, category } = req.body;
   if (!topic) {
     return res.status(400).json({ error: "Topic is required" });
@@ -388,7 +653,7 @@ Return ONLY valid JSON matching this schema:
 // -------------------------------------------------------------
 // 3. AI-Driven Content Suggestions
 // -------------------------------------------------------------
-app.get("/api/ai/content-suggestions", async (_req, res) => {
+app.get("/api/ai/content-suggestions", requireAdminAuth, aiLimiter, async (_req, res) => {
   const fallbackSuggestions = {
     suggestions: [
       {
@@ -599,7 +864,7 @@ function validateDataFreshness(
 // -------------------------------------------------------------
 // 4. Automated EEAT Article Generation with AMFI Data
 // -------------------------------------------------------------
-app.post("/api/ai/generate-article", async (req, res) => {
+app.post("/api/ai/generate-article", requireAdminAuth, aiLimiter, async (req, res) => {
   const {
     topic,
     category,
@@ -900,7 +1165,7 @@ Under current Indian Income Tax regulations (Section 112A), Long-Term Capital Ga
 // -------------------------------------------------------------
 // 5. Social Media Snippet Generator & Rescheduler
 // -------------------------------------------------------------
-app.post("/api/social/generate-snippets", async (req, res) => {
+app.post("/api/social/generate-snippets", requireAdminAuth, aiLimiter, async (req, res) => {
   const { title, excerpt, keyFindings } = req.body;
   if (!title) {
     return res.status(400).json({ error: "Title is required" });
@@ -946,7 +1211,7 @@ Return ONLY valid JSON:
 // -------------------------------------------------------------
 // 6. Direct Supabase Bulk Sync Endpoint
 // -------------------------------------------------------------
-app.post("/api/posts/sync-supabase", async (req, res) => {
+app.post("/api/posts/sync-supabase", requireAdminAuth, async (req, res) => {
   if (!serverSupabase) {
     return res.status(400).json({ error: "Supabase is not configured on the server." });
   }
@@ -1145,7 +1410,7 @@ async function getAllAggregatedArticles(onlyPublished = false): Promise<any[]> {
   );
 }
 
-app.get("/api/posts", async (_req, res) => {
+app.get("/api/posts", publicApiLimiter, async (_req, res) => {
   const posts = await getAllAggregatedArticles(false);
   return res.json(posts);
 });
@@ -1197,9 +1462,9 @@ async function getPublishedArticlesList(): Promise<any[]> {
 }
 
 // -------------------------------------------------------------
-// POST /api/posts & DELETE /api/posts/:id Handlers
+// POST /api/posts & DELETE /api/posts/:id Handlers (Protected)
 // -------------------------------------------------------------
-app.post("/api/posts", async (req, res) => {
+app.post("/api/posts", requireAdminAuth, async (req, res) => {
   const post = req.body;
   if (!post || !post.slug) {
     return res.status(400).json({ error: "Post data with slug is required" });
@@ -1274,9 +1539,13 @@ app.post("/api/posts", async (req, res) => {
   return res.json({ success: true, post });
 });
 
-app.delete("/api/posts/:id", async (req, res) => {
-  const { id } = req.params;
-  const slug = (req.query.slug as string) || "";
+app.delete("/api/posts/:id", requireAdminAuth, async (req, res) => {
+  const id = String(req.params.id || "").replace(/[^0-9a-zA-Z_-]/g, "");
+  const slug = String((req.query.slug as string) || "").replace(/[^0-9a-zA-Z_-]/g, "");
+
+  if (!id && !slug) {
+    return res.status(400).json({ error: "Invalid post identifier format." });
+  }
 
   // 1. Record identifier in deleted set to block resurrection
   recordDeletedPostIdentifier(id, slug);
@@ -1504,8 +1773,17 @@ function renderMarkdownToHtml(markdown: string): string {
   html = html.replace(/\*\*([^*]+)\*\*/g, `<strong>$1</strong>`);
   html = html.replace(/\*([^*]+)\*/g, `<em>$1</em>`);
 
-  // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, `<a href="$2" style="color:#065f46;text-decoration:underline;font-weight:500;">$1</a>`);
+  // Links (strictly sanitized against javascript:/vbscript:/data: schemes)
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, text, rawUrl) => {
+    const trimmed = (rawUrl || "").trim();
+    const isSafe =
+      /^https?:\/\//i.test(trimmed) ||
+      /^\/(?!\/)/.test(trimmed) ||
+      /^#[a-z0-9_-]+$/i.test(trimmed) ||
+      /^mailto:[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(trimmed);
+    const safeUrl = isSafe ? escapeHtml(trimmed) : "#";
+    return `<a href="${safeUrl}" style="color:#065f46;text-decoration:underline;font-weight:500;">${text}</a>`;
+  });
 
   // Tables
   const lines = html.split("\n");

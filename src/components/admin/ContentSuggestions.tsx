@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Sparkles, RefreshCw, ArrowUpRight, TrendingUp, BarChart2 } from "lucide-react";
 import { ContentSuggestion } from "../../types";
+import { getAdminAuthHeaders } from "../../lib/storage";
 
 interface ContentSuggestionsProps {
   onDraftSuggestion: (suggestion: ContentSuggestion) => void;
@@ -13,7 +14,9 @@ export function ContentSuggestions({ onDraftSuggestion }: ContentSuggestionsProp
   const fetchSuggestions = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/ai/content-suggestions");
+      const res = await fetch("/api/ai/content-suggestions", {
+        headers: getAdminAuthHeaders(),
+      });
       if (res.ok) {
         const data = await res.json();
         setSuggestions(data.suggestions || []);

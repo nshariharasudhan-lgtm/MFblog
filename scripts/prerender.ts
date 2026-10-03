@@ -87,8 +87,17 @@ function renderMarkdownToHtml(markdown: string): string {
   html = html.replace(/\*\*([^*]+)\*\*/g, `<strong>$1</strong>`);
   html = html.replace(/\*([^*]+)\*/g, `<em>$1</em>`);
 
-  // Links
-  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, `<a href="$2" style="color:#065f46;text-decoration:underline;font-weight:500;">$1</a>`);
+  // Links (strictly sanitized against javascript:/vbscript:/data: schemes)
+  html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, text, rawUrl) => {
+    const trimmed = (rawUrl || "").trim();
+    const isSafe =
+      /^https?:\/\//i.test(trimmed) ||
+      /^\/(?!\/)/.test(trimmed) ||
+      /^#[a-z0-9_-]+$/i.test(trimmed) ||
+      /^mailto:[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(trimmed);
+    const safeUrl = isSafe ? escapeHtml(trimmed) : "#";
+    return `<a href="${safeUrl}" style="color:#065f46;text-decoration:underline;font-weight:500;">${text}</a>`;
+  });
 
   // Tables
   const lines = html.split("\n");

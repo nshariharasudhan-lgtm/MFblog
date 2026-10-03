@@ -8,7 +8,7 @@ interface ChangePasswordModalProps {
 }
 
 export function ChangePasswordModal({ onSuccess, onDismiss }: ChangePasswordModalProps) {
-  const [currentPassword, setCurrentPassword] = useState("AdminNivesh2026!");
+  const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);

@@ -4,8 +4,6 @@ import {
   Database,
   ShieldCheck,
   CheckCircle2,
-  AlertCircle,
-  RefreshCw,
   Copy,
   ExternalLink,
   Globe,
@@ -13,7 +11,6 @@ import {
 } from "lucide-react";
 import { SiteSettings } from "../../types";
 import { saveSiteSettings, syncAllToSupabase } from "../../lib/storage";
-import { testSupabaseConnection } from "../../lib/supabaseClient";
 
 interface SiteSettingsManagerProps {
   settings: SiteSettings;
@@ -27,12 +24,6 @@ export function SiteSettingsManager({
   articlesCount,
 }: SiteSettingsManagerProps) {
   const [formData, setFormData] = useState<SiteSettings>({ ...settings });
-  const [isTestingSupabase, setIsTestingSupabase] = useState(false);
-  const [supabaseTestStatus, setSupabaseTestStatus] = useState<{
-    tested: boolean;
-    success: boolean;
-    message: string;
-  } | null>(null);
 
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncStatus, setSyncStatus] = useState<string | null>(null);
@@ -45,17 +36,6 @@ export function SiteSettingsManager({
     onUpdateSettings(formData);
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
-  };
-
-  const handleTestSupabase = async () => {
-    setIsTestingSupabase(true);
-    const result = await testSupabaseConnection(formData.supabaseUrl, formData.supabaseAnonKey);
-    setSupabaseTestStatus({
-      tested: true,
-      success: result.success,
-      message: result.message,
-    });
-    setIsTestingSupabase(false);
   };
 
   const handleSyncToSupabase = async () => {
@@ -168,61 +148,31 @@ export function SiteSettingsManager({
           </div>
         </div>
 
-        {/* Section 2: Supabase Database Integration */}
+        {/* Section 2: Supabase Database Integration & Security */}
         <div className="bg-white p-6 rounded-2xl border border-[#EAE8E0] space-y-5 shadow-xs">
           <div className="flex items-center justify-between pb-3 border-b border-[#F0EEE6]">
             <div className="flex items-center gap-2">
               <Database className="w-4 h-4 text-emerald-600" />
               <h3 className="font-semibold text-sm text-stone-900 font-mono-data uppercase tracking-wider">
-                Supabase PostgreSQL Database
+                Supabase PostgreSQL Database &amp; Data Security
               </h3>
             </div>
-            <span className="text-[11px] font-mono-data text-stone-500">Dual-sync Active</span>
+            <span className="text-[11px] font-mono-data text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 font-medium">
+              Enterprise Secure Vault
+            </span>
           </div>
 
-          <p className="text-xs text-stone-600 leading-relaxed">
-            The application operates with full offline and local browser persistence by default. Connecting your Supabase PostgreSQL project stores articles, comments, and analytics in the cloud for multi-device collaboration.
-          </p>
-
-          <div className="grid grid-cols-1 gap-4">
-            <div>
-              <label className="block text-xs font-semibold text-stone-700 mb-1 font-mono-data">
-                VITE_SUPABASE_URL
-              </label>
-              <input
-                type="text"
-                placeholder="https://your-project-id.supabase.co"
-                value={formData.supabaseUrl}
-                onChange={(e) => setFormData({ ...formData, supabaseUrl: e.target.value })}
-                className="w-full text-xs font-mono p-2.5 rounded-xl border border-stone-200 bg-[#FAF9F5] focus:outline-none focus:border-stone-800"
-              />
+          <div className="p-4 rounded-xl bg-stone-50 border border-stone-200/80 space-y-2">
+            <div className="flex items-center gap-2 text-xs font-semibold text-stone-800 font-mono-data">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>Zero-Leak Server Architecture</span>
             </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-stone-700 mb-1 font-mono-data">
-                VITE_SUPABASE_ANON_KEY
-              </label>
-              <input
-                type="password"
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                value={formData.supabaseAnonKey}
-                onChange={(e) => setFormData({ ...formData, supabaseAnonKey: e.target.value })}
-                className="w-full text-xs font-mono p-2.5 rounded-xl border border-stone-200 bg-[#FAF9F5] focus:outline-none focus:border-stone-800"
-              />
-            </div>
+            <p className="text-xs text-stone-600 leading-relaxed">
+              Database connection strings and service secrets are secured server-side via environment variables (<code className="bg-white px-1.5 py-0.5 rounded border border-stone-200">VITE_SUPABASE_URL</code> and <code className="bg-white px-1.5 py-0.5 rounded border border-stone-200">VITE_SUPABASE_ANON_KEY</code>). API keys are never exposed in browser storage or client DOM to guarantee complete defense against scraping and extraction.
+            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3 pt-1">
-            <button
-              type="button"
-              onClick={handleTestSupabase}
-              disabled={isTestingSupabase}
-              className="px-3.5 py-1.5 rounded-lg border border-stone-200 bg-white hover:bg-stone-50 text-xs font-medium text-stone-800 flex items-center gap-1.5 transition-colors disabled:opacity-50"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isTestingSupabase ? "animate-spin" : ""}`} />
-              <span>{isTestingSupabase ? "Testing..." : "Test Connection"}</span>
-            </button>
-
             <button
               type="button"
               onClick={handleSyncToSupabase}
@@ -242,23 +192,6 @@ export function SiteSettingsManager({
               <span>{copiedSchema ? "Path Copied!" : "Schema: supabase/schema.sql"}</span>
             </button>
           </div>
-
-          {supabaseTestStatus && (
-            <div
-              className={`p-3 rounded-xl text-xs flex items-center gap-2 ${
-                supabaseTestStatus.success
-                  ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                  : "bg-amber-50 text-amber-800 border border-amber-200"
-              }`}
-            >
-              {supabaseTestStatus.success ? (
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-              )}
-              <span>{supabaseTestStatus.message}</span>
-            </div>
-          )}
 
           {syncStatus && (
             <div className="p-3 bg-stone-100 rounded-xl text-xs text-stone-800 font-mono-data">

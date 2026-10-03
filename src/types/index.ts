@@ -140,6 +140,7 @@ export interface AdminUser {
   role: "super_admin" | "editor" | "analyst";
   mustChangePassword?: boolean;
   lastLogin?: string;
+  token?: string;
 }
 
 export interface Subscriber {

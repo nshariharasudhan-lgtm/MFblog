@@ -25,6 +25,7 @@ import {
 import { ArticleCategory, ArticlePost, AMFISchemeData, KeywordResearchResult, SiteSettings, DataFreshnessStatus } from "../../types";
 import { cleanSocialExcerpt } from "../SEOHead";
 import { sanitizeSlug, validateSlug, getCanonicalArticleUrl } from "../../lib/slugUtils";
+import { getAdminAuthHeaders } from "../../lib/storage";
 
 interface ArticleEditorProps {
   post?: ArticlePost | null;
@@ -98,7 +99,7 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
     try {
       const res = await fetch("/api/social/generate-snippets", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           title: title || aiTopicInput,
           excerpt,
@@ -198,7 +199,7 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
     try {
       const res = await fetch("/api/ai/research-keywords", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ topic: topicToResearch, category }),
       });
       if (res.ok) {
@@ -231,7 +232,7 @@ export function ArticleEditor({ post, settings, allPosts = [], onSave, onCancel,
     try {
       const res = await fetch("/api/ai/generate-article", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           topic: targetTopic,
           category,

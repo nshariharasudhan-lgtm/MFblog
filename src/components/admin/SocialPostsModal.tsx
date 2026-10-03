@@ -10,7 +10,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ArticlePost } from "../../types";
-import { saveSocialSchedule } from "../../lib/storage";
+import { saveSocialSchedule, getAdminAuthHeaders } from "../../lib/storage";
 
 interface SocialPostsModalProps {
   post: ArticlePost;
@@ -78,7 +78,7 @@ export function SocialPostsModal({ post, onClose, onUpdatePostSocial }: SocialPo
     try {
       const res = await fetch("/api/social/generate-snippets", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAdminAuthHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({
           title: post.title,
           excerpt: post.excerpt,

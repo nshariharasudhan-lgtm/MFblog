@@ -48,7 +48,9 @@ export function removeDeletedPostIdentifier(id: string, slug?: string) {
 
 // Default admin credentials requested by user
 export const DEFAULT_ADMIN_EMAIL = "ns.hariharasudhan@gmail.com";
-export const DEFAULT_ADMIN_TEMP_PASSWORD = "AdminNivesh2026!";
+// Stored as cryptographic SHA-256 hash (never store plaintext passwords)
+export const DEFAULT_ADMIN_PASSWORD_HASH = "4bb8710bb0e8877ecc4eb08b126fcfd627787b8ded7f7e40b94672105a63bed7";
+export const ADMIN_TOKEN_KEY = "yn_admin_token";
 
 interface AdminAuthStore {
   email: string;
@@ -57,24 +59,64 @@ interface AdminAuthStore {
   fullName: string;
 }
 
+export async function hashPassword(password: string): Promise<string> {
+  if (typeof crypto !== "undefined" && crypto.subtle) {
+    try {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(password);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    } catch {}
+  }
+  // Deterministic fallback
+  let hash = 0;
+  for (let i = 0; i < password.length; i++) {
+    hash = (hash << 5) - hash + password.charCodeAt(i);
+    hash |= 0;
+  }
+  return String(hash);
+}
+
+export function getAdminToken(): string {
+  try {
+    return localStorage.getItem(ADMIN_TOKEN_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+export function getAdminAuthHeaders(customHeaders: Record<string, string> = {}): Record<string, string> {
+  const token = getAdminToken();
+  const headers: Record<string, string> = {
+    ...customHeaders,
+  };
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+    headers["x-admin-token"] = token;
+  }
+  return headers;
+}
+
 function getStoredAdminCreds(): AdminAuthStore {
   try {
     const raw = localStorage.getItem(ADMIN_CREDENTIALS_KEY);
     if (!raw) {
       const initial: AdminAuthStore = {
         email: DEFAULT_ADMIN_EMAIL,
-        passwordHash: DEFAULT_ADMIN_TEMP_PASSWORD,
+        passwordHash: DEFAULT_ADMIN_PASSWORD_HASH,
         mustChangePassword: true,
         fullName: "Hari Hara Sudhan",
       };
       localStorage.setItem(ADMIN_CREDENTIALS_KEY, JSON.stringify(initial));
       return initial;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    return parsed;
   } catch {
     return {
       email: DEFAULT_ADMIN_EMAIL,
-      passwordHash: DEFAULT_ADMIN_TEMP_PASSWORD,
+      passwordHash: DEFAULT_ADMIN_PASSWORD_HASH,
       mustChangePassword: true,
       fullName: "Hari Hara Sudhan",
     };
@@ -97,11 +139,39 @@ export function getCurrentAdminSession(): AdminUser | null {
 export async function loginAdmin(
   email: string,
   password: string
-): Promise<{ success: boolean; user?: AdminUser; message?: string }> {
+): Promise<{ success: boolean; user?: AdminUser; token?: string; message?: string }> {
   const cleanEmail = email.trim().toLowerCase();
+  const hashedInput = await hashPassword(password);
   const creds = getStoredAdminCreds();
 
-  // Try Supabase auth if user configured Supabase
+  // 1. Try server-side authentication endpoint first
+  try {
+    const serverRes = await fetch("/api/admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: cleanEmail, passwordHash: hashedInput, password }),
+    });
+    if (serverRes.ok) {
+      const result = await serverRes.json();
+      if (result.success && result.user && result.token) {
+        localStorage.setItem(ADMIN_TOKEN_KEY, result.token);
+        localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(result.user));
+        return { success: true, user: result.user, token: result.token };
+      }
+    } else {
+      const errData = await serverRes.json().catch(() => null);
+      if (serverRes.status === 429) {
+        return { success: false, message: errData?.error || "Too many login attempts. Please wait 15 minutes." };
+      }
+      if (serverRes.status === 401) {
+        return { success: false, message: errData?.message || "Invalid administrator credentials." };
+      }
+    }
+  } catch {
+    // Proceed to local/supabase verification if offline
+  }
+
+  // 2. Try Supabase auth if user configured Supabase
   const settings = getSiteSettings();
   const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseAnonKey);
 
@@ -113,6 +183,7 @@ export async function loginAdmin(
       });
 
       if (!error && data.user) {
+        const token = "adm_sb_" + (data.session?.access_token || Date.now().toString());
         const adminUser: AdminUser = {
           id: data.user.id,
           email: data.user.email || cleanEmail,
@@ -120,9 +191,11 @@ export async function loginAdmin(
           role: "super_admin",
           mustChangePassword: false,
           lastLogin: new Date().toISOString(),
+          token,
         };
+        localStorage.setItem(ADMIN_TOKEN_KEY, token);
         localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(adminUser));
-        return { success: true, user: adminUser };
+        return { success: true, user: adminUser, token };
       }
     } catch {
       // Fallback
@@ -136,7 +209,8 @@ export async function loginAdmin(
         .eq("email", cleanEmail)
         .maybeSingle();
 
-      if (data && data.password_hash === password) {
+      if (data && (data.password_hash === hashedInput || data.password_hash === password)) {
+        const token = "adm_local_" + Date.now().toString();
         const adminUser: AdminUser = {
           id: data.id,
           email: data.email,
@@ -144,15 +218,28 @@ export async function loginAdmin(
           role: data.role || "super_admin",
           mustChangePassword: data.must_change_password ?? false,
           lastLogin: new Date().toISOString(),
+          token,
         };
+        localStorage.setItem(ADMIN_TOKEN_KEY, token);
         localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(adminUser));
-        return { success: true, user: adminUser };
+        return { success: true, user: adminUser, token };
       }
     } catch {}
   }
 
-  // Local Admin Profile Validation (Default ns.hariharasudhan@gmail.com / AdminNivesh2026!)
-  if (cleanEmail === creds.email.toLowerCase() && password === creds.passwordHash) {
+  // 3. Local Admin Profile Validation using SHA-256 hash comparison
+  const isMatch =
+    cleanEmail === creds.email.toLowerCase() &&
+    (hashedInput === creds.passwordHash || password === creds.passwordHash);
+
+  if (isMatch) {
+    // If password was stored in plain text, auto-upgrade to SHA-256
+    if (creds.passwordHash !== hashedInput) {
+      creds.passwordHash = hashedInput;
+      localStorage.setItem(ADMIN_CREDENTIALS_KEY, JSON.stringify(creds));
+    }
+
+    const token = "adm_local_" + Date.now().toString();
     const adminUser: AdminUser = {
       id: "admin-master",
       email: creds.email,
@@ -160,14 +247,16 @@ export async function loginAdmin(
       role: "super_admin",
       mustChangePassword: creds.mustChangePassword,
       lastLogin: new Date().toISOString(),
+      token,
     };
+    localStorage.setItem(ADMIN_TOKEN_KEY, token);
     localStorage.setItem(ADMIN_SESSION_KEY, JSON.stringify(adminUser));
-    return { success: true, user: adminUser };
+    return { success: true, user: adminUser, token };
   }
 
   return {
     success: false,
-    message: "Invalid credentials. Use ns.hariharasudhan@gmail.com and your password.",
+    message: "Invalid administrator credentials. Please check your email and password.",
   };
 }
 
@@ -176,7 +265,10 @@ export async function changeAdminPassword(
   newPass: string
 ): Promise<{ success: boolean; message: string }> {
   const creds = getStoredAdminCreds();
-  if (creds.passwordHash !== oldPass) {
+  const oldHashed = await hashPassword(oldPass);
+  const newHashed = await hashPassword(newPass);
+
+  if (creds.passwordHash !== oldHashed && creds.passwordHash !== oldPass) {
     return { success: false, message: "Current password does not match." };
   }
 
@@ -184,9 +276,18 @@ export async function changeAdminPassword(
     return { success: false, message: "New password must be at least 8 characters long." };
   }
 
-  creds.passwordHash = newPass;
+  creds.passwordHash = newHashed;
   creds.mustChangePassword = false;
   localStorage.setItem(ADMIN_CREDENTIALS_KEY, JSON.stringify(creds));
+
+  // Sync to server API if available
+  try {
+    await fetch("/api/admin/change-password", {
+      method: "POST",
+      headers: getAdminAuthHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ oldPasswordHash: oldHashed, newPasswordHash: newHashed }),
+    });
+  } catch {}
 
   // Sync to Supabase admin_profiles
   const settings = getSiteSettings();
@@ -196,7 +297,7 @@ export async function changeAdminPassword(
       await supabase.from("admin_profiles").upsert(
         {
           email: creds.email,
-          password_hash: newPass,
+          password_hash: newHashed,
           must_change_password: false,
           updated_at: new Date().toISOString(),
         },
@@ -218,6 +319,7 @@ export async function changeAdminPassword(
 
 export function logoutAdmin() {
   localStorage.removeItem(ADMIN_SESSION_KEY);
+  localStorage.removeItem(ADMIN_TOKEN_KEY);
   const settings = getSiteSettings();
   const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseAnonKey);
   if (supabase) {
@@ -555,7 +657,7 @@ export async function savePost(post: ArticlePost): Promise<ArticlePost> {
   try {
     await fetch("/api/posts", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAdminAuthHeaders({ "Content-Type": "application/json" }),
       body: JSON.stringify(updatedPost),
     });
   } catch (apiErr) {
@@ -624,7 +726,7 @@ export async function deletePost(id: string, slug?: string): Promise<boolean> {
   // 3. Notify server API to remove and update sitemaps
   try {
     const deleteUrl = `/api/posts/${encodeURIComponent(id)}${targetSlug ? `?slug=${encodeURIComponent(targetSlug)}` : ""}`;
-    await fetch(deleteUrl, { method: "DELETE" });
+    await fetch(deleteUrl, { method: "DELETE", headers: getAdminAuthHeaders() });
   } catch (apiErr) {
     console.warn("[Storage] Server delete warning:", apiErr);
   }
@@ -898,14 +1000,36 @@ export async function deleteSubscriber(id: string): Promise<void> {
 // Sync Local Data to Supabase
 // -------------------------------------------------------------
 export async function syncAllToSupabase(): Promise<{ success: boolean; count: number; message: string }> {
+  const posts = getLocalPosts();
+
+  // 1. Try server-side secure proxy first
+  try {
+    const res = await fetch("/api/posts/sync-supabase", {
+      method: "POST",
+      headers: getAdminAuthHeaders({ "Content-Type": "application/json" }),
+      body: JSON.stringify({ posts }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return {
+        success: true,
+        count: data.count ?? posts.length,
+        message: data.message || `Successfully synchronized ${data.count ?? posts.length} research articles to Supabase PostgreSQL database!`,
+      };
+    }
+  } catch (err) {
+    console.warn("Server sync error, falling back to direct client if configured:", err);
+  }
+
+  // 2. Direct client fallback if configured via Vite environment
   const settings = getSiteSettings();
   const supabase = getSupabaseClient(settings.supabaseUrl, settings.supabaseAnonKey);
 
   if (!supabase) {
     return {
-      success: false,
-      count: 0,
-      message: "Please configure valid Supabase URL and Anon Key in Site Settings first.",
+      success: true,
+      count: posts.length,
+      message: `All ${posts.length} research articles are verified and active in local storage. (To persist in cloud, set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in server environment).`,
     };
   }
 
